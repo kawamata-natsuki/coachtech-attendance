@@ -22,7 +22,7 @@ return new class extends Migration
             $table->unique(['user_id', 'work_date']);
 
             // 外部キー制約
-            $table->foreign('user_id')->references('id')->on('users');
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
         });
     }
 
