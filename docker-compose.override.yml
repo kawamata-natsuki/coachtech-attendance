@@ -15,3 +15,6 @@ services:
   phpmyadmin:
     ports:
       - 8081:80
+
+# 標準の `docker-compose.yml` ではポートは固定されていません。
+# 各自の環境で `docker-compose.override.yml` に以下のように記載してポートを割り当ててください。
