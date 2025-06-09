@@ -40,8 +40,8 @@ Route::prefix('email')->name('verification.')->middleware('auth')->group(functio
 // ===============================
 // ユーザールート（要ログイン）
 // ===============================
-Route::middleware(['auth', 'verified'])
-    ->name('user.')
+//Route::middleware(['auth', 'verified'])->
+Route::name('user.')
     ->group(function () {
         Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendance.record');
         Route::post('/attendance', [UserAttendanceController::class, 'store'])->name('attendance.store');
@@ -57,8 +57,8 @@ Route::middleware(['auth', 'verified'])
 // ===============================
 // 管理者ルート（要ログイン）
 // ===============================
-Route::middleware(['auth', 'verified', 'admin'])
-    ->name('admin.')
+//Route::middleware(['auth', 'verified', 'admin'])->
+Route::name('admin.')
     ->group(function () {
         // 勤怠一覧画面
         Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
