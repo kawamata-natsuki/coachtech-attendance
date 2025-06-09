@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
 {
@@ -18,40 +20,42 @@ class LoginController extends Controller
     // ログイン処理
     public function store(LoginRequest $request)
     {
-        // 試行回数制限チェック
-        if ($request->hasTooManyLoginAttempts()) {
-            $request->fireLockoutEvent();
-    
-            throw ValidationException::withMessages([
-                'email' => ['ログインに複数回失敗しました。しばらくしてから再度お試しください。'],
-            ])->status(429);
-        }
-    
-        $credentials = $request->only('email', 'password');
-    
-        if (Auth::attempt($credentials, $request->filled('remember'))) {
-            $request->session()->regenerate();
-    
-            // 成功したら試行回数リセット
-            $request->clearLoginAttempts();
-    
-            return redirect()->route('attendance');
-        }
-    
-        // 失敗したら試行回数カウント＋エラー
-        $request->incrementLoginAttempts();
-    
-        return back()->withErrors([
-            'email' => '認証に失敗しました。',
-        ])->onlyInput('email');
-    }
+        $email = (string) $request->input('email');
+        $key = 'login:' . Str::lower($email) . '|' . $request->ip();
 
-    // ログアウト処理
-    public function logout(Request $request)
-    {
-        Auth::logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-        return redirect('/login');
+        // 1分間に6回以上間違えると60秒間ブロックされる
+        $executed = RateLimiter::attempt(
+            $key,
+            $maxAttempts = 5,
+            function () use ($request) {
+                $credentials = $request->validate([
+                    'email' => ['required', 'email'],
+                    'password' => ['required'],
+                ]);
+
+                if (Auth::attempt($credentials)) {
+                    $request->session()->regenerate();
+                    return true;
+                }
+
+                return false;
+            },
+            $decaySeconds = 60
+        );
+
+        if (! $executed) {
+            $seconds = RateLimiter::availableIn($key);
+            throw ValidationException::withMessages([
+                'email' => "ログイン試行が制限されました。{$seconds}秒後に再度お試しください。",
+            ]);
+        }
+
+        if ($executed === true) {
+            return redirect('attendances.record');
+        }
+
+        return back()->withErrors([
+            'email' => 'ログイン情報が登録されていません',
+        ])->onlyInput('email');
     }
 }
