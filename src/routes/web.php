@@ -42,7 +42,18 @@ Route::prefix('email')->name('verification.')->middleware('auth')->group(functio
 
 // 出勤登録画面 
 Route::get('/attendance', [AttendanceController::class, 'record'])->name('attendance.record');
+Route::post('/attemdamce', [AttendanceController::class, 'store'])->name('attendance.store');
+// 勤怠一覧画面
+Route::get('/attendance/list', [AttendanceController::class, 'index'])->name('user.attendance.index');
 
 // ===============================
 // 管理者ルート（要ログイン）
 // ===============================
+// 勤怠一覧画面
+Route::get('/admin/attendance/list', [AttendanceController::class, 'index'])->name('admin.attendance.index');
+
+// ===============================
+// 共通ルート（要ログイン）
+// ===============================
+// 勤怠詳細画面
+Route::get('/attendance/{id}', [AttendanceController::class, 'show'])->name('attendance.show');
