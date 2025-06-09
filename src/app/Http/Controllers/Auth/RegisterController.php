@@ -10,6 +10,11 @@ use Illuminate\Auth\Events\Registered;
 
 class RegisterController extends Controller
 {
+    public function showRegisterView()
+    {
+        return view('auth.register');
+    }
+
     public function store(RegisterRequest $request, CreateNewUser $creator)
     {
         // ユーザー作成・メール認証のメール自動送信
