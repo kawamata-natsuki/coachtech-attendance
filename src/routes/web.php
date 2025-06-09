@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AttendanceController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -13,13 +14,16 @@ Route::get('/', function () {
 // 認証関連ルート
 // ===============================
 
+// ユーザー登録
+Route::get('/register', [RegisterController::class, 'showRegisterView'])->name('register');
+Route::post('/register', [RegisterController::class, 'store']);
+
 // ログイン
 Route::get('/login', [LoginController::class, 'showLoginView'])->name('login');
 Route::post('/login', [LoginController::class, 'store']);
 
 // ログアウト
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
 
 // ===============================
 // ユーザールート（要ログイン）
