@@ -64,6 +64,13 @@ button {
   font-size: 36px;
 }
 
+.form-group {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+}
+
 .form__label {
   font-family: Inter;
   font-weight: 700;
