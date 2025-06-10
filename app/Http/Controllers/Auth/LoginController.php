@@ -61,7 +61,7 @@ class LoginController extends Controller
         }
 
         return back()->withErrors([
-            'email' => 'ログイン情報が登録されていません',
+            'login' => 'ログイン情報が登録されていません',
         ])->onlyInput('email');
     }
 }
