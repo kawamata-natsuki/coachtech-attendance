@@ -4,11 +4,13 @@ services:
     ports: []
     volumes:
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./src:/var/www/
+      - ./:/var/www/
     depends_on:
       - php
 
   php:
+    env_file:
+      - .env.docker
     build:
       context: ./docker/php
       dockerfile: Dockerfile
@@ -16,7 +18,7 @@ services:
         USER_ID: ${UID}
         GROUP_ID: ${GID}
     volumes:
-      - ./src:/var/www/
+      - ./:/var/www/
 
   mysql:
     image: mysql:8.0
