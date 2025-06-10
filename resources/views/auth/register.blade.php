@@ -23,7 +23,7 @@
             <label class="register-page__label form__label" for="name">名前</label>
             <input class="form__input register-page__input" type="text" name="name" id="name" value="{{ old('name') }}"
               placeholder="例：山田　太郎">
-            <x-error.validation-error field="name" />
+            <x-error.message field="name" />
           </div>
 
           <!-- メールアドレス -->
@@ -31,7 +31,7 @@
             <label class="register-page__label form__label" for="email">メールアドレス</label>
             <input class="form__input register-page__input" type="email" name="email" id="email"
               value="{{ old('email') }}" placeholder="例：user@example.com">
-            <x-error.validation-error field="email" />
+            <x-error.message field="email" />
           </div>
 
           <!-- パスワード -->
@@ -39,7 +39,7 @@
             <label class="register-page__label form__label" for="password">パスワード</label>
             <input class="form__input register-page__input" type="password" name="password" id="password"
               placeholder="8文字以上のパスワードを入力">
-            <x-error.validation-error field="password" />
+            <x-error.message field="password" />
           </div>
 
           <!-- 確認用パスワード -->
@@ -47,7 +47,7 @@
             <label class="register-page__label form__label" for="password_confirmation">パスワード確認</label>
             <input class="form__input register-page__input" type="password" name="password_confirmation"
               id="password_confirmation" placeholder="もう一度パスワードを入力">
-            <x-error.validation-error field="password_confirmation" />
+            <x-error.message field="password_confirmation" />
           </div>
         </div>
 
