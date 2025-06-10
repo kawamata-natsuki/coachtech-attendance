@@ -4,6 +4,8 @@
 <link rel="stylesheet" href="{{ asset('css/auth/login.css') }}">
 @endsection
 
+@section('title', 'ログイン')
+
 @section('content')
 <div class="login-page">
   <div class="login-page__container">
