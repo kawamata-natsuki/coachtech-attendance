@@ -7,6 +7,7 @@ use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -63,5 +64,21 @@ class LoginController extends Controller
         return back()->withErrors([
             'login' => 'ログイン情報が登録されていません',
         ])->onlyInput('email');
+    }
+
+    // ログアウト処理
+    public function logout(Request $request)
+    {
+        $user = Auth::user();
+
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        if ($user->is_admin) {
+            return redirect()->route('admin.login');
+        } else {
+            return redirect()->route('user.login');
+        }
     }
 }
