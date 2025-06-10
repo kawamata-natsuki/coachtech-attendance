@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\WorkStatus;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -65,4 +66,29 @@ class Attendance extends Model
         return $this->work_status->is(WorkStatus::COMPLETED);
     }
 
+    public function getWorkDateFormattedAttribute(): string
+    {
+        $date = Carbon::parse($this->work_date);
+        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
+        return $date->format('m/d') . '(' . $weekdays[$date->dayOfWeek] . ')';
+    }
+
+    public function getIsFutureAttribute(): bool
+    {
+        return Carbon::parse($this->work_date)->isFuture();
+    }
+
+    public function getClockOutFormattedAttribute(): ?string
+    {
+        return $this->clock_out
+            ? Carbon::parse($this->clock_out)->format('H:i')
+            : null;
+    }
+
+    public function getClockInFormattedAttribute(): ?string
+    {
+        return $this->clock_in
+            ? Carbon::parse($this->clock_in)->format('H:i')
+            : null;
+    }
 }
