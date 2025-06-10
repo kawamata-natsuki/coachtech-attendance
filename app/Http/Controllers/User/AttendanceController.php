@@ -95,19 +95,19 @@ class AttendanceController extends Controller
                 }
                 break;
         }
-        return redirect()->route('user.attendance.record');
+        return redirect()->route('user.attendances.record');
     }
 
     // 勤怠一覧画面の表示
     public function index()
     {
-        return view('shared.attendance.index');
+        return view('shared.attendances.index');
     }
 
     // 勤怠詳細画面の表示
     public function show()
     {
-        return view('shared.attendance.show');
+        return view('shared.attendances.show');
     }
 
     // 勤怠詳細修正の処理
