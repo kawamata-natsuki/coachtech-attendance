@@ -57,7 +57,7 @@ class LoginController extends Controller
                 return redirect()->route('admin.attendance.index'); // 管理者用
             }
 
-            return redirect()->route('attendance.record'); // 一般ユーザー用
+            return redirect()->route('user.attendance.record'); // 一般ユーザー用
         }
 
         return back()->withErrors([
