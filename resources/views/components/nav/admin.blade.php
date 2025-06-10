@@ -10,7 +10,7 @@
     </a>
   </li>
   <li>
-    <a class="header-menu__link" href="{{ route('admin.correction-request.index') }}">
+    <a class="header-menu__link" href="{{ route('admin.correction-request.admin-index') }}">
       申請一覧
     </a>
   </li>
