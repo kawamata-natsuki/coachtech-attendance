@@ -31,11 +31,7 @@
 }
 
 .register-page__form-group {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 680px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .register-page__input {
