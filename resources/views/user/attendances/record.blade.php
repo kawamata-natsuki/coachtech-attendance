@@ -32,7 +32,7 @@
     <div class="attendance-record-page__record">
       @if (is_null($attendance->clock_in))
       <!-- 出勤前 -->
-      <form class="button-wrapper" method="POST" action="{{ route('user.attendance.store') }}">
+      <form class="button-wrapper" method="POST" action="{{ route('user.attendances.store') }}">
         @csrf
         <button class="attendance-record-page__button  button--black" type="submit" name="action" value="clock_in">
           出勤
@@ -41,7 +41,7 @@
 
       @elseif ($statusValue === 'working')
       <!-- 出勤中 -->
-      <form class="button-wrapper" method="POST" action="{{ route('user.attendance.store') }}">
+      <form class="button-wrapper" method="POST" action="{{ route('user.attendances.store') }}">
         @csrf
         <button class="attendance-record-page__button  button--black" type="submit" name="action" value="clock_out">
           退勤
@@ -53,7 +53,7 @@
 
       @elseif ($statusValue === 'break')
       <!-- 休憩中 -->
-      <form class="button-wrapper" method="POST" action="{{ route('user.attendance.store') }}">
+      <form class="button-wrapper" method="POST" action="{{ route('user.attendances.store') }}">
         @csrf
         <button class="attendance-record-page__button  button--white" type="submit" name="action" value="break_end">
           休憩戻
