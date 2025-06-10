@@ -52,7 +52,13 @@ class LoginController extends Controller
         }
 
         if ($executed === true) {
+            /** @var \App\Models\User|\Illuminate\Contracts\Auth\MustVerifyEmail $user */
             $user = Auth::user();
+
+            // 未認証の場合認証メール再送信
+            if (! $user->hasVerifiedEmail()) {
+                $user->sendEmailVerificationNotification();
+            }
 
             if ($user->is_admin) {
                 return redirect()->route('admin.attendance.index'); // 管理者用
