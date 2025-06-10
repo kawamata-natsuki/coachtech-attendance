@@ -23,7 +23,7 @@
             <label class="register-page__label form__label" for="name">ユーザー名</label>
             <input class="form__input register-page__input" type="text" name="name" id="name" value="{{ old('name') }}"
               placeholder="例：山田　太郎">
-            <x-error-message field="name" class="error-message {{ $errors->has('name') ? 'has-error' : 'no-error' }}" />
+            <x-error.validation-error field="name" class="error-message {{ $errors->has('name') ? 'has-error' : 'no-error' }}" />
           </div>
 
           <!-- メールアドレス -->
@@ -31,7 +31,7 @@
             <label class="register-page__label form__label" for="email">メールアドレス</label>
             <input class="form__input register-page__input" type="email" name="email" id="email"
               value="{{ old('email') }}" placeholder="例：user@example.com">
-            <x-error-message field="email"
+            <x-error.validation-error field="email"
               class="error-message {{ $errors->has('email') ? 'has-error' : 'no-error' }}" />
           </div>
 
@@ -40,25 +40,15 @@
             <label class="register-page__label form__label" for="password">パスワード</label>
             <input class="form__input register-page__input" type="password" name="password" id="password"
               placeholder="8文字以上のパスワードを入力">
-            <x-error-message field="password"
+            <x-error.validation-error field="password"
               class="error-message {{ $errors->has('password') ? 'has-error' : 'no-error' }}"
               :excludeMessage="'パスワードと一致しません'" />
           </div>
 
-          <!-- 確認用パスワード -->
-          <div class="register-page__form-group">
-            <label class="register-page__label form__label" for="password_confirmation">確認用パスワード</label>
-            <input class="form__input register-page__input" type="password" name="password_confirmation"
-              id="password_confirmation" placeholder="もう一度パスワードを入力">
-            <x-password-confirm-error class="error-message {{ $errors->has('password') ? 'has-error' : 'no-error' }}"
-              passwordMessage="パスワードと一致しません" />
+          <!-- 送信ボタン -->
+          <div class="register-page__button">
+            <button class="button--solid-red register-page__button-submit" type="submit">登録する</button>
           </div>
-        </div>
-
-        <!-- 送信ボタン -->
-        <div class="register-page__button">
-          <button class="button--solid-red register-page__button-submit" type="submit">登録する</button>
-        </div>
       </form>
     </div>
 
