@@ -1,9 +1,11 @@
-@props(['field'])
+@props(['field', 'class' => ''])
 
-<div class="form__error">
-  @error($field)
+@error($field)
+<div class="error-message {{ $class }}">
   {{ $message }}
-  @else
-  &nbsp;
-  @enderror
 </div>
+@else
+<div class="error-message {{ $class }}">
+  &nbsp;
+</div>
+@enderror
