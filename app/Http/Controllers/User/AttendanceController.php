@@ -5,8 +5,8 @@ namespace App\Http\Controllers\User;
 use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
-use App\Models\BreakTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
@@ -99,9 +99,38 @@ class AttendanceController extends Controller
     }
 
     // 勤怠一覧画面の表示
-    public function index()
+    public function index(Request $request)
     {
-        return view('shared.attendances.index');
+        $targetMonth = $request->input('month')
+            ? Carbon::createFromFormat('Y-m', $request->input('month'))
+            : now()->startOfMonth();
+
+        $rawAttendances = Attendance::where('user_id', auth()->id())
+            ->whereBetween('work_date', [
+                $targetMonth->copy()->startOfMonth(),
+                $targetMonth->copy()->endOfMonth()
+            ])
+            ->get()
+            ->mapWithKeys(fn($item) => [$item->work_date->format('Y-m-d') => $item]);
+
+        $attendances = collect();
+
+        for ($day = 1; $day <= $targetMonth->daysInMonth; $day++) {
+            $date = $targetMonth->copy()->day($day)->format('Y-m-d');
+
+            $attendances->push(
+                $rawAttendances[$date] ?? new Attendance([
+                    'user_id' => auth()->id(),
+                    'work_date' => $date,
+                    'work_status' => \App\Enums\WorkStatus::OFF,
+                ])
+            );
+        }
+
+        return view('shared.attendances.index', [
+            'attendances' => $attendances,
+            'currentMonth' => $targetMonth,
+        ]);
     }
 
     // 勤怠詳細画面の表示
