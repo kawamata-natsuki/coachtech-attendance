@@ -18,7 +18,7 @@ class EmailVerificationController extends Controller
     public function verify(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect()->route('attendance.record');
+        return redirect()->route('user.attendance.record');
     }
 
     // 認証メール再送信
