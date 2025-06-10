@@ -1,6 +1,6 @@
 <ul class="header-menu">
   <li>
-    <a class="header-menu__link" href="{{ route('admin.attendance.index') }}">
+    <a class="header-menu__link" href="{{ route('admin.attendances.index') }}">
       勤怠一覧
     </a>
   </li>
@@ -10,7 +10,7 @@
     </a>
   </li>
   <li>
-    <a class="header-menu__link" href="{{ route('admin.correction-request.admin-index') }}">
+    <a class="header-menu__link" href="{{ route('admin.correction-requests.admin-index') }}">
       申請一覧
     </a>
   </li>
