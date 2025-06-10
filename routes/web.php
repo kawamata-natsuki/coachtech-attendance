@@ -40,8 +40,8 @@ Route::prefix('email')->name('verification.')->middleware('auth')->group(functio
 // ===============================
 // ユーザールート（要ログイン）
 // ===============================
-//Route::middleware(['auth', 'verified'])->
-Route::name('user.')
+Route::middleware(['auth', 'verified'])
+    ->name('user.')
     ->group(function () {
         Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendance.record');
         Route::post('/attendance', [UserAttendanceController::class, 'store'])->name('attendance.store');
@@ -51,14 +51,14 @@ Route::name('user.')
         Route::get('/attendance/{id}', [UserAttendanceController::class, 'show'])->name('attendance.show');
         Route::post('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendance.update');
 
-        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-request.index');
+        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-request.user-index');
     });
 
 // ===============================
 // 管理者ルート（要ログイン）
 // ===============================
-//Route::middleware(['auth', 'verified', 'admin'])->
-Route::name('admin.')
+Route::middleware(['auth', 'verified', 'admin'])
+    ->name('admin.')
     ->group(function () {
         // 勤怠一覧画面
         Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
@@ -75,7 +75,7 @@ Route::name('admin.')
         Route::get('/admin/attendance/staff/{id}/export', [AdminAttendanceController::class, 'exportCsv'])->name('attendance.export');
 
         // 申請一覧画面
-        Route::get('/stamp_correction_request/list', [AdminCorrectionRequestController::class, 'index'])->name('correction-request.index');
+        Route::get('/stamp_correction_request/list', [AdminCorrectionRequestController::class, 'index'])->name('correction-request.admin-index');
 
         // 修正申請承認画面
         Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [AdminCorrectionRequestController::class, 'show'])->name('correction-request.show');
