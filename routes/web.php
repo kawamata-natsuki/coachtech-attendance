@@ -11,6 +11,8 @@ use App\Http\Controllers\User\CorrectionRequestController as UserCorrectionReque
 use Illuminate\Support\Facades\Route;
 
 // 確認！パス名だぶりのとこ！
+// /attendance/{id}
+// /stamp_correction_request/list
 
 // ===============================
 // 認証ルート（要ログイン）
@@ -51,33 +53,35 @@ Route::middleware(['auth', 'verified'])
         Route::get('/attendance/{id}', [UserAttendanceController::class, 'show'])->name('attendance.show');
         Route::post('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendance.update');
 
-        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-request.user-index');
+        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-request.index');
     });
 
 // ===============================
 // 管理者ルート（要ログイン）
 // ===============================
-Route::middleware(['auth', 'verified', 'admin'])
-    ->name('admin.')
-    ->group(function () {
-        // 勤怠一覧画面
-        Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
 
-        // 勤怠詳細画面
-        Route::get('/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('attendance.show');
-        Route::post('/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
 
-        // スタッフ一覧画面
-        Route::get('/admin/staff/list', [StaffController::class, 'index'])->name('staff.index');
+//Route::middleware(['auth', 'verified', 'admin'])
+//    ->name('admin.')
+//    ->group(function () {
+//        // 勤怠一覧画面
+//        Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendance.index');
 
-        // スタッフ別勤怠一覧画面
-        Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staff'])->name('attendance.staff');
-        Route::get('/admin/attendance/staff/{id}/export', [AdminAttendanceController::class, 'exportCsv'])->name('attendance.export');
+//        // 勤怠詳細画面
+//        Route::get('/attendance/{id}', [AdminAttendanceController::class, 'show'])->name('attendance.show');
+//        Route::post('/attendance/{id}', [AdminAttendanceController::class, 'update'])->name('attendance.update');
+//
+//// スタッフ一覧画面
+//Route::get('/admin/staff/list', [StaffController::class, 'index'])->name('staff.index');
 
-        // 申請一覧画面
-        Route::get('/stamp_correction_request/list', [AdminCorrectionRequestController::class, 'index'])->name('correction-request.admin-index');
+// スタッフ別勤怠一覧画面
+//Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staff'])->name('attendance.staff');
+//Route::get('/admin/attendance/staff/{id}/export', [AdminAttendanceController::class, 'exportCsv'])->name('attendance.export');
 
-        // 修正申請承認画面
-        Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [AdminCorrectionRequestController::class, 'show'])->name('correction-request.show');
-        Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [AdminCorrectionRequestController::class, 'approve'])->name('correction-request.approve');
-    });
+// 申請一覧画面
+//Route::get('/admin/stamp_correction_request/list', [AdminCorrectionRequestController::class, 'index'])->name('correction-request.index');
+
+// 修正申請承認画面
+//Route::get('/stamp_correction_request/approve/{attendance_correct_request}', [AdminCorrectionRequestController::class, 'show'])->name('correction-request.show');
+//Route::post('/stamp_correction_request/approve/{attendance_correct_request}', [AdminCorrectionRequestController::class, 'approve'])->name('correction-request.approve');
+//    });
