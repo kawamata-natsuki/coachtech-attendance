@@ -45,15 +45,15 @@ Route::prefix('email')->name('verification.')->middleware('auth')->group(functio
 Route::middleware(['auth', 'verified'])
     ->name('user.')
     ->group(function () {
-        Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendance.record');
-        Route::post('/attendance', [UserAttendanceController::class, 'store'])->name('attendance.store');
+        Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendances.record');
+        Route::post('/attendance', [UserAttendanceController::class, 'store'])->name('attendances.store');
 
-        Route::get('/attendance/list', [UserAttendanceController::class, 'index'])->name('attendance.index');
+        Route::get('/attendance/list', [UserAttendanceController::class, 'index'])->name('attendances.index');
 
-        Route::get('/attendance/{id}', [UserAttendanceController::class, 'show'])->name('attendance.show');
-        Route::post('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendance.update');
+        Route::get('/attendance/{id}', [UserAttendanceController::class, 'show'])->name('attendances.show');
+        Route::post('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendances.update');
 
-        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-request.index');
+        Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-requests.index');
     });
 
 // ===============================
