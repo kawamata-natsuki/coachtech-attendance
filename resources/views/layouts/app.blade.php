@@ -5,7 +5,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="https://unpkg.com/ress/dist/ress.min.css">
-  <link rel="stylesheet" href="{{ asset('css/layouts/app.css') }}">
+  <link rel="stylesheet" href="{{ asset('css/layouts/common.css') }}">
   @yield('css')
   <title>coachtech 勤怠管理アプリ</title>
 </head>
