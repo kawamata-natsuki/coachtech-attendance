@@ -61,10 +61,10 @@ class LoginController extends Controller
             }
 
             if ($user->is_admin) {
-                return redirect()->route('admin.attendance.index'); // 管理者用
+                return redirect()->route('admin.attendances.index'); // 管理者用
             }
 
-            return redirect()->route('user.attendance.record'); // 一般ユーザー用
+            return redirect()->route('user.attendances.record'); // 一般ユーザー用
         }
 
         return back()->withErrors([

@@ -18,7 +18,7 @@ class EmailVerificationController extends Controller
     public function verify(EmailVerificationRequest $request)
     {
         $request->fulfill();
-        return redirect()->route('user.attendance.record');
+        return redirect()->route('user.attendances.record');
     }
 
     // 認証メール再送信
@@ -35,7 +35,7 @@ class EmailVerificationController extends Controller
         $user = auth()->user();
 
         return $user->hasVerifiedEmail()
-            ? redirect()->route('user.attendance.record')
+            ? redirect()->route('user.attendances.record')
             : redirect()->away('https://mailtrap.io/');
     }
 }
