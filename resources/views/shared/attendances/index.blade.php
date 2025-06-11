@@ -47,20 +47,22 @@
       <tbody>
         @foreach($attendances as $attendance)
         <tr>
-          <td>{{ $attendance->work_date_formatted }}</td>
+          <td>
+            {{ $attendance->present()->workDateForIndex() }}
+          </td>
 
           @if ($attendance->is_future)
           <td colspan="4"></td>
           <td></td>
           @else
 
-          <td>{{ $attendance->clock_in_formatted }}</td>
-          <td>{{ $attendance->clock_out_formatted }}</td>
-          <td>{{ $attendance->break_duration }}</td>
-          <td>{{ $attendance->work_duration }}</td>
+          <td>{{ $attendance->present()->clockInFormatted() }}</td>
+          <td>{{ $attendance->present()->clockOutFormatted() }}</td>
+          <td>{{ $attendance->present()->totalBreakTime() }}</td>
+          <td>{{ $attendance->present()->totalWorkTime() }}</td>
           <td>
             @if ($attendance->id)
-            <a href="{{ route('user.attendances.show', $attendance->id) }}">詳細</a>
+            <a href="{{ route('user.attendances.show', ['id' => $attendance->id]) }}">詳細</a>
             @endif
           </td>
           @endif
