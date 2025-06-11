@@ -3,7 +3,8 @@
 namespace App\Models;
 
 use App\Enums\WorkStatus;
-use Carbon\Carbon;
+use App\Services\AttendanceService;
+use App\Traits\HasPresenter;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,7 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Attendance extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasPresenter;
 
     protected $fillable = [
         'user_id',
@@ -56,7 +57,7 @@ class Attendance extends Model
         return $this->work_status->is(WorkStatus::WORKING);
     }
 
-    public function isOnBreak(): bool
+    public function isBreak(): bool
     {
         return $this->work_status->is(WorkStatus::BREAK);
     }
@@ -64,31 +65,5 @@ class Attendance extends Model
     public function isCompleted(): bool
     {
         return $this->work_status->is(WorkStatus::COMPLETED);
-    }
-
-    public function getWorkDateFormattedAttribute(): string
-    {
-        $date = Carbon::parse($this->work_date);
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土'];
-        return $date->format('m/d') . '(' . $weekdays[$date->dayOfWeek] . ')';
-    }
-
-    public function getIsFutureAttribute(): bool
-    {
-        return Carbon::parse($this->work_date)->isFuture();
-    }
-
-    public function getClockOutFormattedAttribute(): ?string
-    {
-        return $this->clock_out
-            ? Carbon::parse($this->clock_out)->format('H:i')
-            : null;
-    }
-
-    public function getClockInFormattedAttribute(): ?string
-    {
-        return $this->clock_in
-            ? Carbon::parse($this->clock_in)->format('H:i')
-            : null;
     }
 }
