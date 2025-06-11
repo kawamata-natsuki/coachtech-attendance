@@ -17,23 +17,16 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $today = today();
 
-        // 打刻前は new Attendance() で表示、それ以外はDBから取得して表示
-        $attendance = Attendance::where('user_id', $user->id)
-            ->where('work_date', $today)
-            ->first() ?? new Attendance([
-                'user_id' => $user->id,
-                'work_date' => $today,
-                'work_status' => WorkStatus::OFF,
-            ]);
+        // 打刻前表示用：DBにレコードがなければ未打刻の新しいインスタンスを作成※保存はしない
+        $attendance = Attendance::firstOrNew(
+            ['user_id' => $user->id, 'work_date' => $today],
+            ['work_status' => WorkStatus::OFF]
+        );
 
+        // 勤務ステータス表示
         $statusLabel = $attendance->work_status->label();
-        $statusValue = $attendance->work_status->value;
 
-        // 曜日を日本語に変換
-        $weekdays = ['日', '月', '火', '水', '木', '金', '土',];
-        $formattedDate = $today->format('Y年m月d日') . '(' . $weekdays[$today->dayOfWeek] . ')';
-
-        return view('user.attendances.record', compact('attendance', 'statusLabel', 'statusValue', 'formattedDate'));
+        return view('user.attendances.record', compact('attendance', 'statusLabel'));
     }
 
     // 勤怠登録の処理
@@ -42,15 +35,16 @@ class AttendanceController extends Controller
         $user = Auth::user();
         $today = today();
 
-        // 打刻時にレコードを作成（1日1回出勤）
+        // 初回打刻時にレコードを作成（1日1回出勤）
         $attendance = Attendance::firstOrCreate(
             ['user_id' => $user->id, 'work_date' => $today],
             ['work_status' => WorkStatus::OFF]
         );
 
-        // リクエストのアクションに応じて打刻処理を分岐
+        // リクエストのアクションに応じて勤怠登録処理を分岐
         switch ($request->input('action')) {
             case 'clock_in':
+                // 出勤打刻：初回のみ有効（clock_inがnullのとき）
                 if ($attendance->clock_in === null) {
                     $attendance->update([
                         'clock_in' => now(),
@@ -60,7 +54,7 @@ class AttendanceController extends Controller
                 break;
 
             case 'break_start':
-                // 休憩ごとに毎回新しいレコードをつくる
+                // 休憩開始：関連するbreaksテーブルにレコード追加＋attendancesテーブルのステータス変更
                 $attendance->breakTimes()->create([
                     'break_start' => now(),
                 ]);
@@ -70,13 +64,14 @@ class AttendanceController extends Controller
                 break;
 
             case 'break_end':
-                $lastBreak = $attendance->breakTimes()
+                // 休憩終了：まだ終了していない最新の休憩（break_end が null）を取得
+                $activeBreak = $attendance->breakTimes()
                     ->whereNull('break_end')
                     ->latest()
                     ->first();
 
-                if ($lastBreak) {
-                    $lastBreak->update([
+                if ($activeBreak) {
+                    $activeBreak->update([
                         'break_end' => now(),
                     ]);
 
@@ -87,6 +82,7 @@ class AttendanceController extends Controller
                 break;
 
             case 'clock_out':
+                // 退勤打刻：初回のみ有効（clock_outがnullのとき）
                 if ($attendance->clock_out === null) {
                     $attendance->update([
                         'clock_out' => now(),
@@ -105,7 +101,8 @@ class AttendanceController extends Controller
             ? Carbon::createFromFormat('Y-m', $request->input('month'))
             : now()->startOfMonth();
 
-        $rawAttendances = Attendance::where('user_id', auth()->id())
+        $rawAttendances = Attendance::with('breakTimes')
+            ->where('user_id', auth()->id())
             ->whereBetween('work_date', [
                 $targetMonth->copy()->startOfMonth(),
                 $targetMonth->copy()->endOfMonth()
