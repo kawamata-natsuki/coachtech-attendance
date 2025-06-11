@@ -20,7 +20,7 @@
 
     <!-- 日付 -->
     <div class="attendance-record-page__date">
-      {{ $formattedDate }}
+      {{ $attendance->present()->workDateForRecord() }}
     </div>
 
     <!-- 時刻 -->
@@ -39,7 +39,7 @@
         </button>
       </form>
 
-      @elseif ($statusValue === 'working')
+      @elseif ($attendance->isWorking())
       <!-- 出勤中 -->
       <form class="button-wrapper" method="POST" action="{{ route('user.attendances.store') }}">
         @csrf
@@ -51,7 +51,7 @@
         </button>
       </form>
 
-      @elseif ($statusValue === 'break')
+      @elseif ($attendance->isBreak())
       <!-- 休憩中 -->
       <form class="button-wrapper" method="POST" action="{{ route('user.attendances.store') }}">
         @csrf
@@ -60,7 +60,7 @@
         </button>
       </form>
 
-      @elseif ($statusValue === 'completed')
+      @elseif ($attendance->isCompleted())
       <!-- 退勤済 -->
       <p class="attendance-record-page__message">お疲れ様でした。</p>
       @endif
