@@ -62,7 +62,7 @@ class AttendancePresenter
   }
 
   // 勤務時間を合計し、H:MM形式に整形
-  public function workDuration(): string
+  public function totalWorkTime(): string
   {
     // 出勤もしくは退勤が未打刻なら空文字を返す
     if (!$this->attendance->clock_in || !$this->attendance->clock_out) return '';
