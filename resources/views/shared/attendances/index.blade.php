@@ -49,19 +49,22 @@
           <td class="attendance-table__cell">{{ $attendance->present()->clockOutFormatted() }}</td>
           <td class="attendance-table__cell">{{ $attendance->present()->totalBreakTime() }}</td>
           <td class="attendance-table__cell">{{ $attendance->present()->totalWorkTime() }}</td>
+
+          <!-- 未来の勤怠データをスキップ -->
           <td class="attendance-table__cell">
-            <a
-              class="attendance-table__link"
-              href="{{ route('user.attendances.show',['id' => $attendance->id]) }}">
+            @if ($attendance->work_date <= now())
+              <a class="attendance-table__link" href="{{ route('user.attendances.show',['id' => $attendance->id]) }}">
               詳細
-            </a>
+              </a>
+              @else
+              <!-- 未来のデータにはボタンを表示しない -->
+              @endif
           </td>
           @endif
         </tr>
         @endforeach
       </tbody>
     </table>
-
 
   </div>
 </div>

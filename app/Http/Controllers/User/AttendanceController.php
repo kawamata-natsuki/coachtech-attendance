@@ -102,7 +102,7 @@ class AttendanceController extends Controller
             ? Carbon::createFromFormat('Y-m', $request->input('month'))
             : now()->startOfMonth();
 
-        $attendances = AttendanceService::generateMonthlyAttendances(auth()->id(), $targetMonth);
+        $attendances = AttendanceService::generateThisMonthAttendances(auth()->id(), $targetMonth);
 
         return view('shared.attendances.index', [
             'attendances' => $attendances,

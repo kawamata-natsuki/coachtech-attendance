@@ -9,30 +9,40 @@ use Illuminate\Support\Collection;
 
 class AttendanceService
 {
-  // 空レコードの作成（1か月分）
-  public static function generateMonthlyAttendances(int $userId, Carbon $targetMonth): Collection
+  // 空レコードの作成（今月分）
+  public static function generateThisMonthAttendances(int $userId, Carbon $currentMonth): Collection
   {
-    $rawAttendances = Attendance::with('breakTimes')
-      ->where('user_id', $userId)
+    // 今月の日付範囲に合わせて勤怠レコードを取得
+    $existingAttendances = Attendance::where('user_id', $userId)
       ->whereBetween('work_date', [
-        $targetMonth->copy()->startOfMonth(),
-        $targetMonth->copy()->endOfMonth(),
+        $currentMonth->copy()->startOfMonth(),
+        $currentMonth->copy()->endOfMonth(),
       ])
-      ->get()
-      ->mapWithKeys(fn($item) => [$item->work_date->format('Y-m-d') => $item]);
+      ->get(); // get() を使ってレコードを取得
 
     $attendances = collect();
 
-    for ($day = 1; $day <= $targetMonth->daysInMonth; $day++) {
-      $date = $targetMonth->copy()->day($day)->format('Y-m-d');
+    // 今月の日付をループして、まだ作成されていないレコードだけ作成
+    for ($day = 1; $day <= $currentMonth->daysInMonth; $day++) {
+      $date = $currentMonth->copy()->day($day)->format('Y-m-d');
 
-      $attendance = $rawAttendances[$date] ?? Attendance::firstOrCreate([
-        'user_id' => $userId,
-        'work_date' => $date,
-      ], [
-        'work_status' => WorkStatus::OFF,
-      ]);
+      // 現在のレコードが存在するかどうかを確認
+      $attendance = $existingAttendances->firstWhere('work_date', $date);
 
+      if (!$attendance) {
+        // その日付にレコードがなければ作成
+        $attendance = Attendance::updateOrCreate(
+          [
+            'user_id' => $userId,
+            'work_date' => $date,
+          ],
+          [
+            'work_status' => WorkStatus::OFF,
+          ]
+        );
+      }
+
+      // 勤怠レコードをコレクションに追加
       $attendances->push($attendance);
     }
 
