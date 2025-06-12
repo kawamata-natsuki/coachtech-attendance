@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Services\AttendanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -101,28 +102,7 @@ class AttendanceController extends Controller
             ? Carbon::createFromFormat('Y-m', $request->input('month'))
             : now()->startOfMonth();
 
-        $rawAttendances = Attendance::with('breakTimes')
-            ->where('user_id', auth()->id())
-            ->whereBetween('work_date', [
-                $targetMonth->copy()->startOfMonth(),
-                $targetMonth->copy()->endOfMonth()
-            ])
-            ->get()
-            ->mapWithKeys(fn($item) => [$item->work_date->format('Y-m-d') => $item]);
-
-        $attendances = collect();
-
-        for ($day = 1; $day <= $targetMonth->daysInMonth; $day++) {
-            $date = $targetMonth->copy()->day($day)->format('Y-m-d');
-
-            $attendances->push(
-                $rawAttendances[$date] ?? new Attendance([
-                    'user_id' => auth()->id(),
-                    'work_date' => $date,
-                    'work_status' => \App\Enums\WorkStatus::OFF,
-                ])
-            );
-        }
+        $attendances = AttendanceService::generateMonthlyAttendances(auth()->id(), $targetMonth);
 
         return view('shared.attendances.index', [
             'attendances' => $attendances,
@@ -131,9 +111,13 @@ class AttendanceController extends Controller
     }
 
     // 勤怠詳細画面の表示
-    public function show()
+    public function show($id)
     {
-        return view('shared.attendances.show');
+        $attendance = Attendance::findOrFail($id);
+
+        return view('shared.attendances.show', [
+            'attendance' => $attendance,
+        ]);
     }
 
     // 勤怠詳細修正の処理
