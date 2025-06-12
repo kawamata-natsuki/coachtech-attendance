@@ -66,4 +66,10 @@ class Attendance extends Model
     {
         return $this->work_status->is(WorkStatus::COMPLETED);
     }
+
+    // work_date が未来の日付だったら true、それ以外なら false を返す
+    public function isFuture(): bool
+    {
+        return $this->work_date->isFuture();
+    }
 }
