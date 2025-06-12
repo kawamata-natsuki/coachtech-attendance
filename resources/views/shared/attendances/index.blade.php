@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @section('css')
+<link rel="stylesheet" href="{{ asset('css/components/month/nav.css') }}">
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/index.css') }}">
 @endsection
 
@@ -10,60 +11,50 @@
 <div class="attendance-index-page">
   <div class="attendance-index-page__container">
     <h1 class="attendance-index-page__heading content__heading">
-      勤怠一覧
+      <span class="attendance-index-page__heading-text">勤怠一覧</span>
     </h1>
 
-    <!-- 月ナビゲーション -->
-    <div class="attendance-index-page__month-nav">
-
-      <a href="{{ route('user.attendances.index', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')]) }}">
-        <img src="{{ asset('images/left-arrow.svg') }}" alt="前月" class="icon-arrow">
-        前月
-      </a>
-
-      <span class="attendance-index-page__month-label">
-        <img src="{{ asset('images/calendar.svg') }}" alt="カレンダーアイコン" class="icon-calendar">
-        {{ $currentMonth->format('Y/m') }}
-      </span>
-
-      <a href="{{ route('user.attendances.index', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')]) }}">
-        翌月
-        <img src="{{ asset('images/right-arrow.svg') }}" alt="翌月" class="icon-arrow">
-      </a>
-    </div>
+    <x-month.nav
+      :currentMonth="$currentMonth"
+      :prevUrl="route('user.attendances.index', ['month' => $currentMonth->copy()->subMonth()->format('Y-m')])"
+      :nextUrl="route('user.attendances.index', ['month' => $currentMonth->copy()->addMonth()->format('Y-m')])" />
 
     <!-- 日付・出勤・退勤・休憩時間（合計）・合計（勤務）　詳細ボタン -->
     <table class="attendance-index-page__table">
-      <thead>
+
+      <thead class="">
         <tr>
-          <th>日付</th>
-          <th>出勤</th>
-          <th>退勤</th>
-          <th>休憩</th>
-          <th>合計</th>
-          <th></th>
+          <th class="attendance-table__head">日付</th>
+          <th class="attendance-table__head">出勤</th>
+          <th class="attendance-table__head">退勤</th>
+          <th class="attendance-table__head">休憩</th>
+          <th class="attendance-table__head">合計</th>
+          <th class="attendance-table__head">詳細</th>
         </tr>
       </thead>
+
       <tbody>
         @foreach($attendances as $attendance)
         <tr>
-          <td>
+          <td class="attendance-table__cell">
             {{ $attendance->present()->workDateForIndex() }}
           </td>
 
           @if ($attendance->is_future)
-          <td colspan="4"></td>
-          <td></td>
+          <td class="attendance-table__cell" colspan="4"></td>
+          <td class="attendance-table__cell"></td>
           @else
 
-          <td>{{ $attendance->present()->clockInFormatted() }}</td>
-          <td>{{ $attendance->present()->clockOutFormatted() }}</td>
-          <td>{{ $attendance->present()->totalBreakTime() }}</td>
-          <td>{{ $attendance->present()->totalWorkTime() }}</td>
-          <td>
-            @if ($attendance->id)
-            <a href="{{ route('user.attendances.show', ['id' => $attendance->id]) }}">詳細</a>
-            @endif
+          <td class="attendance-table__cell">{{ $attendance->present()->clockInFormatted() }}</td>
+          <td class="attendance-table__cell">{{ $attendance->present()->clockOutFormatted() }}</td>
+          <td class="attendance-table__cell">{{ $attendance->present()->totalBreakTime() }}</td>
+          <td class="attendance-table__cell">{{ $attendance->present()->totalWorkTime() }}</td>
+          <td class="attendance-table__cell">
+            <a
+              class="attendance-table__link"
+              href="{{ route('user.attendances.show',['id' => $attendance->id]) }}">
+              詳細
+            </a>
           </td>
           @endif
         </tr>
