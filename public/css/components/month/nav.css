@@ -1,0 +1,58 @@
+.month-nav {
+  height: 60px;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.month-nav__navigation {
+  flex: 0 0 auto;
+  padding: 0 20px;
+}
+
+.month-nav__current-month {
+  flex: 0 1 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.month-nav__link {
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: #737373;
+}
+
+.month-nav__link-inner {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.month-nav-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 700;
+  font-size: 20px;
+}
+
+
+.icon-calendar {
+  width: 25px;
+  height: 25px;
+  object-fit: contain;
+}
+
+.icon-arrow {
+  width: 20px;
+  height: 15px;
+  object-fit: contain;
+  opacity: 0.3;
+}
