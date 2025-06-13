@@ -51,48 +51,48 @@
   text-align: center;
 }
 
-.attendance-table__head:nth-child(1),
-.attendance-table__cell:nth-child(1) {
+.attendance-index-page__table-head:nth-child(1),
+.attendance-index-page__table-cell:nth-child(1) {
   width: 25%;
   text-align: left;
   padding-left: 64px;
   padding-right: 12px;
 }
 
-.attendance-table__head:nth-child(2),
-.attendance-table__cell:nth-child(2),
-.attendance-table__head:nth-child(3),
-.attendance-table__cell:nth-child(3),
-.attendance-table__head:nth-child(4),
-.attendance-table__cell:nth-child(4),
-.attendance-table__head:nth-child(5),
-.attendance-table__cell:nth-child(5) {
+.attendance-index-page__table-head:nth-child(2),
+.attendance-index-page__table-cell:nth-child(2),
+.attendance-index-page__table-head:nth-child(3),
+.attendance-index-page__table-cell:nth-child(3),
+.attendance-index-page__table-head:nth-child(4),
+.attendance-index-page__table-cell:nth-child(4),
+.attendance-index-page__table-head:nth-child(5),
+.attendance-index-page__table-cell:nth-child(5) {
   width: 15%;
   text-align: center;
 }
 
-.attendance-table__head:nth-child(6),
-.attendance-table__cell:nth-child(6) {
+.attendance-index-page__table-head:nth-child(6),
+.attendance-index-page__table-cell:nth-child(6) {
   width: 15%;
   text-align: center;
   padding-left: 12px;
   padding-right: 48px;
 }
 
-.attendance-table__head {
+.attendance-index-page__table-head {
   width: 15%;
   height: 48px;
   border-bottom: 3px solid #E1E1E1;
   text-align: center;
 }
 
-.attendance-table__cell {
+.attendance-index-page__table-cell {
   width: 16%;
   height: 48px;
   border-bottom: 2px solid #E1E1E1;
   text-align: center;
 }
 
-.attendance-table__link {
+.attendance-index-page__table-link {
   color: #000;
 }
