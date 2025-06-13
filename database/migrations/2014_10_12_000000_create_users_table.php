@@ -15,7 +15,8 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->string('role')->default('user');
-            $table->softDeletes(); 
+            $table->date('joining_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
