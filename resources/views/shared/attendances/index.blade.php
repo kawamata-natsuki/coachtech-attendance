@@ -22,38 +22,40 @@
     <!-- 日付・出勤・退勤・休憩時間（合計）・合計（勤務）　詳細ボタン -->
     <table class="attendance-index-page__table">
 
-      <thead class="">
+      <thead>
         <tr>
-          <th class="attendance-table__head">日付</th>
-          <th class="attendance-table__head">出勤</th>
-          <th class="attendance-table__head">退勤</th>
-          <th class="attendance-table__head">休憩</th>
-          <th class="attendance-table__head">合計</th>
-          <th class="attendance-table__head">詳細</th>
+          <th class="attendance-index-page__table-head">日付</th>
+          <th class="attendance-index-page__table-head">出勤</th>
+          <th class="attendance-index-page__table-head">退勤</th>
+          <th class="attendance-index-page__table-head">休憩</th>
+          <th class="attendance-index-page__table-head">合計</th>
+          <th class="attendance-index-page__table-head">詳細</th>
         </tr>
       </thead>
 
       <tbody>
         @foreach($attendances as $attendance)
         <tr>
-          <td class="attendance-table__cell">
+          <td class="attendance-index-page__table-cell">
             {{ $attendance->present()->workDateForIndex() }}
           </td>
 
           @if ($attendance->is_future)
-          <td class="attendance-table__cell" colspan="4"></td>
-          <td class="attendance-table__cell"></td>
+          <td class="attendance-index-page__table-cell" colspan="4"></td>
+          <td class="attendance-index-page__table-cell"></td>
           @else
 
-          <td class="attendance-table__cell">{{ $attendance->present()->clockInFormatted() }}</td>
-          <td class="attendance-table__cell">{{ $attendance->present()->clockOutFormatted() }}</td>
-          <td class="attendance-table__cell">{{ $attendance->present()->totalBreakTime() }}</td>
-          <td class="attendance-table__cell">{{ $attendance->present()->totalWorkTime() }}</td>
+          <td class="attendance-index-page__table-cell">{{ $attendance->present()->clockInFormatted() }}</td>
+          <td class="attendance-index-page__table-cell">{{ $attendance->present()->clockOutFormatted() }}</td>
+          <td class="attendance-index-page__table-cell">{{ $attendance->present()->totalBreakTime() }}</td>
+          <td class="attendance-index-page__table-cell">{{ $attendance->present()->totalWorkTime() }}</td>
 
           <!-- 詳細ボタン -->
-          <td class="attendance-table__cell">
-            @if (!$attendance->is_dummy && $attendance->id)
-            <a class="attenance-table__link" href="{{ route('user.attendances.show', ['id' => $attendance->id]) }}">詳細</a>
+          <td class="attendance-index-page__table-cell">
+            @if ($attendance->id && $attendance->work_date->lte(\Carbon\Carbon::today()))
+            <a class="attendance-index-page__table-link" href="{{ route('user.attendances.show', ['id' => $attendance->id]) }}">
+              詳細
+            </a>
             @endif
           </td>
           @endif
