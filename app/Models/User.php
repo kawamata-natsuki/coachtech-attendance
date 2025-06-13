@@ -19,6 +19,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'email',
         'password',
         'role',
+        'joining_date',
     ];
 
     protected $hidden = [
@@ -29,7 +30,19 @@ class User extends Authenticatable implements MustVerifyEmail
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'role' => Role::class,
+        'joining_date' => 'date',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($user) {
+            if (empty($user->joining_date)) {
+                $user->joining_date = now();
+            }
+        });
+    }
 
     // リレーション
     public function attendances(): HasMany
