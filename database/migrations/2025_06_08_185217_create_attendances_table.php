@@ -15,6 +15,7 @@ return new class extends Migration
             $table->datetime('clock_in')->nullable(); // 出勤
             $table->datetime('clock_out')->nullable(); // 退勤
             $table->string('work_status')->default('off'); // 出勤前
+            $table->boolean('is_dummy')->default(false);  // ダミーフラグ
             $table->softDeletes();
             $table->timestamps();
 
