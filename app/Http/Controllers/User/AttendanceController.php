@@ -50,6 +50,7 @@ class AttendanceController extends Controller
                     $attendance->update([
                         'clock_in' => now(),
                         'work_status' => WorkStatus::WORKING,
+                        'is_dummy' => false,
                     ]);
                 }
                 break;
@@ -99,7 +100,7 @@ class AttendanceController extends Controller
     public function index(Request $request)
     {
         $targetMonth = $request->input('month')
-            ? Carbon::createFromFormat('Y-m', $request->input('month'))
+            ? Carbon::createFromFormat('Y-m', $request->input('month'))->startOfMonth()
             : now()->startOfMonth();
 
         $attendances = AttendanceService::generateThisMonthAttendances(auth()->id(), $targetMonth);
