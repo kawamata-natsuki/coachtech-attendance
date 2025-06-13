@@ -50,15 +50,11 @@
           <td class="attendance-table__cell">{{ $attendance->present()->totalBreakTime() }}</td>
           <td class="attendance-table__cell">{{ $attendance->present()->totalWorkTime() }}</td>
 
-          <!-- 未来の勤怠データをスキップ -->
+          <!-- 詳細ボタン -->
           <td class="attendance-table__cell">
-            @if ($attendance->work_date <= now())
-              <a class="attendance-table__link" href="{{ route('user.attendances.show',['id' => $attendance->id]) }}">
-              詳細
-              </a>
-              @else
-              <!-- 未来のデータにはボタンを表示しない -->
-              @endif
+            @if (!$attendance->is_dummy && $attendance->id)
+            <a class="attenance-table__link" href="{{ route('user.attendances.show', ['id' => $attendance->id]) }}">詳細</a>
+            @endif
           </td>
           @endif
         </tr>
