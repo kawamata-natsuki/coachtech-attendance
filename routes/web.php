@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified'])
         Route::get('/attendance/list', [UserAttendanceController::class, 'index'])->name('attendances.index');
 
         Route::get('/attendance/{id}', [UserAttendanceController::class, 'show'])->name('attendances.show');
-        Route::post('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendances.update');
+        Route::put('/attendance/{id}', [UserAttendanceController::class, 'update'])->name('attendances.update');
 
         Route::get('/stamp_correction_request/list', [UserCorrectionRequestController::class, 'index'])->name('correction-requests.index');
     });
