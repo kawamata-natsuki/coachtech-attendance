@@ -4,7 +4,11 @@ namespace App\Http\Controllers\User;
 
 use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Models\Attendance;
+use App\Models\BreakTime;
+use App\Models\CorrectionRequest;
+use App\Models\CorrectionBreakTime;
 use App\Services\AttendanceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -114,16 +118,87 @@ class AttendanceController extends Controller
     // 勤怠詳細画面の表示
     public function show($id)
     {
-        $attendance = Attendance::findOrFail($id);
+        $attendance = Attendance::with('user')->findOrFail($id);
+        $break_times = $attendance->breakTimes()->get();
 
-        return view('shared.attendances.show', [
-            'attendance' => $attendance,
-        ]);
+        return view(
+            'shared.attendances.show',
+            compact('attendance', 'break_times')
+        );
     }
 
     // 勤怠詳細修正の処理
-    public function update()
+    public function update(AttendanceCorrectionRequest $request, $id)
     {
-        //
+        // 該当の勤怠レコードを取得、存在しない場合はエラーメッセージを表示
+        $attendance = Attendance::find($id);
+        if (!$attendance) {
+            return redirect()->route('user.attendances.index')
+                ->with('error', '指定された勤怠データは存在しません。');
+        }
+
+        // リクエストの内容が元データから変更されているかをチェック
+        $clockInChanged = $request->requested_clock_in !== optional($attendance->clock_in)->format('H:i');
+        $clockOutChanged = $request->requested_clock_out !== optional($attendance->clock_out)->format('H:i');
+
+        // 変更された休憩を収集するためのコレクションを初期化
+        $changedBreaks = collect();
+
+        // 申請レコードを作成するための変数を初期化
+        $correctionRequest = null;
+
+        // リクエストに含まれる休憩時間の修正を一つずつチェック
+        foreach ($request->input('requested_breaks', []) as $break) {
+            // 休憩の修正申請がなければスキップ
+            if (!isset($break['break_time_id'])) {
+                continue;
+            }
+
+            // 該当する休憩レコードをDBから取得、存在しない場合はスキップ
+            $breakTime = BreakTime::find($break['break_time_id']);
+            if (!$breakTime) {
+                continue;
+            }
+
+            // リクエストの内容が元データから変更されているかをチェック
+            $startChanged = $break['requested_break_start'] !== optional($breakTime->break_start)->format('H:i');
+            $endChanged = $break['requested_break_end'] !== optional($breakTime->break_end)->format('H:i');
+
+            // 変更がある場合は$changedBreaksに休憩データを追加
+            if ($startChanged || $endChanged) {
+                $changedBreaks->push([
+                    'break_time_id' => $breakTime->id,
+                    'requested_break_start' => $break['requested_break_start'],
+                    'requested_break_end' => $break['requested_break_end'],
+                    'original_break_start' => $breakTime->break_start,
+                    'original_break_end' => $breakTime->break_end,
+                ]);
+            }
+        }
+
+        // 出勤、退勤、休憩のいずれかに変更がある場合のみ、勤怠修正申請レコードを correction_requests テーブルに作成
+        if ($clockInChanged || $clockOutChanged || $changedBreaks->isNotEmpty()) {
+            $correctionRequest = CorrectionRequest::create([
+                'attendance_id' => $attendance->id,
+                'user_id' => Auth::id(),
+                'work_date' => $attendance->work_date,
+                'requested_clock_in' => $request->requested_clock_in,
+                'requested_clock_out' => $request->requested_clock_out,
+                'original_clock_in' => $attendance->clock_in,
+                'original_clock_out' => $attendance->clock_out,
+                'reason' => $request->reason,
+            ]);
+        }
+
+        // 休憩申請レコードを correction_break_times テーブルに作成
+        foreach ($changedBreaks as $break) {
+            if ($correctionRequest) {
+                $break['correction_request_id'] = $correctionRequest->id;
+                CorrectionBreakTime::create($break);
+            }
+        }
+
+        return redirect()->route('user.attendances.show', ['id' => $attendance->id])
+            ->with('success', '修正申請を受け付けました');
     }
 }
