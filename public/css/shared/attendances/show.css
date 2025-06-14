@@ -33,6 +33,15 @@
   background-color: #000;
 }
 
+.attendance-show-page .flash-message--success {
+  padding: 10px;
+  background-color: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+  margin-bottom: 1rem;
+  border-radius: 5px;
+}
+
 .attendance-index-page__heading-text {
   margin-left: 32px;
 }
