@@ -28,7 +28,7 @@
           <th class="attendance-show-page__table-head">
             名前
           </th>
-          <td class="attendance-show-page__table-cell">{{ $attendance->user->name }}</td>
+          <td class="attendance-show-page__table-cell--name">{{ $attendance->user->name }}</td>
         </tr>
 
         <!-- 日付 -->
@@ -36,102 +36,56 @@
           <th class="attendance-show-page__table-head">
             日付
           </th>
-          <td class="attendance-show-page__table-cell">
-            {{ $attendance->work_date->format('Y年n月j日') }}
+          <td class="attendance-show-page__table-cell--date">
+            {{ $presenter->workDateForShow() }}
           </td>
         </tr>
 
         <!-- 出勤・退勤 -->
-        <tr class="attendance-show-page__table-row">
-          <th class="attendance-show-page__table-head">
-            出勤・退勤
-          </th>
-          <td class="attendance-show-page__table-cell">
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_clock_in"
-              value="{{ old('requested_clock_in', $attendance->clock_in?->format('H:i')) }}">
-
-            <span class="attendance-show-page__separator">～</span>
-
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_clock_out"
-              value="{{ old('requested_clock_out', $attendance->clock_out?->format('H:i')) }}">
-
-            <x-error.message field="requested_clock_in" />
-            <x-error.message field="requested_clock_out" />
-          </td>
-        </tr>
+        <x-attendance.clock-row
+          :clockIn="$presenter->requestedClockIn()"
+          :clockOut="$presenter->requestedClockOut()"
+          :disabled="$presenter->isCorrectionDisabled()" />
 
         <!-- 休憩 -->
-        @foreach ($break_times as $i => $break)
-        <tr class="attendance-show-page__table-row">
-          <th class="attendance-show-page__table-head">
-            休憩{{ count($break_times) + 1 }}
-          </th>
-          <td class="attendance-show-page__table-cell">
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_breaks[{{ count($break_times) }}][requested_break_start]"
-              value="">
-
-            <span class="attendance-show-page__separator">～</span>
-
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_breaks[{{ count($break_times) }}][requested_break_end]"
-              value="">
-
-            <x-error.message :field="'requested_breaks.' . count($break_times) . '.requested_break_start'" />
-            <x-error.message :field="'requested_breaks.' . count($break_times) . '.requested_break_end'" />
-          </td>
-        </tr>
+        @foreach ($presenter->breaks() as $i => $break)
+        <x-attendance.break-row
+          :index="$i"
+          :breakStart="$break->requested_break_start ?? $break->break_start"
+          :breakEnd="$break->requested_break_end ?? $break->break_end"
+          :breakId="$break->id ?? null"
+          :disabled="$presenter->isCorrectionDisabled()" />
         @endforeach
 
         <!-- 新規追加用の空休憩フォーム -->
-        <tr class="attendance-show-page__table-row">
-          <th class="attendance-show-page__table-head">
-            休憩{{ count($break_times) + 1 }}
-          </th>
-          <td class="attendance-show-page__table-cell">
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_breaks[{{ count($break_times) }}][requested_break_start]"
-              value="">
-
-            <span class="attendance-show-page__separator">～</span>
-
-            <input class="attendance-show-page__time-input"
-              type="time"
-              name="requested_breaks[{{ count($break_times) }}][requested_break_end]"
-              value="">
-
-            <x-error.message :field="'requested_breaks.' . count($break_times) . '.requested_break_start'" />
-            <x-error.message :field="'requested_breaks.' . count($break_times) . '.requested_break_end'" />
-
-          </td>
-        </tr>
+        @if (!$presenter->isCorrectionDisabled())
+        @php $nextIndex = $presenter->nextBreakIndex(); @endphp
+        <x-attendance.break-row
+          :index="$nextIndex"
+          :breakStart="null"
+          :breakEnd="null"
+          :breakId="null"
+          :disabled="false"
+          :isNew="true" />
+        @endif
 
         <!-- 備考 -->
-        <tr class="attendance-show-page__table-row">
-          <th class="attendance-show-page__table-head">
-            備考
-          </th>
-          <td class="attendance-show-page__table-cell">
-            <textarea class="attendance-show-page__textarea" name="reason" id="reason">{{ old('reason') }}</textarea>
-
-            <x-error.message field="reason" />
-
-          </td>
-        </tr>
+        <x-attendance.reason-field
+          :disabled="$presenter->isCorrectionDisabled()"
+          :reason="$presenter->displayReason()" />
       </table>
 
+      @if ($correctionRequest)
+      <p class="attendance-show-page__pending-message">
+        ※承認待ちのため修正はできません。
+      </p>
+      @else
       <div class="attendance-show-page__button">
         <button class="attendance-show-page__submit-button" type="submit">
           修正
         </button>
       </div>
+      @endif
 
     </form>
   </div>
