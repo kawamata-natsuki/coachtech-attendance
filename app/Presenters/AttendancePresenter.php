@@ -3,16 +3,20 @@
 namespace App\Presenters;
 
 use App\Models\Attendance;
+use App\Models\CorrectionRequest;
+use Illuminate\Support\Collection;
 use App\Services\AttendanceService;
 use Carbon\CarbonInterval;
 
 class AttendancePresenter
 {
   protected Attendance $attendance;
+  protected ?CorrectionRequest $correctionRequest = null;
 
-  public function __construct(object $model)
+  public function __construct(Attendance $attendance, ?CorrectionRequest $correctionRequest = null)
   {
-    $this->attendance = $model;
+    $this->attendance = $attendance;
+    $this->correctionRequest = $correctionRequest;
   }
 
   // 勤怠登録画面の日付表示
@@ -65,5 +69,42 @@ class AttendancePresenter
     // 勤務時間のトータル秒数をH:MM形式に変換
     $interval = CarbonInterval::seconds($seconds)->cascade();
     return "{$interval->hours}:" . str_pad($interval->minutes, 2, '0', STR_PAD_LEFT);
+  }
+
+  public function requestedClockIn(): ?string
+  {
+    return optional($this->correctionRequest?->requested_clock_in ?? $this->attendance->clock_in)->format('H:i');
+  }
+
+  public function requestedClockOut(): ?string
+  {
+    return optional($this->correctionRequest?->requested_clock_out ?? $this->attendance->clock_out)->format('H:i');
+  }
+
+  public function isCorrectionDisabled(): bool
+  {
+    return $this->correctionRequest !== null;
+  }
+
+  public function displayReason(): string
+  {
+    return old('reason', $this->correctionRequest->reason ?? '');
+  }
+
+  public function breaks(): Collection
+  {
+    return $this->correctionRequest
+      ? $this->correctionRequest->correctionBreakTimes
+      : $this->attendance->breakTimes;
+  }
+
+  public function nextBreakIndex(): int
+  {
+    return $this->breaks()->count();
+  }
+
+  public function workDateForShow(): string
+  {
+    return $this->attendance->work_date->format('Y年n月j日');
   }
 }
