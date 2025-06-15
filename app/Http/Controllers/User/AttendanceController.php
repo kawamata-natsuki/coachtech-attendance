@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\ApprovalStatus;
 use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
+use App\Presenters\AttendancePresenter;
 use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Models\Attendance;
 use App\Models\BreakTime;
@@ -118,12 +120,17 @@ class AttendanceController extends Controller
     // 勤怠詳細画面の表示
     public function show($id)
     {
-        $attendance = Attendance::with('user')->findOrFail($id);
+        $attendance = Attendance::with(['user', 'breakTimes'])->findOrFail($id);
         $break_times = $attendance->breakTimes()->get();
+
+        // 未承認の修正申請（correctionRequest）と、correctionBreakTimes を取得
+        $correctionRequest = $attendance->correctionRequests()->latest()->first();
+
+        $presenter = new AttendancePresenter($attendance, $correctionRequest);
 
         return view(
             'shared.attendances.show',
-            compact('attendance', 'break_times')
+            compact('attendance', 'break_times', 'correctionRequest', 'presenter')
         );
     }
 
@@ -149,29 +156,19 @@ class AttendanceController extends Controller
 
         // リクエストに含まれる休憩時間の修正を一つずつチェック
         foreach ($request->input('requested_breaks', []) as $break) {
-            // 休憩の修正申請がなければスキップ
-            if (!isset($break['break_time_id'])) {
-                continue;
-            }
+            $hasStart = !empty($break['requested_break_start']);
+            $hasEnd = !empty($break['requested_break_end']);
 
-            // 該当する休憩レコードをDBから取得、存在しない場合はスキップ
-            $breakTime = BreakTime::find($break['break_time_id']);
-            if (!$breakTime) {
-                continue;
-            }
+            if ($hasStart || $hasEnd) {
+                // 既存の休憩レコードがあれば取得（新規追加ならnull）
+                $breakTime = isset($break['break_time_id']) ? BreakTime::find($break['break_time_id']) : null;
 
-            // リクエストの内容が元データから変更されているかをチェック
-            $startChanged = $break['requested_break_start'] !== optional($breakTime->break_start)->format('H:i');
-            $endChanged = $break['requested_break_end'] !== optional($breakTime->break_end)->format('H:i');
-
-            // 変更がある場合は$changedBreaksに休憩データを追加
-            if ($startChanged || $endChanged) {
                 $changedBreaks->push([
-                    'break_time_id' => $breakTime->id,
+                    'break_time_id' => $break['break_time_id'] ?? null,
                     'requested_break_start' => $break['requested_break_start'],
                     'requested_break_end' => $break['requested_break_end'],
-                    'original_break_start' => $breakTime->break_start,
-                    'original_break_end' => $breakTime->break_end,
+                    'original_break_start' => $breakTime?->break_start,
+                    'original_break_end' => $breakTime?->break_end,
                 ]);
             }
         }
@@ -187,6 +184,7 @@ class AttendanceController extends Controller
                 'original_clock_in' => $attendance->clock_in,
                 'original_clock_out' => $attendance->clock_out,
                 'reason' => $request->reason,
+                'approval_status' => ApprovalStatus::PENDING,
             ]);
         }
 
