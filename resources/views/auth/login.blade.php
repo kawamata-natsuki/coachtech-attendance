@@ -28,7 +28,7 @@
             <label class="login-page__label form__label" for="email">メールアドレス</label>
             <input class="login-page__input form__input" type="email" name="email" id="email" value="{{ old('email') }}"
               placeholder="例：user@example.com">
-            <x-error.message field="email" />
+            <x-error.message field="email" preserve />
           </div>
 
           <!-- パスワード -->
@@ -36,7 +36,7 @@
             <label class="login-page__label form__label" for="password">パスワード</label>
             <input class="login-page__input form__input" type="password" name="password" id="password"
               placeholder="8文字以上のパスワードを入力">
-            <x-error.message field="password" />
+            <x-error.message field="password" preserve />
           </div>
         </div>
 
