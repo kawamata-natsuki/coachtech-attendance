@@ -13,8 +13,18 @@
       <span class="correction-request-index-page__heading-text">申請一覧</span>
     </h1>
 
-    <table class="correction-request-index-page__table">
+    <div class="correction-request-index-page__tabs">
+      <a href="{{ route('user.correction-requests.index', ['status' => 'pending']) }}"
+        class="correction-request-index-page__tab {{ $status === 'pending' ? 'active' : '' }}">
+        承認待ち
+      </a>
+      <a href="{{ route('user.correction-requests.index', ['status' => 'approved']) }}"
+        class="correction-request-index-page__tab {{ $status === 'approved' ? 'active' : '' }}">
+        承認済み
+      </a>
+    </div>
 
+    <table class="correction-request-index-page__table">
       <thead>
         <tr>
           <th class="correction-request-index-page__table-head">状態</th>
