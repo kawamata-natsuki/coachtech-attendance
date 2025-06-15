@@ -1,0 +1,66 @@
+@extends('layouts.app')
+
+@section('css')
+<link rel="stylesheet" href="{{ asset('css/shared/correction-requests/index.css') }}">
+@endsection
+
+@section('title', '申請一覧')
+
+@section('content')
+<div class="correction-request-index-page">
+  <div class="correction-request-index-page__container">
+    <h1 class="correction-request-index-page__heading content__heading">
+      <span class="correction-request-index-page__heading-text">申請一覧</span>
+    </h1>
+
+    <table class="correction-request-index-page__table">
+
+      <thead>
+        <tr>
+          <th class="correction-request-index-page__table-head">状態</th>
+          <th class="correction-request-index-page__table-head">名前</th>
+          <th class="correction-request-index-page__table-head">対象日時</th>
+          <th class="correction-request-index-page__table-head">申請理由</th>
+          <th class="correction-request-index-page__table-head">申請日時</th>
+          <th class="correction-request-index-page__table-head">詳細</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        @foreach($correctionRequests as $correctionRequest)
+        <tr>
+          <td class="correction-request-index-page__table-cell">
+            {{ $correctionRequest->approval_status->label() }}
+          </td>
+
+          <td class="correction-request-index-page__table-cell">
+            {{ $correctionRequest->user->name }}
+          </td>
+
+          <td class="correction-request-index-page__table-cell">
+            {{ $correctionRequest->work_date->format('Y/m/d') }}
+          </td>
+
+          <td class="correction-request-index-page__table-cell">
+            {{ $correctionRequest->reason }}
+          </td>
+
+          <td class="correction-request-index-page__table-cell">
+            {{ $correctionRequest->created_at->format('Y/m/d') }}
+          </td>
+
+          <!-- 詳細ボタン -->
+          <td class="correction-request-index-page__table-cell">
+            <a class="correction-request-index-page__table-link" href="{{ route('user.attendances.show', ['id' => $correctionRequest->attendance_id]) }}">
+              詳細
+            </a>
+          </td>
+        </tr>
+        @endforeach
+      </tbody>
+    </table>
+
+  </div>
+</div>
+
+@endsection
