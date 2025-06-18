@@ -33,6 +33,7 @@ class CorrectionRequest extends Model
         'requested_clock_out' => 'datetime',
         'original_clock_in' => 'datetime',
         'original_clock_out' => 'datetime',
+        'approved_at' => 'datetime',
         'approval_status' => ApprovalStatus::class,
     ];
 
@@ -60,11 +61,11 @@ class CorrectionRequest extends Model
     // ApprovalStatus の判定
     public function isPending(): bool
     {
-        return $this->approval_status === ApprovalStatus::PENDING;
+        return optional($this->approval_status)->is(ApprovalStatus::PENDING);
     }
 
     public function isApproved(): bool
     {
-        return $this->approval_status === ApprovalStatus::APPROVED;
+        return optional($this->approval_status)->is(ApprovalStatus::APPROVED);
     }
 }
