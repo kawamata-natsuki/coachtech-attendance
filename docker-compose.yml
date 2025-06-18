@@ -1,0 +1,42 @@
+services:
+  nginx:
+    image: nginx:1.25
+    ports: []
+    volumes:
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./:/var/www/
+    depends_on:
+      - php
+
+  php:
+    env_file:
+      - .env.docker
+    build:
+      context: ./docker/php
+      dockerfile: Dockerfile
+      args:
+        USER_ID: ${UID}
+        GROUP_ID: ${GID}
+    volumes:
+      - ./:/var/www/
+
+  mysql:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=coachtech_attendance_db
+      - MYSQL_USER=laravel_user
+      - MYSQL_PASSWORD=laravel_pass
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+
+  phpmyadmin:
+    image: phpmyadmin:5.2.1
+    environment:
+      - PMA_HOST=mysql
+      - PMA_USER=laravel_user
+      - PMA_PASSWORD=laravel_pass
+    depends_on:
+      - mysql
+    ports: []
