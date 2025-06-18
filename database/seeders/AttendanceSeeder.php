@@ -24,13 +24,14 @@ class AttendanceSeeder extends Seeder
             '2025-05-06',
         ];
 
-        $users = User::where('role', 'user')->get();
+        $users = User::all();
 
         foreach ($users as $user) {
             $date = $startDate->copy();
-            $isHoliday = in_array($date->toDateString(), $holidays);
 
             while ($date->lte($endDate)) {
+                $isHoliday = in_array($date->toDateString(), $holidays);
+
                 if ($date->isWeekday() && !$isHoliday) {
                     // 平日：出勤レコード＋休憩
                     $attendance = Attendance::create([
