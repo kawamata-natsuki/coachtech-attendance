@@ -38,7 +38,6 @@ class LoginController extends Controller
             ]);
         }
 
-        /** @var \App\Models\User $user */
         $user = Auth::guard($guard)->user();
         if ($guard === 'admin' && ! $user instanceof \App\Models\Admin) {
             Auth::guard($guard)->logout();
@@ -54,8 +53,8 @@ class LoginController extends Controller
         $request->session()->forget('url.intended');
 
         // メール未認証の確認
-        if (! $user->hasVerifiedEmail()) {
-            $user->sendEmailVerificationNotification();
+        if (! optional($user)->hasVerifiedEmail()) {
+            optional($user)->sendEmailVerificationNotification();
         }
 
         // ログイン後のリダイレクト先

@@ -31,10 +31,9 @@ class EmailVerificationController extends Controller
     // メール認証済みか確認してリダイレクト
     public function check()
     {
-        /** @var \App\Models\User $user */
         $user = auth('web')->user();
 
-        return $user->hasVerifiedEmail()
+        return optional($user)->hasVerifiedEmail()
             ? redirect()->route('user.attendances.record')
             : redirect()->away('https://mailtrap.io/');
     }
