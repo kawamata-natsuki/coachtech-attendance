@@ -2,13 +2,12 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\Role;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
+use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
-use Illuminate\Support\Str;
-use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
 class LoginController extends Controller
@@ -24,11 +23,13 @@ class LoginController extends Controller
     {
         // アクセス制限の確認
         // 1分間に5回以上のログイン試行があった場合、制限をかける
+
         $this->ensureIsNotRateLimited($request);
+        $guard = $request->is('admin/*') ? 'admin' : 'web';
+
 
         // ログイン試行
-        if (! Auth::attempt($request->only('email', 'password'))) {
-            // ログイン失敗カウント
+        if (! Auth::guard($guard)->attempt($request->only('email', 'password'))) {
             RateLimiter::hit($this->throttleKey($request), 60);
 
             // ログイン失敗時のエラーメッセージ
@@ -37,47 +38,29 @@ class LoginController extends Controller
             ]);
         }
 
+        /** @var \App\Models\User $user */
+        $user = Auth::guard($guard)->user();
+        if ($guard === 'admin' && ! $user instanceof \App\Models\Admin) {
+            Auth::guard($guard)->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return back()->withErrors(['login' => 'このログイン画面は管理者専用です']);
+        }
+
         // ログイン成功後の処理
         RateLimiter::clear($this->throttleKey($request));
         $request->session()->regenerate();
         $request->session()->forget('url.intended');
-
-        /** @var \App\Models\User $user */
-        $user = Auth::user();
-
-        // ロール確認：アクセス元URLに応じてログイン許可を絞る
-        if (
-            $request->is('admin/login') && $user->role !== Role::ADMIN
-        ) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()->withErrors([
-                'login' => 'このログイン画面は管理者専用です',
-            ]);
-        }
-
-        if (
-            $request->is('login') && $user->role === Role::ADMIN
-        ) {
-            Auth::logout();
-            $request->session()->invalidate();
-            $request->session()->regenerateToken();
-
-            return back()->withErrors([
-                'login' => '管理者は管理者専用のログイン画面からログインしてください',
-            ]);
-        }
 
         // メール未認証の確認
         if (! $user->hasVerifiedEmail()) {
             $user->sendEmailVerificationNotification();
         }
 
-        // ログインユーザーのリダイレクト先をを指定
+        // ログイン後のリダイレクト先
         return redirect()->route(
-            $request->input('login_type') === 'admin'
+            $guard === 'admin'
                 ? 'admin.attendances.index'
                 : 'user.attendances.record'
         );
@@ -86,17 +69,14 @@ class LoginController extends Controller
     // ログアウト処理
     public function logout(Request $request)
     {
-        $user = Auth::user();
+        $guard = Auth::guard('admin')->check() ? 'admin' : 'web';
 
-        Auth::logout();
+        Auth::guard($guard)->logout();
+
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        if ($user->role === Role::ADMIN) {
-            return redirect()->route('admin.login');
-        } else {
-            return redirect()->route('user.login');
-        }
+        return redirect()->route($guard === 'admin' ? 'admin.login' : 'user.login');
     }
 
     // ログインの試行回数を制限する処理
