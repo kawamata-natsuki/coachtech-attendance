@@ -11,23 +11,27 @@ use App\Http\Controllers\User\CorrectionRequestController as UserCorrectionReque
 use App\Http\Requests\AttendanceCorrectionRequest;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 // ===============================
-// 認証ルート（要ログイン）
+// 認証ルート
 // ===============================
 
+// 一般ユーザー
 Route::get('/register', [RegisterController::class, 'showRegisterView'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/login', [LoginController::class, 'showLoginView'])->name('user.login');
 Route::post('/login', [LoginController::class, 'store'])->name('user.login.store');
 
+// 管理者
 Route::get('/admin/login', [LoginController::class, 'showLoginView'])->name('admin.login');
 Route::post('/admin/login', [LoginController::class, 'store'])->name('admin.login.store');
 
+// ログアウト（共通）
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// メール認証
-Route::prefix('email')->name('verification.')->middleware('auth')->group(function () {
+// 一般ユーザー用メール認証
+Route::prefix('email')->name('verification.')->middleware('auth:web')->group(function () {
     Route::get('/verify', [EmailVerificationController::class, 'notice'])->name('notice');
     Route::get('/verify/{id}/{hash}', [EmailVerificationController::class, 'verify'])
         ->middleware(['signed'])
@@ -41,7 +45,7 @@ Route::prefix('email')->name('verification.')->middleware('auth')->group(functio
 // ===============================
 // ユーザールート（要ログイン）
 // ===============================
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth:web', 'verified'])
     ->name('user.')
     ->group(function () {
         Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendances.record');
@@ -54,7 +58,7 @@ Route::middleware(['auth', 'verified'])
 // 管理者ルート（要ログイン）
 // ===============================
 
-Route::middleware(['auth', 'verified', 'admin'])
+Route::middleware(['auth:admin', 'verified'])
     ->name('admin.')
     ->group(function () {
         Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendances.index');
@@ -75,32 +79,34 @@ Route::middleware(['auth', 'verified', 'admin'])
 
 // 勤怠詳細画面（共通パス）
 Route::middleware(['auth', 'verified'])->get('/attendance/{id}', function (Request $request, $id) {
-    /** @var \App\Models\User $user */
-    $user = auth()->user();
-
-    $controller = $user->isAdmin()
-        ? AdminAttendanceController::class
-        : UserAttendanceController::class;
-
+    if (Auth::guard('admin')->check()) {
+        $controller = AdminAttendanceController::class;
+    } elseif (Auth::guard('web')->check()) {
+        $controller = UserAttendanceController::class;
+    } else {
+        abort(403);
+    }
     return app($controller)->show($request, $id);
 })->name('attendances.show');
 
 Route::middleware(['auth', 'verified'])->put('/attendance/{id}', function (AttendanceCorrectionRequest $request, $id) {
-    /** @var \App\Models\User $user */
-    $user = auth()->user();
-    $controller = $user->isAdmin()
-        ? AdminAttendanceController::class
-        : UserAttendanceController::class;
-
+    if (Auth::guard('admin')->check()) {
+        $controller = AdminAttendanceController::class;
+    } elseif (Auth::guard('web')->check()) {
+        $controller = UserAttendanceController::class;
+    } else {
+        abort(403);
+    }
     return app($controller)->update($request, $id);
 })->name('attendances.update');
 
-Route::middleware(['auth', 'verified'])->get('/stamp_correction_request/list', function (\Illuminate\Http\Request $request) {
-    /** @var \App\Models\User $user */
-    $user = auth()->user();
-    $controller = $user->isAdmin()
-        ? AdminCorrectionRequestController::class
-        : UserCorrectionRequestController::class;
-
+Route::middleware(['auth', 'verified'])->get('/stamp_correction_request/list', function (Request $request) {
+    if (Auth::guard('admin')->check()) {
+        $controller = AdminCorrectionRequestController::class;
+    } elseif (Auth::guard('web')->check()) {
+        $controller = UserCorrectionRequestController::class;
+    } else {
+        abort(403);
+    }
     return app($controller)->index($request);
 })->name('correction-requests.index');
