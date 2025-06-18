@@ -32,7 +32,7 @@ class EmailVerificationController extends Controller
     public function check()
     {
         /** @var \App\Models\User $user */
-        $user = auth()->user();
+        $user = auth('web')->user();
 
         return $user->hasVerifiedEmail()
             ? redirect()->route('user.attendances.record')
