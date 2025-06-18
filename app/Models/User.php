@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\Role;
-
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -19,8 +17,6 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'password',
-        'role',
     ];
 
     protected $hidden = [
@@ -30,7 +26,6 @@ class User extends Authenticatable implements MustVerifyEmail
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
-        'role' => Role::class,
     ];
 
     // リレーション定義
@@ -41,11 +36,5 @@ class User extends Authenticatable implements MustVerifyEmail
     public function correctionRequests(): HasMany
     {
         return $this->hasMany(CorrectionRequest::class);
-    }
-
-    // Userのロール判定用のカスタムメソッド
-    public function isAdmin(): bool
-    {
-        return $this->role === Role::ADMIN;
     }
 }
