@@ -24,7 +24,6 @@ class Attendance extends Model
         'clock_in',
         'clock_out',
         'work_status',
-        'is_dummy',
     ];
 
     protected $casts = [
@@ -50,24 +49,24 @@ class Attendance extends Model
         return $this->hasMany(BreakTime::class);
     }
 
-    // WorkStatus の判定
+    // 勤務ステータス判定
     public function isOff(): bool
     {
-        return $this->work_status->is(WorkStatus::OFF);
+        return optional($this->work_status)->is(WorkStatus::OFF);
     }
 
     public function isWorking(): bool
     {
-        return $this->work_status->is(WorkStatus::WORKING);
+        return optional($this->work_status)->is(WorkStatus::WORKING);
     }
 
     public function isBreak(): bool
     {
-        return $this->work_status->is(WorkStatus::BREAK);
+        return optional($this->work_status)->is(WorkStatus::BREAK);
     }
 
     public function isCompleted(): bool
     {
-        return $this->work_status->is(WorkStatus::COMPLETED);
+        return optional($this->work_status)->is(WorkStatus::COMPLETED);
     }
 }
