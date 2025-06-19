@@ -20,8 +20,8 @@ use Illuminate\Support\Facades\Auth;
 // 一般ユーザー
 Route::get('/register', [RegisterController::class, 'showRegisterView'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
-Route::get('/login', [LoginController::class, 'showLoginView'])->name('user.login');
-Route::post('/login', [LoginController::class, 'store'])->name('user.login.store');
+Route::get('/login', [LoginController::class, 'showLoginView'])->name('login');
+Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
 // 管理者
 Route::get('/admin/login', [LoginController::class, 'showLoginView'])->name('admin.login');
