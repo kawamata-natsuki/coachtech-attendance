@@ -4,6 +4,7 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\Auth;
 
+// 	ロゴのリンク、ナビゲーションなど、共通レイアウトに関するビュー補助処理
 class LayoutHelper
 {
   // headerのロゴリンククリック時の遷移先
@@ -20,7 +21,7 @@ class LayoutHelper
     }
 
     // 未ログインはログインページへリダイレクト
-    return route('login');
+    return route('user.login');
   }
 
   // headerのナビゲーションメニューのビューを返す
