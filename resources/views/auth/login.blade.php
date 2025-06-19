@@ -1,66 +1,84 @@
 @extends('layouts.app')
 
 @section('css')
-<link rel="stylesheet" href="{{ asset('css/auth/register.css') }}">
+<link rel="stylesheet" href="{{ asset('css/auth/login.css') }}">
 @endsection
 
-@section('title', '会員登録')
+@section('title', 'ログイン')
+
+@php($isAdmin = \App\Helpers\AuthHelper::isAdminLoginPage())
 
 @section('content')
-<div class="register-page">
-  <div class="register-page__container">
-    <h1 class="register-page__heading content__heading">
-      会員登録
+<div class="login-page">
+  <div class="login-page__container">
+    <h1 class="login-page__heading content__heading">
+      {{ $isAdmin ? '管理者ログイン' : 'ログイン' }}
     </h1>
 
-    <div class="register-page__content">
-      <form class="register-page__form" action="/register" method="post" novalidate>
+    <div class="login-page__content">
+      <form class="login-page__form"
+        action="{{ $isAdmin 
+        ? route('admin.login.store') 
+        : route('user.login.store') 
+        }}"
+        method="post"
+        novalidate>
         @csrf
 
-        <div class="register-page__form-section">
-          <!-- 名前 -->
-          <div class="register-page__form-group form-group">
-            <label class="register-page__label form__label" for="name">名前</label>
-            <input class="form__input register-page__input" type="text" name="name" id="name" value="{{ old('name') }}"
-              placeholder="例：山田　太郎">
-            <x-error.auth-message field="name" preserve />
-          </div>
+        <!-- ログイン失敗時のエラー -->
+        <div class="login-page__form-group">
+          <x-error.auth-message field="login" />
+        </div>
 
+        <div class="login-page__form-section">
           <!-- メールアドレス -->
-          <div class="register-page__form-group form-group">
-            <label class="register-page__label form__label" for="email">メールアドレス</label>
-            <input class="form__input register-page__input" type="email" name="email" id="email"
-              value="{{ old('email') }}" placeholder="例：user@example.com">
+          <div class="login-page__form-group form-group">
+            <label class="login-page__label form__label" for="email">
+              メールアドレス
+            </label>
+            <input class="login-page__input form__input"
+              type="email"
+              name="email"
+              id="email"
+              value="{{ old('email') }}"
+              placeholder="例：user@example.com">
             <x-error.auth-message field="email" preserve />
           </div>
 
           <!-- パスワード -->
-          <div class="register-page__form-group form-group">
-            <label class="register-page__label form__label" for="password">パスワード</label>
-            <input class="form__input register-page__input" type="password" name="password" id="password"
+          <div class="login-page__form-group form-group">
+            <label class="login-page__label form__label" for="password">
+              パスワード
+            </label>
+            <input class="login-page__input form__input"
+              type="password"
+              name="password"
+              id="password"
               placeholder="8文字以上のパスワードを入力">
             <x-error.auth-message field="password" preserve />
-          </div>
-
-          <!-- 確認用パスワード -->
-          <div class="register-page__form-group form-group">
-            <label class="register-page__label form__label" for="password_confirmation">パスワード確認</label>
-            <input class="form__input register-page__input" type="password" name="password_confirmation"
-              id="password_confirmation" placeholder="もう一度パスワードを入力">
-            <x-error.auth-message field="password_confirmation" preserve />
           </div>
         </div>
 
         <!-- 送信ボタン -->
-        <div class="register-page__button">
-          <button class="auth-button" type="submit">登録する</button>
+        <div class="login-page__button">
+          <button class="auth-button" type="submit">
+            {{ $isAdmin ? '管理者ログインする' : 'ログインする'}}
+          </button>
         </div>
+        <input
+          type="hidden"
+          name="login_type"
+          value="{{ $isAdmin ? 'admin' : 'user' }}">
       </form>
 
-      <!-- リンク -->
-      <div class="register-page__link">
-        <a href="/login" class="register-page__link--login">ログインはこちら</a>
+      <!-- 会員登録リンク（一般ユーザーのみ） -->
+      @unless($isAdmin)
+      <div class="login-page__link">
+        <a class="login-page__link--register" href="/register">
+          会員登録はこちら
+        </a>
       </div>
+      @endunless
     </div>
   </div>
 </div>
