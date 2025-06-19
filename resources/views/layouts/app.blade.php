@@ -21,9 +21,11 @@
       </div>
 
       <!-- ヘッダーナビ -->
+      @auth
       @if($navView = \App\Helpers\LayoutHelper::headerNavView())
       @include($navView)
       @endif
+      @endauth
     </nav>
   </header>
 
