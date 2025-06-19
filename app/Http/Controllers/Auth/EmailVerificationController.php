@@ -25,7 +25,7 @@ class EmailVerificationController extends Controller
     public function resend(Request $request)
     {
         $request->user()->sendEmailVerificationNotification();
-        return back()->with('message', '認証メールを再送しました');
+        return back()->with('status', 'verification-link-sent');
     }
 
     // メール認証済みか確認してリダイレクト
