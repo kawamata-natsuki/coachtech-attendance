@@ -21,7 +21,7 @@
       </div>
 
       <!-- ヘッダーナビ -->
-      @if($navView = \App\Helpers\LayoutHelper::getNavView())
+      @if($navView = \App\Helpers\LayoutHelper::headerNavView())
       @include($navView)
       @endif
     </nav>
