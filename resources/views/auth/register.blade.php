@@ -86,7 +86,7 @@
 
       <!-- ログインリンク -->
       <div class="register-page__link">
-        <a class="register-page__link--login" href="{{ route('user.login') }}">
+        <a class="register-page__link--login" href="{{ route('login') }}">
           ログインはこちら
         </a>
       </div>

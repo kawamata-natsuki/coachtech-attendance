@@ -75,7 +75,7 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route($guard === 'admin' ? 'admin.login' : 'user.login');
+        return redirect()->route($guard === 'admin' ? 'admin.login' : 'login');
     }
 
     // ログインの試行回数を制限する処理

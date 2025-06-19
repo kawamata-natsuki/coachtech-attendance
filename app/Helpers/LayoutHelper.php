@@ -21,7 +21,7 @@ class LayoutHelper
     }
 
     // 未ログインはログインページへリダイレクト
-    return route('user.login');
+    return route('login');
   }
 
   // headerのナビゲーションメニューのビューを返す
