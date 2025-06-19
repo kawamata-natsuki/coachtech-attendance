@@ -1,0 +1,78 @@
+.attendance-record-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #F0EFF2;
+}
+
+.attendance-record-page__container {
+  width: 100%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 60px;
+}
+
+.attendance-record-page__status {
+  width: 100px;
+  height: 40px;
+  border-radius: 50px;
+  background-color: #C8C8C8;
+  margin-bottom: 32px;
+}
+
+.attendance-record-page__status-label {
+  width: 100px;
+  height: 40px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.15em;
+  color: #696969;
+}
+
+.attendance-record-page__date {
+  font-weight: 400;
+  font-size: 40px;
+  margin-bottom: 36px;
+}
+
+.attendance-record-page__time {
+  font-weight: 700;
+  font-size: 80px;
+  margin-bottom: 72px;
+}
+
+.button-wrapper {
+  display: flex;
+  gap: 72px;
+}
+
+.attendance-record-page__button {
+  width: 220px;
+  height: 75px;
+  border-radius: 20px;
+  font-weight: 700;
+  font-size: 32px;
+  letter-spacing: 0.15em;
+}
+
+.button--black {
+  background-color: #000000;
+  color: #FFFFFF;
+}
+
+.button--white {
+  background-color: #FFFFFF;
+  color: #000000;
+}
+
+.attendance-record-page__message {
+  font-weight: 700;
+  font-size: 26px;
+  letter-spacing: 0.15em;
+}
