@@ -1,0 +1,71 @@
+.register-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-page__container {
+  width: 100%;
+  max-width: 680px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.register-page__heading {
+  padding-top: 16px;
+  padding-bottom: 36px;
+}
+
+.register-page__content {
+  width: 100%;
+  max-width: 680px;
+}
+
+.register-page__form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 680px;
+}
+
+.register-page__form-group {
+  margin-bottom: 8px;
+}
+
+.register-page__input {
+  height: 45px;
+}
+
+.register-page__button {
+  margin-top: 40px;
+}
+
+.register-page__button-submit {
+  height: 60px;
+  font-size: 26px;
+  border-radius: 5px;
+}
+
+.register-page__link {
+  text-align: center;
+  margin-top: 40px;
+}
+
+.register-page__link--login {
+  font-weight: 400;
+  font-size: 20px;
+  color: #0073CC;
+}
+
+.register-page__link--login:hover {
+  color: #0055aa;
+  opacity: 0.85;
+}
+
+.register-page__link--login:active {
+  opacity: 0.6;
+  transform: scale(0.98);
+  transition: transform 0.05s ease, opacity 0.05s ease;
+}
