@@ -19,7 +19,7 @@
       <form class="login-page__form"
         action="{{ $isAdmin 
         ? route('admin.login.store') 
-        : route('user.login.store') 
+        : route('login.store') 
         }}"
         method="post"
         novalidate>
