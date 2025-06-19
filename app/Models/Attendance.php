@@ -3,10 +3,10 @@
 namespace App\Models;
 
 use App\Enums\WorkStatus;
-
 use App\Models\BreakTime;
 use App\Models\CorrectionRequest;
 use App\Models\User;
+use App\Presenters\AttendancePresenter;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -68,5 +68,11 @@ class Attendance extends Model
     public function isCompleted(): bool
     {
         return optional($this->work_status)->is(WorkStatus::COMPLETED);
+    }
+
+    // 表示用Presenter(勤怠情報に関する表示用ロジック)を返す
+    public function present(): AttendancePresenter
+    {
+        return new AttendancePresenter($this);
     }
 }
