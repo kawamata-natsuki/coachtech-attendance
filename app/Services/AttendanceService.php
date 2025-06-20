@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Enums\WorkStatus;
 use App\Models\Attendance;
-use App\Models\User;
+use Carbon\CarbonInterval;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 
@@ -27,24 +26,42 @@ class AttendanceService
       });
   }
 
-  // 休憩時間の合計
-  public static function calculateBreakTime(Attendance $attendance): int
+  //  休憩時間を合計し、H:MM形式に整形
+  public static function getBreakTimeSeconds(Attendance $attendance): int
   {
     return $attendance->breakTimes
-      ->filter(fn($bt) => $bt->break_end)
-      ->reduce(
-        fn($sum, $bt) => $sum + $bt->break_start->diffInSeconds($bt->break_end),
-        0
-      );
+      ->sum(function ($break) {
+        if ($break->break_start && $break->break_end) {
+          return $break->break_end->diffInSeconds($break->break_start);
+        }
+        return 0;
+      });
+  }
+  public static function calculateBreakTime(Attendance $attendance): string
+  {
+    $seconds = self::getBreakTimeSeconds($attendance);
+    if ($seconds === 0) return '';
+
+    $interval = CarbonInterval::seconds($seconds)->cascade();
+    return sprintf('%d:%02d', $interval->hours, $interval->minutes);
   }
 
-  // 勤務時間の合計
-  public static function calculateWorkTime(Attendance $attendance): int
+  //  勤務時間を合計し、H:MM形式に整形
+  public static function getWorkTimeSeconds(Attendance $attendance): int
   {
-    if (!$attendance->clock_in || !$attendance->clock_out) return 0;
+    if (!$attendance->clock_in || !$attendance->clock_out) {
+      return 0;
+    }
 
-    $total = $attendance->clock_in->diffInSeconds($attendance->clock_out);
-    $break = self::calculateBreakTime($attendance);
-    return max(0, $total - $break);
+    return $attendance->clock_out->diffInSeconds($attendance->clock_in)
+      - self::getBreakTimeSeconds($attendance);
+  }
+  public static function calculateWorkTime(Attendance $attendance): string
+  {
+    $seconds = self::getWorkTimeSeconds($attendance);
+    if ($seconds === 0) return '';
+
+    $interval = CarbonInterval::seconds($seconds)->cascade();
+    return sprintf('%d:%02d', $interval->hours, $interval->minutes);
   }
 }
