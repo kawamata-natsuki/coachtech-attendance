@@ -74,10 +74,16 @@
           </td>
 
           <td class="attendance-index-page__table-cell">
+            @if ($attendance->present()->shouldShowDetailCell())
             @if ($attendance->present()->isViewable())
-            <a href="{{ route('attendances.show', ['id' => $attendance->id]) }}">詳細</a>
+            <a class="attendance-index-page__table-link" href="...">
+              詳細
+            </a>
             @else
-            {{-- 表示しない or 非アクティブ表示 --}}
+            <span class="attendance-index-page__table-link--disabled">
+              詳細
+            </span>
+            @endif
             @endif
           </td>
           @endif
