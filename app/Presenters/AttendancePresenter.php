@@ -67,10 +67,15 @@ class AttendancePresenter
     return sprintf('%d:%02d', $interval->hours, $interval->minutes);
   }
 
-  // Bladeで「詳細」リンクを有効にするかどうかの判定用
+  // 勤怠一覧画面で詳細リンクを表示すべきか（未来日除外）
+  public function shouldShowDetailCell(): bool
+  {
+    return $this->attendance->work_date->lte(now());
+  }
+
+  // 勤怠一覧画面でリンクを貼れるか（実データがあるか）
   public function isViewable(): bool
   {
-    return !is_null($this->attendance->id)
-      && $this->attendance->work_date->lte(now());
+    return !is_null($this->attendance->id);
   }
 }
