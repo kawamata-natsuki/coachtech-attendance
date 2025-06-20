@@ -51,7 +51,7 @@
         @foreach($attendances as $attendance)
         <tr>
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->present()->workDateForIndex() }}
+            {{ $attendance->work_date->locale('ja')->isoFormat('MM/DD(dd)') }}
           </td>
 
           @if ($attendance->is_future)
@@ -61,21 +61,21 @@
           </td>
           @else
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->present()->clockInFormatted() }}
+            {{ optional($attendance->clock_in)->format('H:i') }}
           </td>
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->present()->clockOutFormatted() }}
+            {{ optional($attendance->clock_out)->format('H:i') }}
           </td>
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->present()->totalBreakTime() }}
+            {{ App\Services\AttendanceService::calculateBreakTime($attendance) }}
           </td>
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->present()->totalWorkTime() }}
+            {{ App\Services\AttendanceService::calculateWorkTime($attendance) }}
           </td>
 
           <td class="attendance-index-page__table-cell">
-            @if ($attendance->present()->shouldShowDetailCell())
-            @if ($attendance->present()->isViewable())
+            @if ($attendance->work_date->lte(now()))
+            @if (!is_null($attendance->id))
             <a class="attendance-index-page__table-link" href="...">
               詳細
             </a>
