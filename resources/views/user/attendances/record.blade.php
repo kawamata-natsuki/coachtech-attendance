@@ -22,7 +22,7 @@
 
     <!-- 日付 -->
     <div class="attendance-record-page__date">
-      {{ $attendance->present()->workDateForRecord() }}
+      {{ $attendance->work_date->isoFormat('YYYY年M月D日(dd)') }}
     </div>
 
     <!-- 時刻 -->
