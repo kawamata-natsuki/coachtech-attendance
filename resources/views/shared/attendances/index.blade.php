@@ -76,7 +76,7 @@
           <td class="attendance-index-page__table-cell">
             @if ($attendance->work_date->lte(now()))
             @if (!is_null($attendance->id))
-            <a class="attendance-index-page__table-link" href="...">
+            <a class="attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
               詳細
             </a>
             @else
