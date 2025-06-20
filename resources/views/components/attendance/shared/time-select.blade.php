@@ -1,31 +1,52 @@
 @props([
-'nameHour',
-'nameMinute',
+'name' => 'clock_in',
 'selectedHour' => null,
 'selectedMinute' => null,
 'disabled' => false,
 ])
 
-<div class="time-select-wrapper">
+<div class="time-select-wrapper {{ $disabled ? 'time-select-wrapper--disabled' : '' }}">
+  <!-- 時間（Hour） -->
   <select
     class="time-select-wrapper__select"
-    name="{{ $nameHour }}"
+    name="{{ $name }}[hour]"
     {{ $disabled ? 'disabled' : '' }}>
-    @for ($h = 0; $h < 24; $h++)
-      @php $val=sprintf('%02d', $h); @endphp
-      <option value="{{ $val }}" {{ $val == $selectedHour ? 'selected' : '' }}>{{ $val }}</option>
-      @endfor
+
+    <option value="" {{ $selectedHour === null ? 'selected' : '' }}>
+      --
+    </option>
+
+    @php
+    $hours = collect(range(0, 23))->map(fn($h) => str_pad($h, 2, '0', STR_PAD_LEFT));
+    @endphp
+    <!-- 選択肢00～23を生成 -->
+    @foreach ($hours as $h)
+    <option value="{{ $h }}" {{ $h == $selectedHour ? 'selected' : '' }}>
+      {{ $h }}
+    </option>
+    @endforeach
+
   </select>
 
   <span class="time-separator">:</span>
 
+  <!-- 分（Minute） -->
   <select
     class="time-select-wrapper__select"
-    name="{{ $nameMinute }}"
-    {{ $disabled ? 'disabled' : '' }}>
-    @for ($m = 0; $m < 60; $m++)
-      @php $val=sprintf('%02d', $m); @endphp
-      <option value="{{ $val }}" {{ $val == $selectedMinute ? 'selected' : '' }}>{{ $val }}</option>
-      @endfor
+    name="{{ $name }}[minute]">
+
+    <option value="" {{ $selectedMinute === null ? 'selected' : '' }}>
+      --
+    </option>
+    @php
+    $minutes = collect(range(0, 59))->map(fn($m) => str_pad($m, 2, '0', STR_PAD_LEFT));
+    @endphp
+    <!-- 選択肢00～59を生成 -->
+    @foreach ($minutes as $m)
+    <option value="{{ $m }}" {{ $m == $selectedMinute ? 'selected' : '' }}>
+      {{ $m }}
+    </option>
+    @endforeach
+
   </select>
 </div>
