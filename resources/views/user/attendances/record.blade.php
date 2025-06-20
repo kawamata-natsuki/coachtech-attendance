@@ -34,15 +34,15 @@
     <div class="attendance-record-page__record">
       @if (is_null($attendance->clock_in))
       <!-- 出勤前 -->
-      <x-attendance.record-form />
+      <x-attendance.record.clock-in-button />
 
       @elseif ($attendance->isWorking())
       <!-- 出勤中 -->
-      <x-attendance.working-form />
+      <x-attendance.record.clock-out-button />
 
       @elseif ($attendance->isBreak())
       <!-- 休憩中 -->
-      <x-attendance.break-form />
+      <x-attendance.record.break-button />
 
       @elseif ($attendance->isCompleted())
       <!-- 退勤済 -->
