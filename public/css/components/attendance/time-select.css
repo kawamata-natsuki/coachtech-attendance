@@ -3,15 +3,10 @@
   flex-direction: column;
   align-items: flex-start;
   margin-top: 36px;
+  margin-left: 12px;
 }
 
-.time-select-wrapper {
-  display: flex;
-  width: 103px;
-  border: 1px solid #E1E1E1;
-  border-radius: 4px;
-}
-
+/* 00:00 ~ 23:59 の括り */
 .time-range-wrapper {
   width: 100%;
   display: flex;
@@ -20,28 +15,7 @@
   gap: 16px;
 }
 
-.time-select-wrapper__select {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 28px;
-  text-align: center;
-  font-weight: 700;
-  font-size: 16px;
-  letter-spacing: 0.15em;
-}
-
-.time-separator {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
-  text-align: center;
-  font-weight: 700;
-  font-size: 16px;
-}
-
+/* ~ */
 .time-range-separator {
   width: 16px;
   height: 19px;
@@ -55,7 +29,6 @@
   letter-spacing: 0.15em;
 }
 
-
 .time-select__error-wrapper {
   display: flex;
   margin-top: 8px;
@@ -66,4 +39,55 @@
   gap: 16px;
   flex-wrap: nowrap;
   white-space: nowrap;
+}
+
+/* time-select.blade.php のスタイル */
+/* 00:00 の形 */
+.time-select-wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  border: 1px solid #E1E1E1;
+  border-radius: 4px;
+  width: 103px;
+  height: 28px;
+}
+
+.time-select-wrapper--disabled {
+  border: none;
+  justify-content: flex-start;
+  margin-left: 4px;
+  -webkit-text-fill-color: black;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #000000;
+}
+
+
+/* 00:00 の 00 の部分 */
+.time-select-wrapper__select {
+  padding-top: 0;
+  padding-bottom: 0;
+  height: 100%;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-align-last: center;
+  border: none;
+  background: transparent;
+  appearance: none;
+}
+
+
+/* 00:00 の : の部分 */
+.time-separator {
+  height: 100%;
+  line-height: 1;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
