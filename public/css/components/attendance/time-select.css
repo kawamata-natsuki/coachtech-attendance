@@ -55,7 +55,7 @@
   height: 28px;
 }
 
-/* ブラウザ仕様のため、文字色など修正不可 */
+/* ブラウザで強制的にcolor: #6D6D6D */
 .time-select-wrapper--disabled {
   border: none;
   justify-content: flex-start;
