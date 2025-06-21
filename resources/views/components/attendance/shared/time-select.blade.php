@@ -33,11 +33,13 @@
   <!-- 分（Minute） -->
   <select
     class="time-select-wrapper__select"
-    name="{{ $name }}[minute]">
+    name="{{ $name }}[minute]"
+    {{ $disabled ? 'disabled' : '' }}>
 
     <option value="" {{ $selectedMinute === null ? 'selected' : '' }}>
       --
     </option>
+
     @php
     $minutes = collect(range(0, 59))->map(fn($m) => str_pad($m, 2, '0', STR_PAD_LEFT));
     @endphp
