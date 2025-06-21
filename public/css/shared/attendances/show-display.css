@@ -1,0 +1,50 @@
+/* 表示専用のセル */
+.attendance-show-page__table-cell--text {
+  padding: 16px 24px;
+  font-size: 16px;
+  color: #333;
+  background-color: #fff;
+  border: 1px solid #D9D9D9;
+  vertical-align: middle;
+}
+
+/* 出勤退勤、休憩、備考の個別スタイル（必要なら） */
+.attendance-show-page__table-cell--time {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  /* ← 間隔をここで調整 */
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.attendance-show-page__text--time {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 96px;
+  gap: 24px;
+  margin-left: 20px;
+  font-weight: 700;
+  font-size: 16px;
+}
+
+.time-display-block {
+  display: inline-block;
+  min-width: 64px;
+  text-align: center;
+}
+
+.time-display-separator {
+  margin: 0 8px;
+  font-weight: 700;
+}
+
+.attendance-show-page__table-cell--break {
+  font-style: bold;
+}
+
+.attendance-show-page__table-cell--reason {
+  white-space: pre-wrap;
+  line-height: 1.5;
+}
