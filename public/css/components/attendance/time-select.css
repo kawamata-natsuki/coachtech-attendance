@@ -55,6 +55,7 @@
   height: 28px;
 }
 
+/* ブラウザ仕様のため、文字色など修正不可 */
 .time-select-wrapper--disabled {
   border: none;
   justify-content: flex-start;
