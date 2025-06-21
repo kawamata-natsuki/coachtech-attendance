@@ -1,5 +1,5 @@
 @props([
-'name' => 'clock_in',
+'name',
 'selectedHour' => null,
 'selectedMinute' => null,
 'disabled' => false,
