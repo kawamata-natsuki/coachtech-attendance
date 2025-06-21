@@ -14,4 +14,9 @@ enum ApprovalStatus: string
       self::APPROVED => '承認済み',
     };
   }
+
+  public function is(self $other): bool
+  {
+    return $this === $other;
+  }
 }
