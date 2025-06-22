@@ -13,10 +13,10 @@ return new class extends Migration
             $table->unsignedBigInteger('attendance_id');
             $table->unsignedBigInteger('user_id'); // 申請者
             $table->date('work_date');
-            $table->datetime('requested_clock_in');
-            $table->datetime('requested_clock_out');
-            $table->datetime('original_clock_in');
-            $table->datetime('original_clock_out');
+            $table->datetime('requested_clock_in')->nullable();
+            $table->datetime('requested_clock_out')->nullable();
+            $table->datetime('original_clock_in')->nullable();
+            $table->datetime('original_clock_out')->nullable();
             $table->string('reason');
 
             $table->datetime('approved_at')->nullable();
