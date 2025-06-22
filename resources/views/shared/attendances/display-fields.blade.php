@@ -30,8 +30,8 @@
 
 <!-- 備考 -->
 <tr class="attendance-show-page__table-row">
-  <th class="attendance-show-page__table-head">備考</th>
-  <td class="attendance-show-page__table-cell--reason">
-    {{ $correctionRequest?->reason ?? $attendance->reason }}
-  </td>
+  <th class="attendance-show-page__table-head">
+    備考
+  </th>
+  <td class="attendance-show-page__table-cell--reason">{{ $correctionRequest?->reason ?? $attendance->reason }}</td>
 </tr>

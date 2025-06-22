@@ -26,24 +26,28 @@ $end = explode(':', old("requested_breaks.$index.requested_break_end", optional(
     休憩{{ $index + 1 }}
   </th>
 
-  <td class="attendance-show-page__table-cell time-select-cell">
-    <div @class([ 'time-range-wrapper' , 'time-range-wrapper--disabled'=> $disabled,])>
+  <td class="attendance-show-page__table-cell--time-select">
+    <div class="time-range-wrapper">
 
       <!-- 休憩開始時刻セレクトボックス -->
-      <x-attendance.shared.time-select
-        name="requested_breaks[{{ $index }}][requested_break_start]"
-        :selectedHour="data_get($start, 0)"
-        :selectedMinute="data_get($start, 1)"
-        :disabled="$disabled" />
+      <div class="time-block">
+        <x-attendance.shared.time-select
+          name="requested_breaks[{{ $index }}][requested_break_start]"
+          :selectedHour="data_get($start, 0)"
+          :selectedMinute="data_get($start, 1)"
+          :disabled="$disabled" />
+      </div>
 
       <span class="time-range-separator">～</span>
 
       <!-- 休憩終了時刻セレクトボックス -->
-      <x-attendance.shared.time-select
-        name="requested_breaks[{{ $index }}][requested_break_end]"
-        :selectedHour="data_get($end, 0)"
-        :selectedMinute="data_get($end, 1)"
-        :disabled="$disabled" />
+      <div class="time-block">
+        <x-attendance.shared.time-select
+          name="requested_breaks[{{ $index }}][requested_break_end]"
+          :selectedHour="data_get($end, 0)"
+          :selectedMinute="data_get($end, 1)"
+          :disabled="$disabled" />
+      </div>
 
       <!-- 既存の休憩データを編集する際に break_time_id を送る -->
       @if (!$disabled && !$isNew && $breakId)

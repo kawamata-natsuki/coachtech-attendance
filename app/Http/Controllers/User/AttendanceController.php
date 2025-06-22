@@ -6,9 +6,11 @@ use App\Services\AttendanceService;
 use App\Enums\WorkStatus;
 use App\Models\Attendance;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AttendanceCorrectionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Carbon;
+use Illuminate\Http\RedirectResponse;
 
 class AttendanceController extends Controller
 {
@@ -127,5 +129,78 @@ class AttendanceController extends Controller
             'prevUrl'       => $prevUrl,
             'nextUrl'       => $nextUrl,
         ]);
+    }
+
+    // 勤怠詳細画面（共通）の表示処理
+    public function show(Request $request, $id)
+    {
+        $attendance = Attendance::with(['user', 'breakTimes'])->findOrFail($id);
+        $correctionRequest = $attendance->correctionRequests()->latest()->first();
+
+        $isCorrectionDisabled = $correctionRequest?->isPending() || $correctionRequest?->isApproved();
+        $breakTimes = $attendance->breakTimes;
+        $nextIndex = count($breakTimes);
+
+        return view('shared.attendances.show', [
+            'attendance' => $attendance,
+            'correctionRequest' => $correctionRequest,
+            'breakTimes' => $breakTimes,
+            'nextIndex' => $nextIndex,
+            'isCorrectionDisabled' => $isCorrectionDisabled,
+        ]);
+    }
+
+    public function update(AttendanceCorrectionRequest $request, int $id): RedirectResponse
+    {
+        $attendance = Attendance::findOrFail($id);
+        $breaks = $request->input('requested_breaks', []);
+
+        $clockInParts = $request->input('requested_clock_in');
+        $clockOutParts = $request->input('requested_clock_out');
+
+        $clockIn = filled($clockInParts['hour'] ?? null) && filled($clockInParts['minute'] ?? null)
+            ? Carbon::createFromTime($clockInParts['hour'], $clockInParts['minute'])
+            : null;
+
+        $clockOut = filled($clockOutParts['hour'] ?? null) && filled($clockOutParts['minute'] ?? null)
+            ? Carbon::createFromTime($clockOutParts['hour'], $clockOutParts['minute'])
+            : null;
+
+        // 未来の退勤時間は申請不可
+        return back()->withErrors([
+            'requested_clock_out' => [
+                'hour' => '未来の時間は申請できません。',
+            ],
+        ])->withInput();
+
+        // 既存の修正申請があれば更新、なければ作成
+        $correctionRequest = $attendance->correctionRequests()->updateOrCreate(
+            ['user_id' => $attendance->user_id],
+            [
+                'work_date' => $attendance->work_date,
+                'original_clock_in' => $attendance->clock_in,
+                'original_clock_out' => $attendance->clock_out,
+                'requested_clock_in' => $clockIn,
+                'requested_clock_out' => $clockOut,
+                'reason' => $request->input('reason'),
+            ]
+        );
+
+        // 休憩時間も含めて保存
+        foreach ($breaks as $break) {
+            // 休憩の開始・終了どちらもnullなら保存しない
+            if (empty($break['requested_break_start']) && empty($break['requested_break_end'])) {
+                continue;
+            }
+
+            $correctionRequest->correctionBreakTimes()->create([
+                'requested_break_start' => $break['requested_break_start'],
+                'requested_break_end' => $break['requested_break_end'],
+            ]);
+        }
+
+        return redirect()
+            ->route('attendances.show', ['id' => $id])
+            ->with('success', '修正を受け付けました');
     }
 }

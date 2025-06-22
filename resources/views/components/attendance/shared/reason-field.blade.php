@@ -10,13 +10,12 @@
 
   <td class="attendance-show-page__table-cell--textarea">
     <div class="attendance-show-page__textarea-wrapper">
-      @if ($disabled)
-      <div class="attendance-show-page__text">
-        {{ $reason }}
-      </div>
-      @else
-      <textarea class="attendance-show-page__textarea" name="reason" id="reason">{{ old('reason', $reason) }}</textarea>
-      @endif
+
+      <textarea
+        class="attendance-show-page__textarea"
+        name="reason"
+        id="reason"
+        {{ $disabled ? 'disabled' : '' }}>{{ old('reason', $reason) }}</textarea>
     </div>
 
     <div class="attendance-show-page__error-wrapper">

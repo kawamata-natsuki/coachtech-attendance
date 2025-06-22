@@ -2,6 +2,9 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/components/attendance/time-select.css') }}">
+<link rel="stylesheet" href="{{ asset('css/shared/attendances/show-table.css') }}">
+<link rel="stylesheet" href="{{ asset('css/shared/attendances/show-display.css') }}">
+
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/show.css') }}">
 @endsection
 
@@ -14,11 +17,13 @@
       <span class="attendance-index-page__heading-text">勤怠詳細</span>
     </h1>
 
-    @if (session('success'))
-    <div class="flash-message flash-message--success">
-      {{ session('success') }}
+    <div class="attendance-show-page__flash-wrapper">
+      @if (session('success'))
+      <div class="flash-message flash-message--success">
+        {{ session('success') }}
+      </div>
+      @endif
     </div>
-    @endif
 
     <form action="{{ route('attendances.update', ['id' => $attendance->id]) }}" method="post" novalidate>
       @csrf
@@ -45,12 +50,23 @@
           </td>
         </tr>
 
+        @if ($isCorrectionDisabled)
+        {{-- 表示専用モード（修正済み） --}}
+        @include('shared.attendances.display-fields', [
+        'attendance' => $attendance,
+        'correctionRequest' => $correctionRequest,
+        ])
+        @else
+
+        @php
+        $clockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
+        $clockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
+        @endphp
+
         <!-- 出勤・退勤 -->
         <x-attendance.shared.work-time-row
-          :clockIn="optional($correctionRequest?->requested_clock_in
-            ?? $attendance->clock_in)->format('H:i')"
-          :clockOut="optional($correctionRequest?->requested_clock_out
-            ?? $attendance->clock_out)->format('H:i')"
+          :clockIn="is_array($clockIn) ? sprintf('%02d:%02d', $clockIn['hour'], $clockIn['minute']) : $clockIn"
+          :clockOut="is_array($clockOut) ? sprintf('%02d:%02d', $clockOut['hour'], $clockOut['minute']) : $clockOut"
           :disabled="$isCorrectionDisabled" />
 
         <!-- 休憩 -->
@@ -64,7 +80,6 @@
         @endforeach
 
         <!-- 空欄の休憩追加フォーム -->
-        @if (!$isCorrectionDisabled)
         <x-attendance.shared.break-time-row
           :index="$nextIndex"
           :breakStart="null"
@@ -72,44 +87,28 @@
           :breakId="null"
           :disabled="false"
           :isNew="true" />
-        @endif
 
         <!-- 備考 -->
         <x-attendance.shared.reason-field
           :disabled="$isCorrectionDisabled"
           :reason="$correctionRequest?->reason ?? $attendance->reason" />
+        @endif
       </table>
 
       <!-- 修正ボタン -->
       <div class="attendance-show-page__button">
-
-        @if (auth('admin')->check())
-        <!-- 管理者 -->
         @if ($correctionRequest?->isApproved())
-        <button class="attendance-show-page__submit-button" disabled>
+        <button @class(['attendance-show-page__submit-button', 'attendance-show-page__submit-button--disabled' ]) disabled>
           承認済み
         </button>
-        @else
-        <button type="submit" class="attendance-show-page__submit-button">
-          修正
-        </button>
-        @endif
-
-        @else
-        <!-- 一般ユーザー -->
-        @if($correctionRequest?->isPending())
+        @elseif (auth('web')->check() && $correctionRequest?->isPending())
         <p class="attendance-show-page__pending-message">
-          承認待ちです
+          *承認待ちのため修正はできません。
         </p>
-        @elseif($correctionRequest?->isApproved())
-        <button class="attendance-show-page__submit-button" disabled>
-          承認済み
-        </button>
         @else
         <button type="submit" class="attendance-show-page__submit-button">
           修正
         </button>
-        @endif
         @endif
       </div>
     </form>

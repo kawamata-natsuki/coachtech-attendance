@@ -5,7 +5,7 @@
 'disabled' => false,
 ])
 
-<div class="time-select-wrapper {{ $disabled ? 'time-select-wrapper--disabled' : '' }}">
+<div class="time-select-wrapper">
   <!-- 時間（Hour） -->
   <select
     class="time-select-wrapper__select"

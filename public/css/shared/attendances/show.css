@@ -20,7 +20,7 @@
   font-weight: 700;
   font-size: 30px;
   margin-top: 60px;
-  margin-bottom: 72px;
+  margin-bottom: 12px;
   display: inline-block;
   line-height: 1.2;
 }
@@ -40,13 +40,24 @@
 }
 
 /* フラッシュメッセージレイアウト */
+.attendance-show-page__flash-wrapper {
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
 .attendance-show-page .flash-message--success {
-  padding: 10px;
+  width: 100%;
+  padding: 10px 20px;
   background-color: #d4edda;
   border: 1px solid #c3e6cb;
   color: #155724;
-  margin-bottom: 1rem;
   border-radius: 5px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 26px;
 }
 
 /* テーブルレイアウトはshow-table.cssに分離 */

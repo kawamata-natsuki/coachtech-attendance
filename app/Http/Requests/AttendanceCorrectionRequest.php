@@ -6,7 +6,6 @@ use App\Models\Attendance;
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Http\Exceptions\HttpResponseException;
 
 class AttendanceCorrectionRequest extends FormRequest
 {
@@ -15,107 +14,92 @@ class AttendanceCorrectionRequest extends FormRequest
         return true;
     }
 
+    public function prepareForValidation()
+    {
+        $this->merge([
+            'requested_clock_in' => sprintf(
+                '%02d:%02d',
+                $this->input('requested_clock_in_hour'),
+                $this->input('requested_clock_in_minute')
+            ),
+            'requested_clock_out' => sprintf(
+                '%02d:%02d',
+                $this->input('requested_clock_out_hour'),
+                $this->input('requested_clock_out_minute')
+            ),
+        ]);
+
+        $breaks = $this->input('requested_breaks', []);
+
+        foreach ($breaks as $i => $break) {
+            $hourStart = $break['requested_break_start_hour'] ?? null;
+            $minuteStart = $break['requested_break_start_minute'] ?? null;
+
+            $hourEnd = $break['requested_break_end_hour'] ?? null;
+            $minuteEnd = $break['requested_break_end_minute'] ?? null;
+
+            $breaks[$i]['requested_break_start'] =
+                ($hourStart !== null && $hourStart !== '' && $minuteStart !== null && $minuteStart !== '')
+                ? sprintf('%02d:%02d', $hourStart, $minuteStart)
+                : null;
+
+            $breaks[$i]['requested_break_end'] =
+                ($hourEnd !== null && $hourEnd !== '' && $minuteEnd !== null && $minuteEnd !== '')
+                ? sprintf('%02d:%02d', $hourEnd, $minuteEnd)
+                : null;
+        }
+
+        $this->merge(['requested_breaks' => $breaks]);
+    }
+
     public function rules(): array
     {
-        $rules = [
-            'requested_clock_in' => ['nullable', 'date_format:H:i'],
-            'requested_clock_out' => ['nullable', 'date_format:H:i'],
+        return [
             'reason' => ['required', 'string'],
-            'requested_breaks' => ['array'],
         ];
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        // 休憩時間（配列入力）のバリデーションルール
-        foreach ($this->input('requested_breaks', []) as $i => $break) {
-            $hasInput = !empty($break['requested_break_start']) || !empty($break['requested_break_end']);
-
-            if (!empty($break['break_time_id']) || $hasInput) {
-                $rules["requested_breaks.$i.break_time_id"] = ['nullable', 'integer', 'exists:break_times,id'];
-            }
-
-            $rules["requested_breaks.$i.requested_break_start"] = ['nullable', 'date_format:H:i'];
-            $rules["requested_breaks.$i.requested_break_end"] = ['nullable', 'date_format:H:i'];
-        }
-        return $rules;
     }
 
     public function messages(): array
     {
         return [
-            'requested_clock_in.date_format' => '出勤時間は「時:分」の形式で入力してください',
-            'requested_clock_out.date_format' => '退勤時間は「時:分」の形式で入力してください',
             'reason.required' => '備考を記入してください',
-            'requested_breaks.*.requested_break_start.date_format' => '休憩開始時間は「時:分」の形式で入力してください',
-            'requested_breaks.*.requested_break_end.date_format' => '休憩終了時間は「時:分」の形式で入力してください',
         ];
     }
 
     public function withValidator($validator)
     {
+        logger()->debug('input', $this->all());
+
         $validator->after(function ($validator) {
             $clockIn = $this->input('requested_clock_in');
             $clockOut = $this->input('requested_clock_out');
             $breaks = $this->input('requested_breaks', []);
 
-            $hasBreakUpdate = collect($breaks)->contains(function ($break) {
-                return !empty($break['requested_break_start']) || !empty($break['requested_break_end']);
-            });
-
-            if (empty($clockIn) && empty($clockOut) && !$hasBreakUpdate) {
-                $validator->errors()->add('requested_clock_in', '出勤・退勤・休憩のいずれかを入力してください');
-            }
-
-            // ① 出勤時間 > 退勤時間 のチェック
+            // 1. 出勤 > 退勤
             if ($clockIn && $clockOut && $clockIn > $clockOut) {
-                $validator->errors()->add('requested_clock_in', '出勤時間もしくは退勤時間が不適切な値です');
+                $validator->errors()->add('work_time_logic', '出勤時間もしくは退勤時間が不適切な値です');
             }
 
-            // ② 勤務時間外に休憩があるチェック
-            foreach ($this->input('requested_breaks', []) as $i => $break) {
+            // 2. 勤務時間外の休憩チェック
+            foreach ($breaks as $i => $break) {
                 $breakStart = $break['requested_break_start'] ?? null;
                 $breakEnd = $break['requested_break_end'] ?? null;
 
                 if ($clockIn && $breakStart && $breakStart < $clockIn) {
-                    $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間が勤務時間外です');
+                    $validator->errors()->add("break_time_logic_$i", '休憩時間が勤務時間外です');
                 }
 
                 if ($clockOut && $breakEnd && $breakEnd > $clockOut) {
-                    $validator->errors()->add("requested_breaks.$i.requested_break_end", '休憩時間が勤務時間外です');
+                    $validator->errors()->add("break_time_logic_$i", '休憩時間が勤務時間外です');
                 }
 
+                // 任意：休憩は開始・終了セット（UIで制御されてなければ残す）
                 if (($breakStart && !$breakEnd) || (!$breakStart && $breakEnd)) {
                     $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間は開始・終了をセットで入力してください');
                 }
             }
 
-            // 承認済みは再申請不可
-            $attendance = Attendance::find($this->route('id'));
-            $latestRequest = $attendance?->correctionRequests()->latest()->first();
-
-            if ($latestRequest?->isApproved()) {
-                $validator->errors()->add('approved', 'この勤怠は承認済みのため修正できません。');
-            }
-
-            // 今日の日付なら未来時刻の入力は禁止
+            // 3. 今日の日付なら未来時刻は禁止
             if ($this->isToday()) {
                 $now = now()->format('H:i');
 
@@ -127,7 +111,7 @@ class AttendanceCorrectionRequest extends FormRequest
                     $validator->errors()->add('requested_clock_out', '未来の退勤時刻は入力できません');
                 }
 
-                foreach ($this->input('requested_breaks', []) as $i => $break) {
+                foreach ($breaks as $i => $break) {
                     $breakStart = $break['requested_break_start'] ?? null;
                     $breakEnd = $break['requested_break_end'] ?? null;
 
@@ -136,10 +120,25 @@ class AttendanceCorrectionRequest extends FormRequest
                     }
 
                     if ($breakEnd && $breakEnd > $now) {
-                        $validator->errors()->add("requested_breaks.$i.requested_break_end", '未来の休憩終了時刻は入力できません');
+                        $validator->errors()->add('requested_clock_out', '未来の退勤時刻は入力できません');
                     }
                 }
             }
+
+            // 4. 未来の時間は申請不可
+            $clockOutHour = $this->input('requested_clock_out.hour');
+            $clockOutMinute = $this->input('requested_clock_out.minute');
+
+            if (filled($clockOutHour) && filled($clockOutMinute)) {
+                $clockOutTime = Carbon::createFromTime($clockOutHour, $clockOutMinute);
+                if ($clockOutTime->gt(now())) {
+                    $validator->errors()->add('requested_clock_out.hour', '未来の時間は申請できません。');
+                }
+            }
+
+
+            logger()->debug('退勤H', [$clockOutHour]);
+            logger()->debug('退勤M', [$clockOutMinute]);
         });
     }
 
