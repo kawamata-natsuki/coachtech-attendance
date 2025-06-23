@@ -6,12 +6,17 @@
   margin-left: 8px;
 }
 
-/* 00:00 ~ 23:59 の括り */
 .time-range-wrapper {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   gap: 16px;
+}
+
+/* 00:00 ~ 23:59 の括り */
+.time-inputs {
+  display: flex;
+  align-items: center;
+  gap: 24px;
 }
 
 /* 00:00 の 00 の部分 */
