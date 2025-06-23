@@ -1,23 +1,41 @@
+{{-- 休憩時間セレクトボックス --}}
+
 @props([
-'index',
-'breakStart' => null,
-'breakEnd' => null,
-'breakId' => null,
-'disabled' => false,
-'isNew' => false,
+'index', // 何番目の休憩か
+'breakStart' => null, // 初期表示用の休憩開始時刻（Carbon型 or null）
+'breakEnd' => null, // 初期表示用の休憩終了時刻（Carbon型 or null）
+'breakId' => null, // 既存の休憩データがある場合のID（hiddenで送信）
+'isNew' => false, // trueなら新規追加（既存データではない）
 ])
 
-<!-- 入力の初期値（休憩開始時刻・休憩終了時刻）を「時」と「分」に分割 -->
-<!-- 例："12:00"-> ["12", "00"] -->
-<!-- isNew = True （新しく追加された空の休憩行） -->
-<!-- isNew = False （既存の休憩データあり） -->
+{{-- バリデーションエラー後の再表示 --}}
 @php
+$breakStartInput = old("requested_breaks.$index.requested_break_start");
+$breakEndInput = old("requested_breaks.$index.requested_break_end");
+
+// 新規休憩の場合：null で初期化
 if ($isNew) {
-$start = [null, null];
-$end = [null, null];
+$breakStartHour = null;
+$breakStartMinute = null;
+$breakEndHour = null;
+$breakEndMinute = null;
+
 } else {
-$start = explode(':', old("requested_breaks.$index.requested_break_start", optional($breakStart)->format('H:i')));
-$end = explode(':', old("requested_breaks.$index.requested_break_end", optional($breakEnd)->format('H:i')));
+
+// 既存休憩の場合：old() または breakStart/breakEnd から値を分割
+if (is_array($breakStartInput)) {
+$breakStartHour = $breakStartInput['hour'] ?? null;
+$breakStartMinute = $breakStartInput['minute'] ?? null;
+} else {
+[$breakStartHour, $breakStartMinute] = explode(':', optional($breakStart)->format('H:i'));
+}
+
+if (is_array($breakEndInput)) {
+$breakEndHour = $breakEndInput['hour'] ?? null;
+$breakEndMinute = $breakEndInput['minute'] ?? null;
+} else {
+[$breakEndHour, $breakEndMinute] = explode(':', optional($breakEnd)->format('H:i'));
+}
 }
 @endphp
 
@@ -28,38 +46,37 @@ $end = explode(':', old("requested_breaks.$index.requested_break_end", optional(
 
   <td class="attendance-show-page__table-cell--time-select">
     <div class="time-range-wrapper">
+      <div class="time-inputs">
 
-      <!-- 休憩開始時刻セレクトボックス -->
-      <div class="time-block">
-        <x-attendance.shared.time-select
-          name="requested_breaks[{{ $index }}][requested_break_start]"
-          :selectedHour="data_get($start, 0)"
-          :selectedMinute="data_get($start, 1)"
-          :disabled="$disabled" />
+        {{-- ▼ 休憩開始時刻セレクトボックス --}}
+        <div class="time-block">
+          <x-attendance.shared.time-select
+            name="requested_breaks[{{ $index }}][requested_break_start]"
+            :selectedHour="$breakStartHour"
+            :selectedMinute="$breakStartMinute" />
+        </div>
+
+        <span class="time-range-separator">～</span>
+
+        {{-- ▼ 休憩終了時刻セレクトボックス --}}
+        <div class="time-block">
+          <x-attendance.shared.time-select
+            name="requested_breaks[{{ $index }}][requested_break_end]"
+            :selectedHour="$breakEndHour"
+            :selectedMinute="$breakEndMinute" />
+        </div>
+
+        {{-- ▼ 既存の休憩データを編集する際に break_time_id を送る --}}
+        @if (!$isNew && $breakId)
+        <input type="hidden" name="requested_breaks[{{ $index }}][break_time_id]" value="{{ $breakId }}">
+        @endif
       </div>
 
-      <span class="time-range-separator">～</span>
-
-      <!-- 休憩終了時刻セレクトボックス -->
-      <div class="time-block">
-        <x-attendance.shared.time-select
-          name="requested_breaks[{{ $index }}][requested_break_end]"
-          :selectedHour="data_get($end, 0)"
-          :selectedMinute="data_get($end, 1)"
-          :disabled="$disabled" />
+      {{-- ▼ エラーメッセージ --}}
+      <div class="time-select__error-wrapper">
+        <x-error.attendance-message :field="'requested_breaks.' . $index . '.requested_break_start'" />
+        <x-error.attendance-message :field="'requested_breaks.' . $index . '.requested_break_end'" />
       </div>
-
-      <!-- 既存の休憩データを編集する際に break_time_id を送る -->
-      @if (!$disabled && !$isNew && $breakId)
-      <input type="hidden" name="requested_breaks[{{ $index }}][break_time_id]" value="{{ $breakId }}">
-      @endif
-    </div>
-
-    <div class="time-select__error-wrapper">
-      <x-error.attendance-message :field="'requested_breaks.' . $index . '.requested_break_start'" />
-      <x-error.attendance-message :field="'requested_breaks.' . $index . '.requested_break_end'" />
-      <x-error.attendance-message :field="'break_time_logic_' . $index" />
-    </div>
 
     </div>
   </td>
