@@ -7,11 +7,12 @@
 ])
 
 <div class="time-select-wrapper">
-  {{-- 時間（Hour） --}}
+  {{-- ▼ 時間（Hour）セレクトボックス --}}
   <select
     class="time-select-wrapper__select"
     name="{{ $name }}[hour]">
 
+    {{-- 未選択時のプレースホルダー --}}
     <option value="" {{ $selectedHour === null ? 'selected' : '' }}>
       --
     </option>
@@ -31,11 +32,12 @@
 
   <span class="time-separator">:</span>
 
-  {{-- 分（Minute） --}}
+  {{-- ▼ 分（Minute） --}}
   <select
     class="time-select-wrapper__select"
     name="{{ $name }}[minute]">
 
+    {{-- 未選択時のプレースホルダー --}}
     <option value="" {{ $selectedMinute === null ? 'selected' : '' }}>
       --
     </option>

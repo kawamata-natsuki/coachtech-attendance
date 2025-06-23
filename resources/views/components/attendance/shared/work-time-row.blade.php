@@ -1,3 +1,5 @@
+{{-- 出退勤の時間入力用セレクトボックス --}}
+
 @props([
 'clockIn' => null,
 'clockOut' => null,
@@ -22,7 +24,7 @@
         $clockOutMinute = old('requested_clock_out.minute', data_get(explode(':', $clockOut), 1));
         @endphp
 
-        {{-- 出勤時刻セレクトボックス  --}}
+        {{-- ▼ 出勤時刻セレクトボックス  --}}
         <div class="time-block">
           <x-attendance.shared.time-select
             name="requested_clock_in"
@@ -32,7 +34,7 @@
 
         <span class="time-range-separator">～</span>
 
-        {{-- 退勤時刻セレクトボックス  --}}
+        {{-- ▼ 退勤時刻セレクトボックス  --}}
         <div class="time-block">
           <x-attendance.shared.time-select
             name="requested_clock_out"
@@ -41,9 +43,10 @@
         </div>
       </div>
 
+      {{-- ▼ エラーメッセージ  --}}
       <div class="time-select__error-wrapper">
-        <x-error.attendance-message field="requested_clock_in" />
         <x-error.attendance-message field="requested_clock_out" />
+        <x-error.attendance-message field="work_time_invalid" />
       </div>
 
     </div>
