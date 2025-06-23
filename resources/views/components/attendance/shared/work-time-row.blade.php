@@ -45,6 +45,7 @@
 
       {{-- ▼ エラーメッセージ  --}}
       <div class="time-select__error-wrapper">
+        <x-error.attendance-message field="requested_clock_in" />
         <x-error.attendance-message field="requested_clock_out" />
         <x-error.attendance-message field="work_time_invalid" />
       </div>
