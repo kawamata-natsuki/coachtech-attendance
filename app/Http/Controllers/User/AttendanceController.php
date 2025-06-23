@@ -150,28 +150,23 @@ class AttendanceController extends Controller
         ]);
     }
 
+    // 勤怠詳細画面（共通）の修正申請処理
     public function update(AttendanceCorrectionRequest $request, int $id): RedirectResponse
     {
+        // 勤怠レコードと休憩時間を取得
         $attendance = Attendance::findOrFail($id);
         $breaks = $request->input('requested_breaks', []);
 
-        $clockInParts = $request->input('requested_clock_in');
-        $clockOutParts = $request->input('requested_clock_out');
+        $requestedClockInParts = $request->input('requested_clock_in');
+        $requestedClockOutParts = $request->input('requested_clock_out');
 
-        $clockIn = filled($clockInParts['hour'] ?? null) && filled($clockInParts['minute'] ?? null)
-            ? Carbon::createFromTime($clockInParts['hour'], $clockInParts['minute'])
+        // 分割されていた hour と minute を Carbon オブジェクトに変換（09:00）
+        $requestedClockIn = filled($requestedClockInParts['hour'] ?? null) && filled($requestedClockInParts['minute'] ?? null)
+            ? Carbon::createFromTime($requestedClockInParts['hour'], $requestedClockInParts['minute'])
             : null;
-
-        $clockOut = filled($clockOutParts['hour'] ?? null) && filled($clockOutParts['minute'] ?? null)
-            ? Carbon::createFromTime($clockOutParts['hour'], $clockOutParts['minute'])
+        $requestedClockOut = filled($requestedClockOutParts['hour'] ?? null) && filled($requestedClockOutParts['minute'] ?? null)
+            ? Carbon::createFromTime($requestedClockOutParts['hour'], $requestedClockOutParts['minute'])
             : null;
-
-        // 未来の退勤時間は申請不可
-        return back()->withErrors([
-            'requested_clock_out' => [
-                'hour' => '未来の時間は申請できません。',
-            ],
-        ])->withInput();
 
         // 既存の修正申請があれば更新、なければ作成
         $correctionRequest = $attendance->correctionRequests()->updateOrCreate(
@@ -180,22 +175,37 @@ class AttendanceController extends Controller
                 'work_date' => $attendance->work_date,
                 'original_clock_in' => $attendance->clock_in,
                 'original_clock_out' => $attendance->clock_out,
-                'requested_clock_in' => $clockIn,
-                'requested_clock_out' => $clockOut,
+                'requested_clock_in' => $requestedClockIn,
+                'requested_clock_out' => $requestedClockOut,
                 'reason' => $request->input('reason'),
             ]
         );
 
         // 休憩時間も含めて保存
         foreach ($breaks as $break) {
-            // 休憩の開始・終了どちらもnullなら保存しない
-            if (empty($break['requested_break_start']) && empty($break['requested_break_end'])) {
+            $requestedBreakStartParts = $break['requested_break_start'];
+            $requestedBreakEndParts   = $break['requested_break_end'];
+
+            // 両方とも未入力ならスキップ
+            if (
+                empty($requestedBreakStartParts['hour']) && empty($requestedBreakStartParts['minute']) &&
+                empty($requestedBreakEndParts['hour']) && empty($requestedBreakEndParts['minute'])
+            ) {
                 continue;
             }
 
+            // 休憩時間を Carbon オブジェクトに変換して整形（HH:MM）
+            $requestedBreakStart = (filled($requestedBreakStartParts['hour']) && filled($requestedBreakStartParts['minute']))
+                ? Carbon::createFromTime($requestedBreakStartParts['hour'], $requestedBreakStartParts['minute'])
+                : null;
+            $requestedBreakEnd = (filled($requestedBreakEndParts['hour']) && filled($requestedBreakEndParts['minute']))
+                ? Carbon::createFromTime($requestedBreakEndParts['hour'], $requestedBreakEndParts['minute'])
+                : null;
+
+            // 休憩修正申請テーブルに紐づけて、休憩時間を保存
             $correctionRequest->correctionBreakTimes()->create([
-                'requested_break_start' => $break['requested_break_start'],
-                'requested_break_end' => $break['requested_break_end'],
+                'requested_break_start' => $requestedBreakStart,
+                'requested_break_end'   => $requestedBreakEnd,
             ]);
         }
 
