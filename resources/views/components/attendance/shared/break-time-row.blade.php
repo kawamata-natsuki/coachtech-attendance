@@ -26,8 +26,11 @@ $breakEndMinute = null;
 if (is_array($breakStartInput)) {
 $breakStartHour = $breakStartInput['hour'] ?? null;
 $breakStartMinute = $breakStartInput['minute'] ?? null;
+} elseif ($breakStart) {
+[$breakStartHour, $breakStartMinute] = explode(':', $breakStart->format('H:i'));
 } else {
-[$breakStartHour, $breakStartMinute] = explode(':', optional($breakStart)->format('H:i'));
+$breakStartHour = null;
+$breakStartMinute = null;
 }
 
 if (is_array($breakEndInput)) {
