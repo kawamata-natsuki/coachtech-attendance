@@ -28,8 +28,8 @@
     </div>
 
     @php
-    $clockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
-    $clockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
+    $requestedClockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
+    $requestedClockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
     @endphp
 
     <form action="{{ route('attendances.update', ['id' => $attendance->id]) }}" method="post" novalidate>
@@ -67,23 +67,23 @@
 
         <!-- 出勤・退勤 -->
         <x-attendance.shared.work-time-row
-          :clockIn="$clockIn"
-          :clockOut="$clockOut" />
+          :clockIn="$requestedClockIn"
+          :clockOut="$requestedClockOut" />
 
         <!-- 休憩 -->
         @foreach ($breakTimes as $i => $break)
         <x-attendance.shared.break-time-row
           :index="$i"
-          :breakStart="$break->requested_break_start ?? $break->break_start"
-          :breakEnd="$break->requested_break_end ?? $break->break_end"
+          :requestedBreakStart="$break->requested_break_start ?? $break->break_start"
+          :requestedBreakEnd="$break->requested_break_end ?? $break->break_end"
           :breakId="$break->id ?? null" />
         @endforeach
 
         <!-- 空欄の休憩追加フォーム -->
         <x-attendance.shared.break-time-row
           :index="$nextIndex"
-          :breakStart="null"
-          :breakEnd="null"
+          :requestedBreakStart="null"
+          :requestedBreakEnd="null"
           :breakId="null"
           :isNew="true" />
 

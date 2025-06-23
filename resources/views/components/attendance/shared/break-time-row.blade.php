@@ -2,8 +2,8 @@
 
 @props([
 'index', // 何番目の休憩か
-'breakStart' => null, // 初期表示用の休憩開始時刻（Carbon型 or null）
-'breakEnd' => null, // 初期表示用の休憩終了時刻（Carbon型 or null）
+'requestedBreakStart' => null, // 初期表示用の休憩開始時刻（Carbon型 or null）
+'requestedBreakEnd' => null, // 初期表示用の休憩終了時刻（Carbon型 or null）
 'breakId' => null, // 既存の休憩データがある場合のID（hiddenで送信）
 'isNew' => false, // trueなら新規追加（既存データではない）
 ])
@@ -13,21 +13,17 @@
 $breakStartInput = old("requested_breaks.$index.requested_break_start");
 $breakEndInput = old("requested_breaks.$index.requested_break_end");
 
-// 新規休憩の場合：null で初期化
 if ($isNew) {
 $breakStartHour = null;
 $breakStartMinute = null;
 $breakEndHour = null;
 $breakEndMinute = null;
-
 } else {
-
-// 既存休憩の場合：old() または breakStart/breakEnd から値を分割
 if (is_array($breakStartInput)) {
 $breakStartHour = $breakStartInput['hour'] ?? null;
 $breakStartMinute = $breakStartInput['minute'] ?? null;
-} elseif ($breakStart) {
-[$breakStartHour, $breakStartMinute] = explode(':', $breakStart->format('H:i'));
+} elseif ($requestedBreakStart) {
+[$breakStartHour, $breakStartMinute] = explode(':', $requestedBreakStart->format('H:i'));
 } else {
 $breakStartHour = null;
 $breakStartMinute = null;
@@ -37,7 +33,7 @@ if (is_array($breakEndInput)) {
 $breakEndHour = $breakEndInput['hour'] ?? null;
 $breakEndMinute = $breakEndInput['minute'] ?? null;
 } else {
-[$breakEndHour, $breakEndMinute] = explode(':', optional($breakEnd)->format('H:i'));
+[$breakEndHour, $breakEndMinute] = explode(':', optional($requestedBreakEnd)->format('H:i'));
 }
 }
 @endphp
