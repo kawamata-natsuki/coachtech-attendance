@@ -28,8 +28,8 @@
     </div>
 
     @php
-    $requestedClockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
-    $requestedClockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
+    $requestedClockIn = ($correctionRequest?->requested_clock_in)?->format('H:i') ?? ($attendance->clock_in)?->format('H:i');
+    $requestedClockOut = ($correctionRequest?->requested_clock_out)?->format('H:i') ?? ($attendance->clock_out)?->format('H:i');
     @endphp
 
     <form action="{{ route('attendances.update', ['id' => $attendance->id]) }}" method="post" novalidate>
@@ -67,8 +67,8 @@
 
         <!-- 出勤・退勤 -->
         <x-attendance.shared.work-time-row
-          :clockIn="$requestedClockIn"
-          :clockOut="$requestedClockOut" />
+          :requestedClockIn="$requestedClockIn"
+          :requestedClockOut="$requestedClockOut" />
 
         <!-- 休憩 -->
         @foreach ($breakTimes as $i => $break)
