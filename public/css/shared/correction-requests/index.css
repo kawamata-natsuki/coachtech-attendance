@@ -1,0 +1,140 @@
+.correction-request-index-page {
+  min-height: calc(100vh - 80px);
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background-color: #F0EFF2;
+}
+
+.correction-request-index-page__container {
+  width: 100%;
+  max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 100px;
+}
+
+.correction-request-index-page__heading {
+  position: relative;
+  font-weight: 700;
+  font-size: 30px;
+  margin-top: 80px;
+  display: inline-block;
+  line-height: 1.2;
+  margin-bottom: 48px;
+}
+
+.content__heading::before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: calc(1em + 8px);
+  background-color: #000;
+}
+
+.correction-request-index-page__heading-text {
+  margin-left: 32px;
+}
+
+.correction-request-index-page__tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+  border-bottom: 1px solid #000000;
+  margin-bottom: 48px;
+}
+
+.correction-request-index-page__tab {
+  position: relative;
+  display: inline-block;
+  padding: 8px 32px 8px 48px;
+  font-weight: 400;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  text-decoration: none;
+  border-bottom: 2px solid transparent;
+  color: #333;
+  text-align: right;
+}
+
+.correction-request-index-page__tab.active {
+  font-weight: 700;
+}
+
+.correction-request-index-page__table {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background-color: #FFFFFF;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.15em;
+  color: #737373;
+  border-collapse: collapse;
+  text-align: center;
+  table-layout: fixed;
+}
+
+.correction-request-index-page__table-head,
+.correction-request-index-page__table-cell {
+  width: calc(100% / 6);
+  text-align: left;
+  height: 48px;
+  border-bottom: 2px solid #E1E1E1;
+}
+
+.correction-request-index-page__table-head:nth-child(1),
+.correction-request-index-page__table-cell:nth-child(1) {
+  text-align: center;
+}
+
+.correction-request-index-page__table-head:nth-child(2),
+.correction-request-index-page__table-cell:nth-child(2) {
+  width: 16%;
+  padding-left: 12px;
+  /* 名前 */
+}
+
+.correction-request-index-page__table-cell:nth-child(3),
+.correction-request-index-page__table-cell:nth-child(5) {
+  /* 対象日時、申請日時 */
+  letter-spacing: 0;
+}
+
+.correction-request-index-page__table-head:nth-child(6),
+.correction-request-index-page__table-cell:nth-child(6) {
+  width: 10%;
+  /* 詳細 */
+}
+
+.correction-request-index-page__table-head {
+  border-bottom: 3px solid #E1E1E1;
+}
+
+.correction-request-index-page__table-cell {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.correction-request-index-page__table-cell--name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100px;
+}
+
+.correction-request-index-page__table-cell--reason {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 160px;
+  padding-right: 16px;
+}
+
+.correction-request-index-page__table-link {
+  color: #000;
+}
