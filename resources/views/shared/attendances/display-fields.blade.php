@@ -11,7 +11,11 @@
 </tr>
 
 <!-- 休憩 -->
-@foreach ($attendance->breakTimes as $break)
+@php
+$breaks = $correctionRequest?->correctionBreakTimes ?? $attendance->breakTimes;
+@endphp
+
+@foreach ($breaks as $break)
 <tr class="attendance-show-page__table-row">
   <th class="attendance-show-page__table-head">
     休憩
