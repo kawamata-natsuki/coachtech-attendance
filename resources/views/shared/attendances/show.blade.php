@@ -14,7 +14,9 @@
 <div class="attendance-show-page">
   <div class="attendance-show-page__container">
     <h1 class="attendance-show-page__heading content__heading">
-      <span class="attendance-index-page__heading-text">勤怠詳細</span>
+      <span class="attendance-index-page__heading-text">
+        勤怠詳細
+      </span>
     </h1>
 
     <div class="attendance-show-page__flash-wrapper">
@@ -24,6 +26,11 @@
       </div>
       @endif
     </div>
+
+    @php
+    $clockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
+    $clockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
+    @endphp
 
     <form action="{{ route('attendances.update', ['id' => $attendance->id]) }}" method="post" novalidate>
       @csrf
@@ -58,16 +65,10 @@
         ])
         @else
 
-        @php
-        $clockIn = $correctionRequest?->requested_clock_in?->format('H:i') ?? $attendance->clock_in?->format('H:i');
-        $clockOut = $correctionRequest?->requested_clock_out?->format('H:i') ?? $attendance->clock_out?->format('H:i');
-        @endphp
-
         <!-- 出勤・退勤 -->
         <x-attendance.shared.work-time-row
-          :clockIn="is_array($clockIn) ? sprintf('%02d:%02d', $clockIn['hour'], $clockIn['minute']) : $clockIn"
-          :clockOut="is_array($clockOut) ? sprintf('%02d:%02d', $clockOut['hour'], $clockOut['minute']) : $clockOut"
-          :disabled="$isCorrectionDisabled" />
+          :clockIn="$clockIn"
+          :clockOut="$clockOut" />
 
         <!-- 休憩 -->
         @foreach ($breakTimes as $i => $break)
@@ -75,8 +76,7 @@
           :index="$i"
           :breakStart="$break->requested_break_start ?? $break->break_start"
           :breakEnd="$break->requested_break_end ?? $break->break_end"
-          :breakId="$break->id ?? null"
-          :disabled="$isCorrectionDisabled" />
+          :breakId="$break->id ?? null" />
         @endforeach
 
         <!-- 空欄の休憩追加フォーム -->
@@ -85,12 +85,10 @@
           :breakStart="null"
           :breakEnd="null"
           :breakId="null"
-          :disabled="false"
           :isNew="true" />
 
         <!-- 備考 -->
         <x-attendance.shared.reason-field
-          :disabled="$isCorrectionDisabled"
           :reason="$correctionRequest?->reason ?? $attendance->reason" />
         @endif
       </table>
