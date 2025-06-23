@@ -19,7 +19,7 @@
         $clockInHour = old('requested_clock_in.hour', data_get(explode(':', $clockIn), 0));
         $clockInMinute = old('requested_clock_in.minute', data_get(explode(':', $clockIn), 1));
 
-        {{-- バリデーションエラー後の再表示はold()の値を優先 --}}
+        // バリデーションエラー後の再表示はold()の値を優先
         $clockOutHour = old('requested_clock_out.hour', data_get(explode(':', $clockOut), 0));
         $clockOutMinute = old('requested_clock_out.minute', data_get(explode(':', $clockOut), 1));
         @endphp
