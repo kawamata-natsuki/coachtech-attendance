@@ -108,5 +108,5 @@ Route::middleware(['auth', 'verified'])->get('/stamp_correction_request/list', f
     } else {
         abort(403);
     }
-    return app($controller)->index($request);
+    return app()->call([app($controller), 'index'], ['request' => $request]);
 })->name('correction-requests.index');
