@@ -182,7 +182,9 @@ class AttendanceController extends Controller
         );
 
         // 休憩時間も含めて保存
-        foreach ($breaks as $break) {
+        $originalBreaks = $attendance->breakTimes->values();
+
+        foreach ($breaks as $i => $break) {
             $requestedBreakStartParts = $break['requested_break_start'];
             $requestedBreakEndParts   = $break['requested_break_end'];
 
@@ -202,10 +204,14 @@ class AttendanceController extends Controller
                 ? Carbon::createFromTime($requestedBreakEndParts['hour'], $requestedBreakEndParts['minute'])
                 : null;
 
+            $originalBreak = $originalBreaks->get($i);
+
             // 休憩修正申請テーブルに紐づけて、休憩時間を保存
             $correctionRequest->correctionBreakTimes()->create([
                 'requested_break_start' => $requestedBreakStart,
-                'requested_break_end'   => $requestedBreakEnd,
+                'requested_break_end' => $requestedBreakEnd,
+                'original_break_start' => $originalBreak?->break_start,
+                'original_break_end' => $originalBreak?->break_end,
             ]);
         }
 
