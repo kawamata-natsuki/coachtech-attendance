@@ -39,20 +39,25 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($users as $user) {
-            User::create([
-                'name' => $user['name'],
-                'email' => $user['email'],
-                'password' => Hash::make('12345678'),
-                'email_verified_at' => now(),
-            ]);
+            User::updateOrCreate(
+                ['email' => $user['email']],
+                [
+                    'name' => $user['name'],
+                    'email' => $user['email'],
+                    'password' => Hash::make('12345678'),
+                    'email_verified_at' => now(),
+                ]
+            );
         }
 
         // 管理者ユーザー
-        Admin::create([
-            'name' => 'ADMIN',
-            'email' => 'admin@coachtech.com',
-            'password' => Hash::make('admin123'),
-            'email_verified_at' => now(),
-        ]);
+        Admin::updateOrCreate(
+            ['email' => 'admin@coachtech.com'],
+            [
+                'name' => 'ADMIN',
+                'password' => Hash::make('admin123'),
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }
