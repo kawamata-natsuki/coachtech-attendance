@@ -39,8 +39,9 @@ class AttendanceService
   }
   public static function calculateBreakTime(Attendance $attendance): string
   {
+    if (! $attendance->exists) return '';
+
     $seconds = self::getBreakTimeSeconds($attendance);
-    if ($seconds === 0) return '';
 
     $interval = CarbonInterval::seconds($seconds)->cascade();
     return sprintf('%d:%02d', $interval->hours, $interval->minutes);
@@ -58,8 +59,9 @@ class AttendanceService
   }
   public static function calculateWorkTime(Attendance $attendance): string
   {
+    if (! $attendance->exists) return '';
+
     $seconds = self::getWorkTimeSeconds($attendance);
-    if ($seconds === 0) return '';
 
     $interval = CarbonInterval::seconds($seconds)->cascade();
     return sprintf('%d:%02d', $interval->hours, $interval->minutes);
