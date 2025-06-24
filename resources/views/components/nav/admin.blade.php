@@ -15,12 +15,11 @@
     </a>
   </li>
   <li>
-    <button class="header-menu__link" type="submit" form="logout-form">
-      ログアウト
-    </button>
+    <form id="logout-form" method="POST" action="{{ route('admin.logout') }}">
+      @csrf
+      <button class="header-menu__link" type="submit">
+        ログアウト
+      </button>
+    </form>
   </li>
 </ul>
-
-<form id="logout-form" method="POST" action="{{ route('logout') }}">
-  @csrf
-</form>
