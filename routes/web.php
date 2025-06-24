@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Auth;
 // 一般ユーザー
 Route::get('/register', [RegisterController::class, 'showRegisterView'])->name('register');
 Route::post('/register', [RegisterController::class, 'store']);
+
 Route::get('/login', [LoginController::class, 'showLoginView'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
@@ -45,12 +46,15 @@ Route::prefix('email')->name('verification.')->middleware('auth:web')->group(fun
 // ===============================
 // ユーザールート（要ログイン）
 // ===============================
+
 Route::middleware(['auth:web', 'verified'])
     ->name('user.')
     ->group(function () {
+        // 出勤登録画面
         Route::get('/attendance', [UserAttendanceController::class, 'record'])->name('attendances.record');
         Route::post('/attendance', [UserAttendanceController::class, 'store'])->name('attendances.store');
 
+        // 勤怠一覧画面
         Route::get('/attendance/list', [UserAttendanceController::class, 'index'])->name('attendances.index');
     });
 
@@ -61,8 +65,10 @@ Route::middleware(['auth:web', 'verified'])
 Route::middleware(['auth:admin', 'verified'])
     ->name('admin.')
     ->group(function () {
+        // 勤怠一覧画面
         Route::get('/admin/attendance/list', [AdminAttendanceController::class, 'index'])->name('attendances.index');
 
+        // スタッフ一覧画面
         Route::get('/admin/staff/list', [StaffController::class, 'index'])->name('staff.index');
 
         // スタッフ別勤怠一覧画面
@@ -87,9 +93,11 @@ Route::middleware(['auth:admin,web', 'verified'])->get('/attendance/{id}', funct
     } else {
         abort(403);
     }
-    return app($controller)->show($request, $id);
+    return app()->call([app($controller), 'show'], [
+        'request' => $request,
+        'id' => $id,
+    ]);
 })->name('attendances.show');
-
 Route::middleware(['auth:admin,web', 'verified'])->put('/attendance/{id}', function (AttendanceCorrectionRequest $request, $id) {
     if (Auth::guard('admin')->check()) {
         $controller = AdminAttendanceController::class;
@@ -104,6 +112,7 @@ Route::middleware(['auth:admin,web', 'verified'])->put('/attendance/{id}', funct
     ]);
 })->name('attendances.update');
 
+// 申請一覧画面
 Route::middleware(['auth:admin,web', 'verified'])->get('/stamp_correction_request/list', function (Request $request) {
     if (Auth::guard('admin')->check()) {
         $controller = AdminCorrectionRequestController::class;
@@ -112,5 +121,10 @@ Route::middleware(['auth:admin,web', 'verified'])->get('/stamp_correction_reques
     } else {
         abort(403);
     }
-    return app()->call([app($controller), 'index'], ['request' => $request]);
+    return app()->call(
+        [app($controller), 'index'],
+        [
+            'request' => $request
+        ]
+    );
 })->name('correction-requests.index');
