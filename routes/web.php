@@ -65,6 +65,7 @@ Route::middleware(['auth:admin', 'verified'])
 
         Route::get('/admin/staff/list', [StaffController::class, 'index'])->name('staff.index');
 
+        // スタッフ別勤怠一覧画面
         Route::get('/admin/attendance/staff/{id}', [AdminAttendanceController::class, 'staff'])->name('attendances.staff');
         Route::get('/admin/attendance/staff/{id}/export', [AdminAttendanceController::class, 'exportCsv'])->name('attendances.export');
 
