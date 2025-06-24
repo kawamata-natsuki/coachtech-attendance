@@ -78,7 +78,7 @@ Route::middleware(['auth:admin', 'verified'])
 // ===============================
 
 // 勤怠詳細画面（共通パス）
-Route::middleware(['auth', 'verified'])->get('/attendance/{id}', function (Request $request, $id) {
+Route::middleware(['auth:admin,web', 'verified'])->get('/attendance/{id}', function (Request $request, $id) {
     if (Auth::guard('admin')->check()) {
         $controller = AdminAttendanceController::class;
     } elseif (Auth::guard('web')->check()) {
@@ -89,7 +89,7 @@ Route::middleware(['auth', 'verified'])->get('/attendance/{id}', function (Reque
     return app($controller)->show($request, $id);
 })->name('attendances.show');
 
-Route::middleware(['auth', 'verified'])->put('/attendance/{id}', function (AttendanceCorrectionRequest $request, $id) {
+Route::middleware(['auth:admin,web', 'verified'])->put('/attendance/{id}', function (AttendanceCorrectionRequest $request, $id) {
     if (Auth::guard('admin')->check()) {
         $controller = AdminAttendanceController::class;
     } elseif (Auth::guard('web')->check()) {
@@ -97,10 +97,13 @@ Route::middleware(['auth', 'verified'])->put('/attendance/{id}', function (Atten
     } else {
         abort(403);
     }
-    return app($controller)->update($request, $id);
+    return app()->call([app($controller), 'update'], [
+        'request' => $request,
+        'id' => $id,
+    ]);
 })->name('attendances.update');
 
-Route::middleware(['auth', 'verified'])->get('/stamp_correction_request/list', function (Request $request) {
+Route::middleware(['auth:admin,web', 'verified'])->get('/stamp_correction_request/list', function (Request $request) {
     if (Auth::guard('admin')->check()) {
         $controller = AdminCorrectionRequestController::class;
     } elseif (Auth::guard('web')->check()) {
