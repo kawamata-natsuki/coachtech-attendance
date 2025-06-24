@@ -153,67 +153,64 @@ class AttendanceController extends Controller
     // 勤怠詳細画面（共通）の修正申請処理
     public function update(AttendanceCorrectionRequest $request, int $id): RedirectResponse
     {
-        // 勤怠レコードと休憩時間を取得
+        // 勤怠と日付情報取得
         $attendance = Attendance::findOrFail($id);
+        $workDate = $attendance->work_date;
         $breaks = $request->input('requested_breaks', []);
 
         $requestedClockInParts = $request->input('requested_clock_in');
         $requestedClockOutParts = $request->input('requested_clock_out');
 
-        // 分割されていた hour と minute を Carbon オブジェクトに変換（09:00）
         $requestedClockIn = filled($requestedClockInParts['hour'] ?? null) && filled($requestedClockInParts['minute'] ?? null)
-            ? Carbon::createFromTime($requestedClockInParts['hour'], $requestedClockInParts['minute'])
+            ? Carbon::createFromDate($workDate->year, $workDate->month, $workDate->day)
+            ->setTime($requestedClockInParts['hour'], $requestedClockInParts['minute'])
             : null;
+
         $requestedClockOut = filled($requestedClockOutParts['hour'] ?? null) && filled($requestedClockOutParts['minute'] ?? null)
-            ? Carbon::createFromTime($requestedClockOutParts['hour'], $requestedClockOutParts['minute'])
+            ? Carbon::createFromDate($workDate->year, $workDate->month, $workDate->day)
+            ->setTime($requestedClockOutParts['hour'], $requestedClockOutParts['minute'])
             : null;
 
-        // 既存の修正申請があれば更新、なければ作成
-        $correctionRequest = $attendance->correctionRequests()->updateOrCreate(
-            ['user_id' => $attendance->user_id],
-            [
-                'work_date' => $attendance->work_date,
-                'original_clock_in' => $attendance->clock_in,
-                'original_clock_out' => $attendance->clock_out,
-                'requested_clock_in' => $requestedClockIn,
-                'requested_clock_out' => $requestedClockOut,
-                'reason' => $request->input('reason'),
-            ]
-        );
+        // 申請レコードを新規作成（常に create）
+        $correctionRequest = $attendance->correctionRequests()->create([
+            'user_id'             => $attendance->user_id,
+            'work_date'           => $attendance->work_date,
+            'original_clock_in'   => $attendance->clock_in,
+            'original_clock_out'  => $attendance->clock_out,
+            'requested_clock_in'  => $requestedClockIn,
+            'requested_clock_out' => $requestedClockOut,
+            'reason'              => $request->input('reason'),
+        ]);
 
-        // 休憩時間も含めて保存
+        // 休憩を保存
         $originalBreaks = $attendance->breakTimes->values();
 
         foreach ($breaks as $i => $break) {
-            $requestedBreakStartParts = $break['requested_break_start'];
-            $requestedBreakEndParts   = $break['requested_break_end'];
+            $startParts = $break['requested_break_start'];
+            $endParts   = $break['requested_break_end'];
 
-            // 両方とも未入力ならスキップ
-            if (
-                empty($requestedBreakStartParts['hour']) && empty($requestedBreakStartParts['minute']) &&
-                empty($requestedBreakEndParts['hour']) && empty($requestedBreakEndParts['minute'])
-            ) {
-                continue;
+            // 空フォームの入力（完全に未入力）なら無視
+            $isEmptyInput = empty($startParts['hour']) && empty($startParts['minute']) &&
+                empty($endParts['hour']) && empty($endParts['minute']);
+
+            // break_time_idが存在しない＝空フォームの追加用で保存対象外
+            $hasBreakTimeId = isset($break['break_time_id']);
+
+            if ($isEmptyInput && !$hasBreakTimeId) {
+                continue; // 完全に何も入力されてないやつはスルー
             }
 
-            // 休憩時間を Carbon オブジェクトに変換して整形（HH:MM）
-            $requestedBreakStart = (filled($requestedBreakStartParts['hour']) && filled($requestedBreakStartParts['minute']))
-                ? Carbon::createFromTime($requestedBreakStartParts['hour'], $requestedBreakStartParts['minute'])
-                : null;
-            $requestedBreakEnd = (filled($requestedBreakEndParts['hour']) && filled($requestedBreakEndParts['minute']))
-                ? Carbon::createFromTime($requestedBreakEndParts['hour'], $requestedBreakEndParts['minute'])
-                : null;
-
+            // 対応する breakTime（元データ）があれば取得、なければ null
             $originalBreak = $originalBreaks->get($i);
 
-            // 休憩修正申請テーブルに紐づけて、休憩時間を保存
             $correctionRequest->correctionBreakTimes()->create([
-                'requested_break_start' => $requestedBreakStart,
-                'requested_break_end' => $requestedBreakEnd,
-                'original_break_start' => $originalBreak?->break_start,
-                'original_break_end' => $originalBreak?->break_end,
+                'requested_break_start' => $isEmptyInput ? null : Carbon::createFromTime($startParts['hour'], $startParts['minute']),
+                'requested_break_end'   => $isEmptyInput ? null : Carbon::createFromTime($endParts['hour'], $endParts['minute']),
+                'original_break_start'  => $originalBreak?->break_start,
+                'original_break_end'    => $originalBreak?->break_end,
             ]);
         }
+
 
         return redirect()
             ->route('attendances.show', ['id' => $id])
