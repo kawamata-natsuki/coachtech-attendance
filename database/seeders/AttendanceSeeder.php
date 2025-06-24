@@ -40,6 +40,7 @@ class AttendanceSeeder extends Seeder
                         'clock_in' => $date->copy()->setTime(9, 0),
                         'clock_out' => $date->copy()->setTime(18, 0),
                         'work_status' => WorkStatus::COMPLETED,
+                        'reason' => '',
                     ]);
                     $attendance->breakTimes()->create([
                         'attendance_id' => $attendance->id,
