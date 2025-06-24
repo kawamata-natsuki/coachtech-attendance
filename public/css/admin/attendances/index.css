@@ -96,3 +96,10 @@
 .admin-attendance-index-page__table-link {
   color: #000;
 }
+
+.admin-attendance-index-page__table-link--disabled {
+  color: #aaa;
+  cursor: not-allowed;
+  text-decoration: none;
+  pointer-events: none;
+}
