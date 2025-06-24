@@ -43,7 +43,6 @@
 }
 
 /* 出勤・退勤（work） */
-
 .attendance-show-page__error-wrapper {
   display: flex;
   flex-direction: column;
