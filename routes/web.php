@@ -24,12 +24,13 @@ Route::post('/register', [RegisterController::class, 'store']);
 Route::get('/login', [LoginController::class, 'showLoginView'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
 
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
 // 管理者
 Route::get('/admin/login', [LoginController::class, 'showLoginView'])->name('admin.login');
 Route::post('/admin/login', [LoginController::class, 'store'])->name('admin.login.store');
 
-// ログアウト（共通）
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/admin/logout', [LoginController::class, 'logout'])->name('admin.logout');
 
 // 一般ユーザー用メール認証
 Route::prefix('email')->name('verification.')->middleware('auth:web')->group(function () {
