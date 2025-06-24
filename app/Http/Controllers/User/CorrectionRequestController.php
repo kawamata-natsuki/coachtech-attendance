@@ -30,7 +30,7 @@ class CorrectionRequestController extends Controller
 
         return view('shared.correction-requests.index', [
             'status' => $status,
-            'correctionRequests' => $correctionRequests,
+            'requests' => $correctionRequests,
         ]);
     }
 }
