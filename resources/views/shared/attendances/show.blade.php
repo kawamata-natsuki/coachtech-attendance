@@ -88,18 +88,26 @@
           :isNew="true" />
 
         <!-- 備考 -->
-        <x-attendance.shared.reason-field
-          :reason="$correctionRequest?->reason ?? $attendance->reason" />
+        <x-attendance.shared.reason-field :reason="$attendance->reason" />
         @endif
       </table>
 
+      <!-- 仕様確認！勤務詳細画面からは修正のみ？申請されたデータはどう表示される？ -->
       <!-- 修正ボタン -->
       <div class="attendance-show-page__button">
+        <!-- 管理者は常に修正可能 -->
+        @if (auth('admin')->check())
+        <button type="submit" class="attendance-show-page__submit-button">
+          修正
+        </button>
+
+        <!-- ユーザーは再申請は不可 -->
+        @elseif (auth('web')->check())
         @if ($correctionRequest?->isApproved())
         <button @class(['attendance-show-page__submit-button', 'attendance-show-page__submit-button--disabled' ]) disabled>
           承認済み
         </button>
-        @elseif (auth('web')->check() && $correctionRequest?->isPending())
+        @elseif ($correctionRequest?->isPending())
         <p class="attendance-show-page__pending-message">
           *承認待ちのため修正はできません。
         </p>
@@ -107,6 +115,7 @@
         <button type="submit" class="attendance-show-page__submit-button">
           修正
         </button>
+        @endif
         @endif
       </div>
     </form>
