@@ -5,7 +5,9 @@
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/index.css') }}">
 @endsection
 
-@section('title', '勤怠一覧')
+@section('title')
+{{ auth('admin')->check() ? $user->name.'さんの勤怠' : '勤怠一覧' }}
+@endsection
 
 @section('content')
 <div class="attendance-index-page">
@@ -54,7 +56,7 @@
             {{ $attendance->work_date->locale('ja')->isoFormat('MM/DD(dd)') }}
           </td>
 
-          @if ($attendance->is_future)
+          @if ($attendance?->is_future)
           <td class="attendance-index-page__table-cell" colspan="4">
           </td>
           <td class="attendance-index-page__table-cell">
