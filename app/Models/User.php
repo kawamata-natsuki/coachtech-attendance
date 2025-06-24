@@ -2,6 +2,11 @@
 
 namespace App\Models;
 
+/**
+ * @property-read \Illuminate\Database\Eloquent\Collection|\App\Models\Attendance[] $attendances
+ * @property \App\Models\Attendance|null $attendanceForDay
+ */
+
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
