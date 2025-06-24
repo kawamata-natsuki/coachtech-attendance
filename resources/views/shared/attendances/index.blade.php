@@ -91,11 +91,21 @@
           @endif
         </tr>
         @endforeach
-
       </tbody>
     </table>
 
+    @isset($user)
+    @if(Auth::guard('admin')->check())
+    <div class="attendance-index-page__export">
+      <form class="attendance-index-page__export-form" method="GET" action="{{ route('admin.attendances.export', ['id' => $user->id]) }}">
+        <button class="attendance-index-page__submit-button" type="submit">
+          CSV出力
+        </button>
+      </form>
+    </div>
+    @endif
+    @endisset
+
   </div>
 </div>
-
 @endsection
