@@ -51,7 +51,7 @@
       </thead>
 
       <tbody>
-        @foreach($correctionRequests as $correctionRequest)
+        @foreach ($requests as $correctionRequest)
         <tr>
           <td class="correction-request-index-page__table-cell">
             {{ $correctionRequest->approval_status->label() }}
