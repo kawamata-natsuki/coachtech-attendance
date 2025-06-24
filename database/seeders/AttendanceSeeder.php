@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Enums\WorkStatus;
 use Illuminate\Database\Seeder;
 use App\Models\Attendance;
-use App\Models\BreakTime;
 use App\Models\User;
 use Carbon\Carbon;
 
