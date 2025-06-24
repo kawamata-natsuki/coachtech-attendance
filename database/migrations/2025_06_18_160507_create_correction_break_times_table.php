@@ -12,8 +12,8 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('correction_request_id');
             $table->unsignedBigInteger('break_time_id')->nullable();
-            $table->datetime('requested_break_start');
-            $table->datetime('requested_break_end');
+            $table->datetime('requested_break_start')->nullable();
+            $table->datetime('requested_break_end')->nullable();
             $table->datetime('original_break_start')->nullable();
             $table->datetime('original_break_end')->nullable();
             $table->softDeletes();
