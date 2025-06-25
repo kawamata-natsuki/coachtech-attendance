@@ -97,7 +97,9 @@
     @isset($user)
     @if(Auth::guard('admin')->check())
     <div class="attendance-index-page__export">
-      <form class="attendance-index-page__export-form" method="GET" action="{{ route('admin.attendances.export', ['id' => $user->id]) }}">
+      <form class="attendance-index-page__export-form" method="GET"
+        action="{{ route('admin.attendances.export', ['id' => $user->id]) }}">
+        <input type="hidden" name="month" value="{{ $currentMonth->format('Y-m') }}">
         <button class="attendance-index-page__submit-button" type="submit">
           CSV出力
         </button>
