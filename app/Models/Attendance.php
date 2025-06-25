@@ -6,7 +6,6 @@ use App\Enums\WorkStatus;
 use App\Models\BreakTime;
 use App\Models\CorrectionRequest;
 use App\Models\User;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
