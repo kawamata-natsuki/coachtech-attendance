@@ -55,7 +55,7 @@ class CorrectionRequest extends Model
 
     public function approver(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'approver_id');
+        return $this->belongsTo(Admin::class, 'approver_id');
     }
 
     // ApprovalStatus の判定
