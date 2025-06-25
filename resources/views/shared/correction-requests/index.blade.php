@@ -81,12 +81,15 @@
           <td class="correction-request-index-page__table-cell">
             @if (auth('admin')->check())
             <a class="correction-request-index-page__table-link"
-              href="{{ route('admin.correction-requests.show', $correctionRequest) }}">
+              href="{{ route('admin.correction-requests.show', $correctionRequest->id) }}">
               詳細
             </a>
-            @else (auth('web')->check())
+            @elseif (auth('web')->check())
             <a class="correction-request-index-page__table-link"
-              href="{{ route('attendances.show', ['id' => $correctionRequest->attendance_id]) }}">
+              href="{{ route('attendances.show', [
+              'id' => $correctionRequest->attendance_id,
+              'request_id' => $correctionRequest->id,
+              ]) }}">
               詳細
             </a>
             @endif
