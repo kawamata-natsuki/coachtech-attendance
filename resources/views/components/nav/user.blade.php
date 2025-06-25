@@ -15,12 +15,17 @@
     </a>
   </li>
   <li>
-    <button class="header-menu__link" type="submit" form="logout-form">
-      ログアウト
-    </button>
+    @if(Auth::check())
+    <form id="logout-form" method="POST" action="{{ route('logout') }}">
+      @csrf
+      <button class="header-menu__link" type="submit">
+        ログアウト
+      </button>
+    </form>
+    @else
+    <a href="{{ route('login') }}" class="header-menu__link">
+      ログイン
+    </a>
+    @endif
   </li>
 </ul>
-
-<form id="logout-form" method="POST" action="{{ route('logout') }}">
-  @csrf
-</form>
