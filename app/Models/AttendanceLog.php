@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -22,4 +23,20 @@ class AttendanceLog extends Model
         'before_reason',
         'after_reason',
     ];
+
+    protected $casts = [
+        'before_breaks' => 'array',
+        'after_breaks' => 'array',
+    ];
+
+    // リレーション定義
+    public function attendance()
+    {
+        return $this->belongsTo(Attendance::class);
+    }
+
+    public function admin()
+    {
+        return $this->belongsTo(Admin::class, 'updated_by_admin_id');
+    }
 }
