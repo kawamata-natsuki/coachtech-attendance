@@ -29,7 +29,7 @@ return new class extends Migration
             // 外部キー制約
             $table->foreign('attendance_id')->references('id')->on('attendances')->onDelete('restrict');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('restrict');
-            $table->foreign('approver_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreign('approver_id')->references('id')->on('admins')->onDelete('set null');
         });
     }
 
