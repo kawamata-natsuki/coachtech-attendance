@@ -135,9 +135,24 @@ class AttendanceController extends Controller
     public function show(Request $request, $id)
     {
         $attendance = Attendance::with(['user', 'breakTimes'])->findOrFail($id);
-        $correctionRequest = $attendance->correctionRequests()->latest()->first();
 
-        $isCorrectionDisabled = $correctionRequest?->isPending() || $correctionRequest?->isApproved();
+        // クエリパラメータから申請IDを取得
+        $requestId = $request->query('request_id');
+
+        if ($requestId) {
+            // 指定された correctionRequest を取得（セキュリティで attendance_id も確認）
+            $correctionRequest = \App\Models\CorrectionRequest::with('correctionBreakTimes')
+                ->where('id', $requestId)
+                ->where('attendance_id', $attendance->id)
+                ->firstOrFail();
+        } else {
+            // 通常は最新の申請を表示
+            $correctionRequest = $attendance->correctionRequests()->latest()->first();
+        }
+
+        // 承認待ちのときだけ入力を無効化
+        $isCorrectionDisabled = $correctionRequest?->isPending();
+
         $breakTimes = $attendance->breakTimes;
         $nextIndex = count($breakTimes);
 
