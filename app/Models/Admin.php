@@ -29,8 +29,13 @@ class Admin extends Authenticatable implements MustVerifyEmail
     ];
 
     // リレーション定義
-    public function approvedRequests(): HasMany
+    public function approvedCorrectionRequests(): HasMany
     {
         return $this->hasMany(CorrectionRequest::class, 'approver_id');
+    }
+
+    public function attendanceLogs(): HasMany
+    {
+        return $this->hasMany(AttendanceLog::class);
     }
 }
