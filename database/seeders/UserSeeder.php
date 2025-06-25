@@ -44,7 +44,7 @@ class UserSeeder extends Seeder
                 [
                     'name' => $user['name'],
                     'email' => $user['email'],
-                    'password' => Hash::make('12345678'),
+                    'password' => '12345678',
                     'email_verified_at' => now(),
                 ]
             );
@@ -55,7 +55,7 @@ class UserSeeder extends Seeder
             ['email' => 'admin@coachtech.com'],
             [
                 'name' => 'ADMIN',
-                'password' => Hash::make('admin123'),
+                'password' => 'admin123',
                 'email_verified_at' => now(),
             ]
         );
