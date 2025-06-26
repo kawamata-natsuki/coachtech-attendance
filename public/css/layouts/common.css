@@ -10,17 +10,19 @@ body {
   color: #000;
 }
 
-.main {
+
+main {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 80px);
-  width: 100%;
-  max-width: 1540px;
-  margin: 0 auto;
-  padding: 0 16px;
-  flex-grow: 1;
+  padding-top: 80px;
+  min-height: 100vh;
 }
 
+/*  
+    width: 100%;
+    max-width: 1540px;
+    margin: 0 auto;
+*/
 *,
 *::before,
 *::after {
@@ -140,6 +142,9 @@ button {
        ヘッダー
       ===============================*/
 .header {
+  position: fixed;
+  top: 0;
+  z-index: 1000;
   width: 100%;
   background-color: #000;
 }
