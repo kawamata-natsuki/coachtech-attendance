@@ -97,6 +97,15 @@
   color: #000;
 }
 
+.admin-attendance-index-page__table-link:hover {
+  color: #333;
+}
+
+.admin-attendance-index-page__table-link:active {
+  color: #888;
+  transform: translateY(1px);
+}
+
 .admin-attendance-index-page__table-link--disabled {
   color: #aaa;
   cursor: not-allowed;

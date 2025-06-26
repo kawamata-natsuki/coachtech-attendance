@@ -68,3 +68,12 @@
 .staff-index-page__table-link {
   color: #000;
 }
+
+.staff-index-page__table-link:hover {
+  color: #333;
+}
+
+.staff-index-page__table-link:active {
+  color: #888;
+  transform: translateY(1px);
+}
