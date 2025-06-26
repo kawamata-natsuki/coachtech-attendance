@@ -29,6 +29,15 @@
   color: #737373;
 }
 
+.day-nav__link:hover {
+  color: #333;
+}
+
+.day-nav__link:active {
+  transform: translateY(1px);
+  color: #444;
+}
+
 .day-nav__link-inner {
   display: inline-flex;
   align-items: center;
@@ -55,4 +64,12 @@
   height: 15px;
   object-fit: contain;
   opacity: 0.3;
+}
+
+.icon-arrow:hover {
+  filter: brightness(0.4);
+}
+
+.icon-arrowactive {
+  filter: brightness(0.25);
 }
