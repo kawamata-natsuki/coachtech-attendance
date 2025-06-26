@@ -115,26 +115,34 @@
 
 .attendance-index-page__export {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  justify-content: flex-end;
   margin-left: auto;
-  width: 184px;
-  height: 50px;
-  background-color: #000;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
-.attendance-index-page__export-form {
-  width: 100%;
-  height: 100%;
+  margin-top: 32px;
 }
 
 .attendance-index-page__submit-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 184px;
+  height: 50px;
+  background-color: #000;
   color: #FFFFFF;
   font-weight: 700;
   font-size: 22px;
   letter-spacing: 0.15em;
-  width: 100%;
-  height: 100%;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.attendance-index-page__submit-button:hover {
+  background-color: #1a1a1a;
+  opacity: 0.95;
+}
+
+.attendance-index-page__submit-button:active {
+  background-color: #000000;
+  box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.15);
+  transform: translateY(2px);
+  opacity: 0.85;
 }
