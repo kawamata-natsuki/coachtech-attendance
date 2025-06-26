@@ -29,6 +29,15 @@
   color: #737373;
 }
 
+.month-nav__link:hover {
+  color: #333;
+}
+
+.month-nav__link:active {
+  transform: translateY(1px);
+  color: #444;
+}
+
 .month-nav__link-inner {
   display: inline-flex;
   align-items: center;
@@ -55,4 +64,12 @@
   height: 15px;
   object-fit: contain;
   opacity: 0.3;
+}
+
+.month-nav__link:hover .icon-arrow {
+  filter: brightness(0.4);
+}
+
+.month-nav__link:active .icon-arrow {
+  filter: brightness(0.25);
 }
