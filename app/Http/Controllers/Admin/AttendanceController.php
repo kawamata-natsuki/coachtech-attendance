@@ -174,8 +174,14 @@ class AttendanceController extends Controller
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
 
-        $prevUrl = route('user.attendances.index', ['month' => $prevMonth]);
-        $nextUrl = route('user.attendances.index', ['month' => $nextMonth]);
+        $prevUrl = route('admin.attendances.staff', [
+            'id' => $user->id,
+            'month' => $prevMonth,
+        ]);
+        $nextUrl = route('admin.attendances.staff', [
+            'id' => $user->id,
+            'month' => $nextMonth,
+        ]);
 
         return view('shared.attendances.index', [
             'user' => $user,
@@ -188,10 +194,12 @@ class AttendanceController extends Controller
     }
 
     // スタッフ別勤怠一覧画面CSVエクスポート処理
-    public function exportCsv($id)
+    public function exportCsv(Request $request, $id)
     {
         $user = User::findOrFail($id);
-        $currentMonth = now()->startOfMonth();
+        $currentMonth = $request->query('month')
+            ? Carbon::createFromFormat('Y-m', $request->query('month'))
+            : now()->startOfMonth();
         $attendances = AttendanceService::getMonthlyAttendances($user->id, $currentMonth);
 
         $filename = "勤務表_{$user->name}_{$currentMonth->format('Y-m')}.csv";
