@@ -22,9 +22,13 @@ $breaks = $correctionRequest?->correctionBreakTimes ?? $attendance->breakTimes;
     休憩{{ $index + 1 }}
   </th>
   <td class="attendance-show-page__text--time">
-    {{ optional($break->requested_break_start)->format('H:i') ?? '--:--' }}
-    ～
-    {{ optional($break->requested_break_end)->format('H:i') ?? '--:--' }}
+    <span class="time-display-block">
+      {{ optional($break->requested_break_start)->format('H:i') ?? '--:--' }}
+    </span>
+    <span class="time-display-separator">～</span>
+    <span class="time-display-block">
+      {{ optional($break->requested_break_end)->format('H:i') ?? '--:--' }}
+    </span>
   </td>
 </tr>
 @endforeach
@@ -34,5 +38,5 @@ $breaks = $correctionRequest?->correctionBreakTimes ?? $attendance->breakTimes;
   <th class="attendance-show-page__table-head">
     備考
   </th>
-  <td class="attendance-show-page__table-cell--reason">{{ $correctionRequest?->reason ?? $attendance->reason }}</td>
+  <td class="attendance-show-page__text--reason">{{ $correctionRequest?->reason ?? $attendance->reason }}</td>
 </tr>

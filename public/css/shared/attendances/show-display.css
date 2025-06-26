@@ -40,11 +40,7 @@
   font-weight: 700;
 }
 
-.attendance-show-page__table-cell--break {
-  font-style: bold;
-}
-
-.attendance-show-page__table-cell--reason {
+.attendance-show-page__text--reason {
   max-width: 500px;
   padding: 10px 40px 10px 20px;
   text-align: left;

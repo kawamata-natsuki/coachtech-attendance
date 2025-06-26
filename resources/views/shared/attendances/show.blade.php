@@ -4,7 +4,6 @@
 <link rel="stylesheet" href="{{ asset('css/components/attendance/time-select.css') }}">
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/show-table.css') }}">
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/show-display.css') }}">
-
 <link rel="stylesheet" href="{{ asset('css/shared/attendances/show.css') }}">
 @endsection
 
