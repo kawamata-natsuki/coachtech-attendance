@@ -15,8 +15,7 @@
   <header class="header">
     <nav class="header-nav">
       <div class="header-logo">
-        <a href="{{ \App\Helpers\LayoutHelper::headerTopLink() }}">
-          <img class="header-logo__image" src="/images/logo.png" alt="ロゴ">
+        <img class="header-logo__image" src="/images/logo.png" alt="ロゴ">
         </a>
       </div>
 
