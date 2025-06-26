@@ -52,7 +52,6 @@
   font-size: 20px;
 }
 
-
 .icon-calendar {
   width: 25px;
   height: 25px;
@@ -66,10 +65,10 @@
   opacity: 0.3;
 }
 
-.month-nav__link:hover .icon-arrow {
+.icon-arrow:hover {
   filter: brightness(0.4);
 }
 
-.month-nav__link:active .icon-arrow {
+.icon-arrowactive {
   filter: brightness(0.25);
 }
