@@ -138,3 +138,12 @@
 .correction-request-index-page__table-link {
   color: #000;
 }
+
+.correction-request-index-page__table-link:hover {
+  color: #333;
+}
+
+.correction-request-index-page__table-link:active {
+  color: #888;
+  transform: translateY(1px);
+}
