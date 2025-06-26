@@ -3,7 +3,6 @@
 namespace Tests\Feature\Auth;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class RegisterTest extends TestCase
@@ -26,7 +25,7 @@ class RegisterTest extends TestCase
         ]);
 
         // 「お名前を入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'name' => 'お名前を入力してください',
         ]);
     }
@@ -47,7 +46,7 @@ class RegisterTest extends TestCase
         ]);
 
         // 「メールアドレスを入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'email' => 'メールアドレスを入力してください',
         ]);
     }
@@ -68,7 +67,7 @@ class RegisterTest extends TestCase
         ]);
 
         // 「パスワードは8文字以上で入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'password' => 'パスワードは8文字以上で入力してください',
         ]);
     }
@@ -89,7 +88,7 @@ class RegisterTest extends TestCase
         ]);
 
         // 「パスワードと一致しません」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'password_confirmation' => 'パスワードと一致しません',
         ]);
     }
@@ -110,7 +109,7 @@ class RegisterTest extends TestCase
         ]);
 
         // 「パスワードを入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'password' => 'パスワードを入力してください',
         ]);
     }

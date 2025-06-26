@@ -27,7 +27,7 @@ class UserLoginTest extends TestCase
         ]);
 
         // 「メールアドレスを入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'email' => 'メールアドレスを入力してください',
         ]);
     }
@@ -48,7 +48,7 @@ class UserLoginTest extends TestCase
         ]);
 
         // 「パスワードを入力してください」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'password' => 'パスワードを入力してください',
         ]);
     }
@@ -69,7 +69,7 @@ class UserLoginTest extends TestCase
         ]);
 
         // 「ログイン情報が登録されていません」というバリデーションメッセージが表示される
-        $response->assertSessionHasErrors([
+        $response->assertInvalid([
             'login' => 'ログイン情報が登録されていません',
         ]);
     }
