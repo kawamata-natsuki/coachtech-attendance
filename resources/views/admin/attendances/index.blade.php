@@ -84,11 +84,11 @@
 
           <td class="admin-attendance-index-page__table-cell">
             @if ($attendance && $attendance->id && $attendance->work_date->lte(now()))
-            <a class="admin-attendance-index-page__link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
+            <a class="admin-attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
               詳細
             </a>
             @else
-            <span class="admin-attendance-index-page__link admin-attendance-index-page__link--disabled">
+            <span class="admin-attendance-index-page__table-link--disabled">
               詳細
             </span>
             @endif
