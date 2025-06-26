@@ -80,6 +80,12 @@
   appearance: none;
 }
 
+.time-select-wrapper:focus-within {
+  border: 1.5px solid #888;
+  background-color: #fff;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.06);
+}
+
 /* 00:00 の : の部分 */
 .time-separator {
   height: 100%;
