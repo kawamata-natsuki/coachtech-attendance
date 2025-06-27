@@ -78,11 +78,21 @@ class ClockInTest extends TestCase
             ->whereDate('work_date', today())
             ->first();
         $this->assertNotNull($attendance);
+        $this->assertNotNull($attendance->clock_in);
+        $this->assertEquals(
+            WorkStatus::WORKING,
+            $attendance->work_status
+        );
+
+        // --- DBで出勤時刻を09:00に意図的に調整 ---
+        $attendance->update([
+            'clock_in' => now()->setTime(9, 0, 0),
+        ]);
+
 
         // 管理画面（勤怠一覧画面）に出勤時刻が正確に記録されている
-        $clockInTime = $attendance->clock_in->format('H:i');
         $response = $this->get(route('user.attendances.index'));
         $response->assertStatus(200);
-        $response->assertSee($clockInTime);
+        $response->assertSee('09:00');
     }
 }
