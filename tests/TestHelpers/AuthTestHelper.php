@@ -23,6 +23,10 @@ trait AuthTestHelper
   public function loginUser(array $override = []): User
   {
     $user = $this->createUser($override);
+
+    $user->email_verified_at = now();
+    $user->save();
+
     $this->actingAs($user);
     return $user;
   }
