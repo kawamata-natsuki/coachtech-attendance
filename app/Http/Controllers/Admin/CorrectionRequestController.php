@@ -28,9 +28,11 @@ class CorrectionRequestController extends Controller
         $query = CorrectionRequest::with('user');
 
         if ($status === 'pending') {
-            $query->where('approval_status', ApprovalStatus::PENDING);
+            $query->where('approval_status', ApprovalStatus::PENDING)
+                ->orderBy('created_at', 'asc'); // 古→新
         } elseif ($status === 'approved') {
-            $query->where('approval_status', ApprovalStatus::APPROVED);
+            $query->where('approval_status', ApprovalStatus::APPROVED)
+                ->orderBy('created_at', 'desc'); // 新→古
         }
 
         $correctionRequests = $query->get();
