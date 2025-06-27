@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Attendance;
 
+use App\Enums\WorkStatus;
 use App\Models\Attendance;
 use App\Services\AttendanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -36,7 +37,6 @@ class BreakTimeTest extends TestCase
             ->whereDate('work_date', today())
             ->first();
         $this->assertNotNull($attendance);
-
         $latestBreak = $attendance->breakTimes()->latest()->first();
         $this->assertNotNull($latestBreak);
         $this->assertNotNull($latestBreak->break_start);
@@ -87,6 +87,12 @@ class BreakTimeTest extends TestCase
         ]);
         $response->assertStatus(302);
 
+        // --- DBチェック ---
+        $latestBreak = $attendance->breakTimes()->latest()->first();
+        $this->assertNotNull($latestBreak);
+        $this->assertNotNull($latestBreak->break_start);
+        $this->assertNotNull($latestBreak->break_end);
+
         // --- 休憩件数が+2されていることを確認（1回目と2回目）
         $attendance->refresh();
         $currentBreakCount = $attendance->breakTimes()->count();
@@ -123,6 +129,20 @@ class BreakTimeTest extends TestCase
         ]);
         $response->assertStatus(302);
 
+        // --- DBチェック ---
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('work_date', today())
+            ->first();
+        $this->assertNotNull($attendance);
+        $latestBreak = $attendance->breakTimes()->latest()->first();
+        $this->assertNotNull($latestBreak);
+        $this->assertNotNull($latestBreak->break_end);
+        $this->assertEquals(
+            WorkStatus::WORKING,
+            $attendance->work_status
+        );
+
+        // --- 画面確認（リダイレクト先） ---
         $response = $this->get(route('user.attendances.record'));
         $response->assertSee('出勤中');
     }
@@ -161,6 +181,19 @@ class BreakTimeTest extends TestCase
         ]);
         $response->assertStatus(302);
 
+        // --- DBチェック ---
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('work_date', today())
+            ->first();
+        $this->assertNotNull($attendance);
+        $latestBreak = $attendance->breakTimes()->latest()->first();
+        $this->assertNotNull($latestBreak);
+        $this->assertNotNull($latestBreak->break_start);
+        $this->assertEquals(
+            WorkStatus::BREAK,
+            $attendance->work_status
+        );
+
         // --- 休憩件数が+2されていることを確認（1回目と2回目）
         $attendance->refresh();
         $currentBreakCount = $attendance->breakTimes()->count();
@@ -193,13 +226,17 @@ class BreakTimeTest extends TestCase
         ]);
         $response->assertStatus(302);
 
-        // --- DBで休憩の時間を意図的に1時間に調整 ---
+        // --- DBチェック ---
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', today())
             ->first();
+        $this->assertNotNull($attendance);
         $latestBreak = $attendance->breakTimes()->latest()->first();
         $this->assertNotNull($latestBreak);
+        $this->assertNotNull($latestBreak->break_start);
+        $this->assertNotNull($latestBreak->break_end);
 
+        // --- DBで休憩の時間を意図的に1時間に調整 ---
         $latestBreak->update([
             'break_start' => now()->setTime(12, 0, 0),
             'break_end'   => now()->setTime(13, 0, 0),
