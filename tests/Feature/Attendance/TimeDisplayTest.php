@@ -2,10 +2,7 @@
 
 namespace Tests\Feature\Attendance;
 
-use App\Enums\WorkStatus;
-use App\Models\Attendance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Session;
 use Tests\TestCase;
 use Tests\TestHelpers\AuthTestHelper;
 
