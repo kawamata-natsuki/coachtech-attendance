@@ -23,8 +23,10 @@ class AttendanceController extends Controller
         // DB に attendanceレコードあれば取得、なければ未保存の新規レコード生成
         $attendance = Attendance::firstOrNew(
             ['user_id'      => $user->id, 'work_date' => $today],
-            ['work_status'  => WorkStatus::OFF]
         );
+        if (!$attendance->exists) {
+            $attendance->work_status = WorkStatus::OFF;
+        }
 
         return view(
             'user.attendances.record',
