@@ -19,21 +19,24 @@ class ClockInTest extends TestCase
     public function test_user_can_clock_in_successfully(): void
     {
         $user = $this->loginUser();
-        $response = $this->get(route('user.attendances.record'));
-        $response->assertStatus(200);
 
         // 画面上に「出勤」ボタンが表示され、処理後に画面上に表示されるステータスが「勤務中」になる
+        $response = $this->get(route('user.attendances.record'));
+        $response->assertStatus(200);
         $response->assertSee('出勤');
 
+        // --- 出勤処理 ---
         $response = $this->post(route('user.attendances.store'), [
             'action' => 'clock_in',
         ]);
+        $response->assertStatus(302);
 
+        // --- DBチェック ---
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', today())
             ->first();
-
         $this->assertNotNull($attendance);
+
         $this->assertNotNull($attendance->clock_in);
         $this->assertEquals(WorkStatus::WORKING, $attendance->work_status);
     }
@@ -44,10 +47,10 @@ class ClockInTest extends TestCase
     public function test_user_cannot_clock_in_twice_on_same_day(): void
     {
         $user = $this->loginCompletedUser();
-        $response = $this->get(route('user.attendances.record'));
-        $response->assertStatus(200);
 
         // 画面上に「出勤」ボタンが表示されない
+        $response = $this->get(route('user.attendances.record'));
+        $response->assertStatus(200);
         $response->assertDontSee('出勤');
     }
 
@@ -57,21 +60,23 @@ class ClockInTest extends TestCase
     public function test_user_can_see_their_clock_in_time_on_attendance_page(): void
     {
         $user = $this->loginUser();
+
         $response = $this->get(route('user.attendances.record'));
         $response->assertStatus(200);
 
+        // --- 出勤処理 ---
         $response = $this->post(route('user.attendances.store'), [
             'action' => 'clock_in',
         ]);
 
+        // --- DBチェック ---
         $attendance = Attendance::where('user_id', $user->id)
             ->whereDate('work_date', today())
             ->first();
         $this->assertNotNull($attendance);
 
-        $clockInTime = $attendance->clock_in->format('H:i');
-
         // 管理画面に出勤時刻が正確に記録されている
+        $clockInTime = $attendance->clock_in->format('H:i');
         $response = $this->get(route('user.attendances.index'));
         $response->assertStatus(200);
         $response->assertSee($clockInTime);
