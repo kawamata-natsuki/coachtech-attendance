@@ -30,7 +30,7 @@ class AttendanceController extends Controller
             'user.attendances.record',
             [
                 'attendance'    => $attendance,
-                'statusLabel'   => $attendance->work_status->label(),
+                'statusLabel' => $attendance->work_status?->label() ?? '',
             ]
         );
     }
