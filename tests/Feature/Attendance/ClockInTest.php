@@ -20,7 +20,7 @@ class ClockInTest extends TestCase
     {
         $user = $this->loginUser();
 
-        // 画面上に「出勤」ボタンが表示され、処理後に画面上に表示されるステータスが「勤務中」になる
+        // 画面上に「出勤」ボタンが表示され、処理後に画面上に表示されるステータスが「勤務中」（＝出勤中）になる
         $response = $this->get(route('user.attendances.record'));
         $response->assertStatus(200);
         $response->assertSee('出勤');
@@ -36,9 +36,13 @@ class ClockInTest extends TestCase
             ->whereDate('work_date', today())
             ->first();
         $this->assertNotNull($attendance);
-
         $this->assertNotNull($attendance->clock_in);
         $this->assertEquals(WorkStatus::WORKING, $attendance->work_status);
+
+        // --- 出勤後の画面確認 ---
+        $response = $this->get(route('user.attendances.record'));
+        $response->assertStatus(200);
+        $response->assertSee('出勤中');
     }
 
     /**
