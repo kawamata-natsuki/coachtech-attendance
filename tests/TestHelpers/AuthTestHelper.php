@@ -2,6 +2,7 @@
 
 namespace Tests\TestHelpers;
 
+use App\Enums\WorkStatus;
 use App\Models\Admin;
 use App\Models\Attendance;
 use App\Models\User;
@@ -46,6 +47,7 @@ trait AuthTestHelper
       'user_id' => $user->id,
       'work_date' => today(),
       'clock_in' => now()->subHour(),
+      'work_status' => WorkStatus::WORKING,
     ]);
 
     $this->actingAs($user);
@@ -53,7 +55,7 @@ trait AuthTestHelper
   }
 
   // 一般ユーザー（ログイン済、休憩中）
-  public function loginOnBreakUser(): User
+  public function loginBreakUser(): User
   {
     $user = $this->createUser();
     $user->email_verified_at = now();
@@ -63,6 +65,7 @@ trait AuthTestHelper
       'user_id' => $user->id,
       'work_date' => today(),
       'clock_in' => now()->subHours(3),
+      'work_status' => WorkStatus::BREAK,
     ]);
 
     $attendance->breakTimes()->create([
@@ -75,7 +78,7 @@ trait AuthTestHelper
   }
 
   // 一般ユーザー（ログイン済、退勤済）
-  public function loginClockedOutUser(): User
+  public function loginCompletedUser(): User
   {
     $user = $this->createUser();
     $user->email_verified_at = now();
@@ -86,6 +89,7 @@ trait AuthTestHelper
       'work_date' => today(),
       'clock_in' => now()->subHours(8),
       'clock_out' => now()->subHour(),
+      'work_status' => WorkStatus::COMPLETED,
     ]);
 
     $this->actingAs($user);
