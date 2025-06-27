@@ -75,7 +75,7 @@ class ClockInTest extends TestCase
             ->first();
         $this->assertNotNull($attendance);
 
-        // 管理画面に出勤時刻が正確に記録されている
+        // 管理画面（勤怠一覧画面）に出勤時刻が正確に記録されている
         $clockInTime = $attendance->clock_in->format('H:i');
         $response = $this->get(route('user.attendances.index'));
         $response->assertStatus(200);
