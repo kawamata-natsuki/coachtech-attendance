@@ -4,7 +4,6 @@ namespace Tests\Feature\Attendance;
 
 use App\Enums\WorkStatus;
 use App\Models\Attendance;
-use App\Services\AttendanceService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
