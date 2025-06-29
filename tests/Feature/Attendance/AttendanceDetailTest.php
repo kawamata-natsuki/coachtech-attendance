@@ -61,14 +61,10 @@ class AttendanceDetailTest extends TestCase
      */
     public function test_attendance_detail_displays_correct_clock_in_and_out_times(): void
     {
-        $user = $this->loginUser();
-
-        $attendance = Attendance::factory()
-            ->for($user)
-            ->withBreakTime()
-            ->create([
-                'work_date' => today()->toDateString(),
-            ]);
+        $user = $this->loginCompletedUser();
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('work_date', today())
+            ->first();
 
         $response = $this->get(route('attendances.show', [
             'id' => $attendance->id,
@@ -90,14 +86,10 @@ class AttendanceDetailTest extends TestCase
      */
     public function test_attendance_detail_displays_correct_break_times(): void
     {
-        $user = $this->loginUser();
-
-        $attendance = Attendance::factory()
-            ->for($user)
-            ->withBreakTime()
-            ->create([
-                'work_date' => today()->toDateString(),
-            ]);
+        $user = $this->loginCompletedUser();
+        $attendance = Attendance::where('user_id', $user->id)
+            ->whereDate('work_date', today())
+            ->first();
 
         $response = $this->get(route('attendances.show', [
             'id' => $attendance->id,
