@@ -46,7 +46,7 @@ trait AuthTestHelper
     Attendance::create([
       'user_id' => $user->id,
       'work_date' => today(),
-      'clock_in' => now()->subHour(),
+      'clock_in' => now()->setTime(9, 0),
       'work_status' => WorkStatus::WORKING,
     ]);
 
@@ -64,7 +64,7 @@ trait AuthTestHelper
     $attendance = Attendance::create([
       'user_id' => $user->id,
       'work_date' => today(),
-      'clock_in' => now()->subHours(3),
+      'clock_in' => now()->setTime(9, 0),
       'work_status' => WorkStatus::BREAK,
     ]);
 
@@ -87,8 +87,8 @@ trait AuthTestHelper
     Attendance::create([
       'user_id' => $user->id,
       'work_date' => today(),
-      'clock_in' => now()->subHours(8),
-      'clock_out' => now()->subHour(),
+      'clock_in' => now()->setTime(9, 0),
+      'clock_out' => now()->setTime(18, 0),
       'work_status' => WorkStatus::COMPLETED,
     ]);
 
