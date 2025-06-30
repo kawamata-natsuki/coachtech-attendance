@@ -1,12 +1,12 @@
 <?php
 
-namespace Tests\Feature\Correction;
+namespace Tests\Feature\Admin;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
-class AdminCorrectionApprovalTest extends TestCase
+class CorrectionApprovalTest extends TestCase
 {
     /**
      * A basic feature test example.
