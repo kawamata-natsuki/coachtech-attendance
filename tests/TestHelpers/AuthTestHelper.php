@@ -10,6 +10,19 @@ use Illuminate\Support\Facades\Hash;
 
 trait AuthTestHelper
 {
+  /**
+   * 指定ユーザーで当日の勤怠データを作成するヘルパー
+   */
+  private function createTodayAttendanceWithBreakTime($user): Attendance
+  {
+    return Attendance::factory()
+      ->for($user)
+      ->withBreakTime()
+      ->create([
+        'work_date' => today()->toDateString(),
+      ]);
+  }
+
   // =========================================================
   // 一般ユーザー関連
   // =========================================================
@@ -17,12 +30,14 @@ trait AuthTestHelper
   // 一般ユーザー（ログイン前）
   public function createUser(): User
   {
-    return User::create([
-      'name' => 'guest',
-      'email' => 'guest@example.com',
-      'password' => Hash::make('guest123'),
-      'email_verified_at' => now(),
-    ]);
+    return User::firstOrCreate(
+      ['email' => 'guest@example.com'],
+      [
+        'name' => 'guest',
+        'password' => Hash::make('guest123'),
+        'email_verified_at' => now(),
+      ]
+    );
   }
 
   // 一般ユーザー（ログイン済、未出勤）
@@ -101,20 +116,25 @@ trait AuthTestHelper
   // =========================================================
 
   // 管理者(ログイン前)
-  public function createAdmin(array $override = []): Admin
+  public function createAdmin(): Admin
   {
-    return Admin::create(array_merge([
-      'name' => 'admin',
-      'email' => 'admin@example.com',
-      'password' => Hash::make('admin123'),
-      'email_verified_at' => now(),
-    ], $override));
+    return Admin::firstOrCreate(
+      ['email' => 'admin@example.com'],
+      [
+        'name' => 'admin',
+        'password' => Hash::make('admin123'),
+        'email_verified_at' => now(),
+      ]
+    );
   }
 
   // 管理者(ログイン済)
-  public function loginAdmin(array $override = []): Admin
+  public function loginAdmin(): Admin
   {
-    $admin = $this->createAdmin($override);
+    $admin = $this->createAdmin();
+    $admin->email_verified_at = now();
+    $admin->save();
+
     $this->actingAs($admin, 'admin');
     return $admin;
   }
