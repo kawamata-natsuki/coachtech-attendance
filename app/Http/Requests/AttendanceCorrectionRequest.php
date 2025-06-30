@@ -55,8 +55,22 @@ class AttendanceCorrectionRequest extends FormRequest
                     if ($start && $end) {
                         $breakStart = Carbon::createFromFormat('H:i', $start);
                         $breakEnd = Carbon::createFromFormat('H:i', $end);
-                        if ($breakStart->lt($clockInTime) || $breakEnd->gt($clockOutTime)) {
+
+                        // 開始が勤務時間外か（開始 < 出勤 or 開始 > 退勤）
+                        if ($breakStart->lt($clockInTime) || $breakStart->gt($clockOutTime)) {
                             $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間が勤務時間外です');
+                            continue; // 勤務時間外なら他のチェックはスキップ
+                        }
+
+                        // 終了が勤務時間外か（終了 < 出勤 or 終了 > 退勤）
+                        if ($breakEnd->lt($clockInTime) || $breakEnd->gt($clockOutTime)) {
+                            $validator->errors()->add("requested_breaks.$i.requested_break_end", '休憩時間が勤務時間外です');
+                            continue; // 勤務時間外なら他のチェックはスキップ
+                        }
+
+                        // 開始 > 終了か
+                        if ($breakStart->gt($breakEnd)) {
+                            $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間が不適切な値です');
                         }
                     }
                 }
