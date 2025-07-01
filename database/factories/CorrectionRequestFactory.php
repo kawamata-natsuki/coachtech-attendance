@@ -13,13 +13,8 @@ class CorrectionRequestFactory extends Factory
 
     public function definition(): array
     {
-        $user = User::factory()->create();
-        $attendance = Attendance::factory()->create(['user_id' => $user->id]);
-
         return [
-            'user_id' => $user->id,
-            'attendance_id' => $attendance->id,
-            'work_date' => $this->faker->date(),
+            'work_date' => today()->subDay()->toDateString(),
             'requested_clock_in' =>  now()->setTime(10, 0),
             'requested_clock_out' =>  now()->setTime(19, 0),
             'original_clock_in' =>  now()->setTime(9, 0),
