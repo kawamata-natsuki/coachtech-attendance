@@ -21,14 +21,13 @@ class AttendanceDetailTest extends TestCase
 
         // --- スタッフの特定の日付の勤怠データを作成 ---
         $user = $this->createUser();
-        $targetDate = now()->startOfMonth();
+        $today = today();
+        $targetDay = $today->subDay();
         $attendance = Attendance::factory()
             ->for($user)
             ->withBreakTime()
             ->create([
-                'work_date' => $targetDate,
-                'clock_in' => $targetDate->setTime(9, 0),
-                'clock_out' => $targetDate->setTime(18, 0),
+                'work_date' => $targetDay,
             ]);
 
         $response = $this->get(route('attendances.show', [
@@ -38,7 +37,7 @@ class AttendanceDetailTest extends TestCase
 
         // 詳細画面の内容が選択した情報と一致する
         $response->assertSee($user->name);
-        $response->assertSee($targetDate->format('Y年n月j日'));
+        $response->assertSee($targetDay->format('Y年n月j日'));
         $html = $response->getContent();
         $this->assertStringContainsString('09', $html);
         $this->assertStringContainsString(':', $html);
