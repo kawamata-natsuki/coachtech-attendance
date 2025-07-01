@@ -48,6 +48,11 @@ class Attendance extends Model
         return $this->hasMany(BreakTime::class);
     }
 
+    public function attendanceLogs(): HasMany
+    {
+        return $this->hasMany(AttendanceLog::class);
+    }
+
     // 勤務ステータス判定
     public function isOff(): bool
     {
