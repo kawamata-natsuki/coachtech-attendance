@@ -17,6 +17,7 @@ services:
       args:
         USER_ID: ${UID}
         GROUP_ID: ${GID}
+    user: "${UID:-1000}:${GID:-1000}"
     volumes:
       - ./:/var/www/
 
