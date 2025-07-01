@@ -32,7 +32,7 @@ class Attendance extends Model
         'work_status' => WorkStatus::class,
     ];
 
-    // リレーション
+    // リレーション定義
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
