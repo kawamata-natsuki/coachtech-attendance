@@ -26,6 +26,7 @@ class TimeDisplayTest extends TestCase
         $response->assertSee($today);
 
         // 時刻部分の形式(HH:MM)チェック
+        // 現在時刻を取得できているかは、目視で確認
         $this->assertMatchesRegularExpression(
             '/<div[^>]*id="server-time"[^>]*>\s*\d{2}:\d{2}\s*<\/div>/',
             $response->getContent()
