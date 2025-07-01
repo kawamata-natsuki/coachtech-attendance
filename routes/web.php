@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 
 // 一般ユーザー
 Route::get('/register', [RegisterController::class, 'showRegisterView'])->name('register');
-Route::post('/register', [RegisterController::class, 'store']);
+Route::post('/register', [RegisterController::class, 'store'])->name('register.store');
 
 Route::get('/login', [LoginController::class, 'showLoginView'])->name('login');
 Route::post('/login', [LoginController::class, 'store'])->name('login.store');
