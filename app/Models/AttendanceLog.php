@@ -25,6 +25,10 @@ class AttendanceLog extends Model
     ];
 
     protected $casts = [
+        'before_clock_in' => 'datetime',
+        'after_clock_in' => 'datetime',
+        'before_clock_out' => 'datetime',
+        'after_clock_out' => 'datetime',
         'before_breaks' => 'array',
         'after_breaks' => 'array',
     ];
