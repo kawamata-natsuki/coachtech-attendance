@@ -9,10 +9,8 @@ return new class extends Migration {
     {
         Schema::create('attendance_logs', function (Blueprint $table) {
             $table->id();
-
-            // 勤怠データと管理者
-            $table->foreignId('attendance_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('updated_by_admin_id')->constrained('admins')->cascadeOnDelete();
+            $table->unsignedBigInteger('attendance_id');
+            $table->unsignedBigInteger('updated_by_admin_id');
 
             // 修正種別（直接修正か、申請承認による修正か）
             $table->string('action_type')->default('direct'); // 'direct' or 'approval'
@@ -28,10 +26,14 @@ return new class extends Migration {
             $table->json('after_breaks')->nullable();
 
             // 備考欄（修正理由）
-            $table->text('before_reason')->nullable();
-            $table->text('after_reason')->nullable();
+            $table->string('before_reason')->nullable();
+            $table->string('after_reason')->nullable();
 
             $table->timestamps();
+
+            // 外部キー制約
+            $table->foreign('attendance_id')->references('id')->on('attendances')->onDelete('restrict');
+            $table->foreign('updated_by_admin_id')->references('id')->on('admins')->onDelete('set null');
         });
     }
 
