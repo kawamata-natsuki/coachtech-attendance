@@ -10,7 +10,7 @@ return new class extends Migration {
         Schema::create('attendance_logs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('attendance_id');
-            $table->unsignedBigInteger('updated_by_admin_id');
+            $table->unsignedBigInteger('updated_by_admin_id')->nullable();
 
             // 修正種別（直接修正か、申請承認による修正か）
             $table->string('action_type')->default('direct'); // 'direct' or 'approval'
