@@ -16,14 +16,15 @@ class AttendanceCorrectionRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required', 'string'],
+            'reason' => ['required', 'max:255', 'string'],
         ];
     }
 
     public function messages(): array
     {
         return [
-            'reason.required' => '備考を記入してください',
+            'reason.required'   => '備考を記入してください',
+            'reason.max'        => '備考は255文字以内で入力してください'
         ];
     }
 
@@ -33,14 +34,15 @@ class AttendanceCorrectionRequest extends FormRequest
             $clockIn = $this->combineTimeFromArray($this->input('requested_clock_in'));
             $clockOut = $this->combineTimeFromArray($this->input('requested_clock_out'));
 
-            // 出勤 > 退勤 のチェック（両方が入力されている場合のみ）
-            if ($clockIn && $clockOut && Carbon::parse($clockIn)->gt(Carbon::parse($clockOut))) {
-                $validator->errors()->add('work_time_invalid', '出勤時間もしくは退勤時間が不適切な値です');
-            }
+            // --- 出勤・退勤時刻の組み合わせ ---
 
             // 出勤または退勤が未入力 → 無条件でエラー出す
             if (!$clockIn || !$clockOut) {
                 $validator->errors()->add("requested_clock_in", '出勤・退勤を入力してください');
+            }
+            // 出勤 > 退勤 のチェック（両方が入力されている場合のみ）
+            if ($clockIn && $clockOut && Carbon::parse($clockIn)->gt(Carbon::parse($clockOut))) {
+                $validator->errors()->add('work_time_invalid', '出勤時間もしくは退勤時間が不適切な値です');
             }
 
             // 出勤・退勤が両方入力されていれば、休憩時間がその範囲外にある場合をチェック
