@@ -37,7 +37,7 @@ class CorrectionRequest extends Model
         'approval_status' => ApprovalStatus::class,
     ];
 
-    // リレーション
+    // リレーション定義
     public function attendance(): BelongsTo
     {
         return $this->belongsTo(Attendance::class);
@@ -58,7 +58,7 @@ class CorrectionRequest extends Model
         return $this->belongsTo(Admin::class, 'approver_id');
     }
 
-    // ApprovalStatus の判定
+    // 承認ステータスの判定
     public function isPending(): bool
     {
         return optional($this->approval_status)->is(ApprovalStatus::PENDING);
