@@ -1,3 +1,4 @@
+/* ページ全体レイアウト */
 .login-page {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -22,6 +23,7 @@
   max-width: 680px;
 }
 
+/* フォームレイアウト */
 .login-page__form {
   display: flex;
   flex-direction: column;
@@ -43,6 +45,7 @@
   height: 60px;
 }
 
+/* ボタン・リンクレイアウト */
 .login-page__button {
   margin-top: 60px;
 }
