@@ -1,3 +1,5 @@
+console.log('clock js loaded');
+
 // 時計リアルタイム更新
 document.addEventListener('DOMContentLoaded', function () {
   function updateClock() {

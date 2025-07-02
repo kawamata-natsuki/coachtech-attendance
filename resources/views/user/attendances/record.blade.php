@@ -2,18 +2,11 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/user/attendances/record.css') }}">
-
-@if (app()->environment('testing'))
-{{-- テスト用にはViteを使わず直接ビルド済みのファイルを参照 --}}
-<link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
-<script src="{{ asset('build/assets/app.js') }}" defer></script>
-@else
-{{-- 開発 or 本番は通常通りViteを使う --}}
-@vite(['resources/css/app.css', 'resources/js/app.js'])
-@endif
+@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/attendance/record.js'])
 @endsection
 
 @section('title', '勤怠登録')
+
 
 @section('content')
 <div class="attendance-record-page">
@@ -32,12 +25,14 @@
       {{ $attendance->work_date->isoFormat('YYYY年M月D日(dd)') }}
     </div>
 
-    <!-- 時刻 -->
-    @env(['local', 'testing', 'test'])
+    <!-- 時刻（テスト用サーバー時刻） -->
+    @env('testing')
     <div id="server-time">
       {{ now()->format('H:i') }}
     </div>
     @endenv
+
+    <!-- 時刻（開発・本番はJSで更新） -->
     <div class="attendance-record-page__time" id="clock">
       --:--
     </div>
