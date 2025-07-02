@@ -178,14 +178,37 @@
 3. テスト用データベースにマイグレーションを実行：
 
     ```
-    php artisan migrate --env=testing
+    php artisan migrate:fresh --env=testing
     ```
 
-4. テスト実行：
+4. テスト用環境に切り替える前に .env をバックアップ
+テスト環境に切り替える前に現在の開発用 .env を保存します：
 
-    ```
-    php artisan test tests/Feature
-    ```
+cp .env .env.backup
+
+5.  テスト用環境に切り替え
+Laravelの仕様上、php artisan test 実行時に APP_ENV=testing が自動で適用されないケースがあります。
+そのため、以下のMakefileコマンドを利用して .env をテスト用に切り替えてからテストを実行します：
 
 
+make set-testing-env
 
+内容：
+set-testing-env:
+	cp .env.testing .env
+	php artisan config:clear
+
+
+5. テスト実行
+
+php artisan test tests/Feature
+
+6. テスト完了後、開発環境に戻す
+テスト後は開発環境に戻して作業を続けてください：
+
+make restore-env
+
+内容：
+restore-env:
+	cp .env.backup .env
+	php artisan config:clear
