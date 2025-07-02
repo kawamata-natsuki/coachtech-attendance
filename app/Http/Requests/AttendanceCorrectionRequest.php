@@ -34,18 +34,41 @@ class AttendanceCorrectionRequest extends FormRequest
             $clockIn = $this->combineTimeFromArray($this->input('requested_clock_in'));
             $clockOut = $this->combineTimeFromArray($this->input('requested_clock_out'));
 
-            // --- 出勤・退勤時刻の組み合わせ ---
+            // ================================
+            // 出勤・退勤時刻の入力チェック
+            // ================================
 
-            // 出勤または退勤が未入力 → 無条件でエラー出す
-            if (!$clockIn || !$clockOut) {
-                $validator->errors()->add("requested_clock_in", '出勤・退勤を入力してください');
+            // 両方未入力なら即エラー、片方未入力は個別エラー
+            if (!$clockIn && !$clockOut) {
+                $validator->errors()->add(
+                    "requested_clock_in",
+                    '出勤時間・退勤時間を入力してください'
+                );
+            } elseif (!$clockIn) {
+                $validator->errors()->add(
+                    "requested_clock_in",
+                    '出勤時間を入力してください'
+                );
+            } elseif (!$clockOut) {
+                $validator->errors()->add(
+                    "requested_clock_in",
+                    '退勤時間を入力してください'
+                );
             }
-            // 出勤 > 退勤 のチェック（両方が入力されている場合のみ）
+
+            // 出勤時間 > 退勤時間の場合はエラー
             if ($clockIn && $clockOut && Carbon::parse($clockIn)->gt(Carbon::parse($clockOut))) {
-                $validator->errors()->add('work_time_invalid', '出勤時間もしくは退勤時間が不適切な値です');
+                $validator->errors()->add(
+                    'work_time_invalid',
+                    '出勤時間もしくは退勤時間が不適切な値です'
+                );
             }
 
-            // 出勤・退勤が両方入力されていれば、休憩時間がその範囲外にある場合をチェック
+            // ================================
+            // 休憩時間の範囲チェック
+            // ================================
+
+            // 休憩時間が勤務時間内か検証
             if ($clockIn && $clockOut) {
                 $clockInTime = Carbon::createFromFormat('H:i', $clockIn);
                 $clockOutTime = Carbon::createFromFormat('H:i', $clockOut);
@@ -58,19 +81,19 @@ class AttendanceCorrectionRequest extends FormRequest
                         $breakStart = Carbon::createFromFormat('H:i', $start);
                         $breakEnd = Carbon::createFromFormat('H:i', $end);
 
-                        // 開始が勤務時間外か（開始 < 出勤 or 開始 > 退勤）
+                        // 休憩開始が勤務時間外の場合
                         if ($breakStart->lt($clockInTime) || $breakStart->gt($clockOutTime)) {
                             $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間が勤務時間外です');
-                            continue; // 勤務時間外なら他のチェックはスキップ
+                            continue;
                         }
 
-                        // 終了が勤務時間外か（終了 < 出勤 or 終了 > 退勤）
+                        // 休憩終了が勤務時間外の場合
                         if ($breakEnd->lt($clockInTime) || $breakEnd->gt($clockOutTime)) {
                             $validator->errors()->add("requested_breaks.$i.requested_break_end", '休憩時間が勤務時間外です');
-                            continue; // 勤務時間外なら他のチェックはスキップ
+                            continue;
                         }
 
-                        // 開始 > 終了か
+                        // 休憩開始時間 > 休憩終了時間の場合
                         if ($breakStart->gt($breakEnd)) {
                             $validator->errors()->add("requested_breaks.$i.requested_break_start", '休憩時間が不適切な値です');
                         }
@@ -85,7 +108,10 @@ class AttendanceCorrectionRequest extends FormRequest
                 if ($clockOut) {
                     $clockOutTime = Carbon::createFromFormat('H:i', $clockOut);
                     if ($clockOutTime->gt($now)) {
-                        $validator->errors()->add('requested_clock_out', '未来の退勤時刻は入力できません');
+                        $validator->errors()->add(
+                            'requested_clock_out',
+                            '未来の退勤時刻は入力できません'
+                        );
                     }
                 }
             }
