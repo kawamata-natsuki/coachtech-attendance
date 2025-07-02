@@ -61,7 +61,7 @@
 
     PHP コンテナに入って、 Composer をインストールします：
     ```bash
-    docker-compose exec php bash
+    docker compose exec php bash
     composer install
     ```
 <br>
@@ -81,8 +81,8 @@
 
     メール設定
  
-    メール認証は Mailtrap を使用します。  
-    Mailtrap のアカウントを作成し、受信箱に記載される `MAIL_USERNAME` と `MAIL_PASSWORD` を `.env`設定してください：  
+    メール認証は Mailtrap（[https://mailtrap.io/](https://mailtrap.io/)）を使用します。  
+    Mailtrapのアカウントを作成し、Inbox（受信箱）に表示される `MAIL_USERNAME` と `MAIL_PASSWORD` を `.env`設定してください：  
     ```ini
     MAIL_MAILER=smtp
     MAIL_HOST=sandbox.smtp.mailtrap.io
@@ -126,6 +126,66 @@
     php artisan db:seed
     ```
 <br>
+
+## 使用技術(実行環境)
+- Laravel Framework 10.48.29
+- PHP 8.2.28
+- MYSQL 8.0.42
+- Nginx 1.25.5
+- phpMyAdmin 5.2.1
+
+
+## ER図
+![ER図](er.png)
+
+
+## URL
+- 開発環境 ：http://localhost/
+  ※ポート番号は`docker-compose.override.yml`で各自調整してください。
+
+## ログイン情報一覧
+※ログイン確認用のテストアカウントです。  
+
+| ユーザー種別    | メールアドレス             | パスワード  |
+|----------------|----------------------------|------------|
+| 一般ユーザー1   | reina.n@coachtech.com      | 12345678   |
+| 一般ユーザー2   | taro.y@coachtech.com       | 12345678   |
+| 一般ユーザー3   | issei.m@coachtech.com      | 12345678   |
+| 一般ユーザー4   | keikichi.y@coachtech.com   | 12345678   |
+| 一般ユーザー5   | tomomi.a@coachtech.com     | 12345678   |
+| 一般ユーザー6   | norio.n@coachtech.com      | 12345678   |
+| 管理者ユーザー  | admin@coachtech.com        | admin123   |
+
+
+## テスト実行方法
+テストケース ID4 「日時取得機能」は JavaScript を含むため、 Dusk による E2E テストは導入せず、 Feature テスト＋手動によるブラウザ確認で対応しています。
+※このテスト実行方法についてはクライアント（コーチ）に事前相談し、了承を得ています。　
+
+1. `.env.testing.example` をコピーして `.env.testing` を作成：
+
+   ```bash
+   cp .env.testing.example .env.testing
+   ```
+
+    ※ `.env.testing.example` はテスト専用の設定テンプレートです。
+
+2. テスト用データベースを作成：
+
+   ```bash
+   docker compose exec mysql mysql -u root -proot -e "CREATE DATABASE demo_test;"
+   ```
+
+3. テスト用データベースにマイグレーションを実行：
+
+    ```
+    php artisan migrate --env=testing
+    ```
+
+4. テスト実行：
+
+    ```
+    php artisan test tests/Feature
+    ```
 
 
 
