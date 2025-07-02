@@ -1,3 +1,4 @@
+/* ページ全体レイアウト */
 .register-page {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -23,6 +24,7 @@
   max-width: 680px;
 }
 
+/* フォームレイアウト */
 .register-page__form {
   display: flex;
   flex-direction: column;
@@ -38,6 +40,7 @@
   height: 45px;
 }
 
+/* ボタン・リンクレイアウト */
 .register-page__button {
   margin-top: 40px;
 }
