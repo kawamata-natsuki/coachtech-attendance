@@ -6,6 +6,7 @@
 
 @section('title', '会員登録')
 
+@section('body-class', 'page-auth')
 @section('content')
 <div class="register-page">
   <div class="register-page__container">

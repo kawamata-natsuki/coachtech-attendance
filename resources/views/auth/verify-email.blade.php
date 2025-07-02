@@ -6,6 +6,7 @@
 
 @section('title', 'メール認証')
 
+@section('body-class', 'page-auth')
 @section('content')
 <div class="verify-email-page">
   <h1 class="sr-only">

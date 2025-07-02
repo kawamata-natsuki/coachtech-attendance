@@ -11,7 +11,7 @@
   <title>@yield('title', 'coachtech 勤怠管理アプリ')</title>
 </head>
 
-<body>
+<body class="@yield('body-class')">
   <header class="header">
     <nav class="header-nav">
       <div class="header-logo">

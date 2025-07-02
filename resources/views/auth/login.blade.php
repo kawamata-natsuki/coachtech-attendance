@@ -8,6 +8,7 @@
 
 @php($isAdmin = \App\Helpers\AuthHelper::isAdminLoginPage())
 
+@section('body-class', 'page-auth')
 @section('content')
 <div class="login-page">
   <div class="login-page__container">

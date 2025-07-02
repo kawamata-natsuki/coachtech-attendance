@@ -8,8 +8,12 @@ body {
   padding: 0;
   font-family: 'Inter';
   color: #000;
+  background-color: #F0EFF2;
 }
 
+body.page-auth {
+  background-color: #FFFFFF;
+}
 
 main {
   display: flex;
