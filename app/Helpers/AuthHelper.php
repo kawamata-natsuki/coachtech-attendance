@@ -2,7 +2,6 @@
 
 namespace App\Helpers;
 
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Request;
 
 // 	Guardチェック、ログイン判定
