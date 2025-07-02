@@ -73,4 +73,10 @@ class Attendance extends Model
     {
         return optional($this->work_status)->is(WorkStatus::COMPLETED);
     }
+
+    // 勤務日の判定
+    public function isFuture(): bool
+    {
+        return $this->work_date->isFuture();
+    }
 }
