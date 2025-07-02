@@ -6,6 +6,7 @@ use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
 use App\Models\Attendance;
+use App\Models\CorrectionRequest;
 use App\Services\AttendanceService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -149,14 +150,22 @@ class AttendanceController extends Controller
     // 勤怠詳細画面（共通）の表示処理
     public function show(Request $request, $id)
     {
-        $attendance = Attendance::with(['user', 'breakTimes'])->findOrFail($id);
+        // 勤怠レコードと関連するユーザー・休憩データを取得
+        $attendance = Attendance::with([
+            'user',
+            'breakTimes',
+        ])->findOrFail($id);
+
+        // 勤怠レコードの休憩情報を取得し、新規休憩のインデックスを決定
+        $breakTimes = $attendance->breakTimes;
+        $nextIndex = count($breakTimes);
 
         // クエリパラメータから申請IDを取得
         $requestId = $request->query('request_id');
 
+        // 指定された correctionRequest を取得
         if ($requestId) {
-            // 指定された correctionRequest を取得（セキュリティで attendance_id も確認）
-            $correctionRequest = \App\Models\CorrectionRequest::with('correctionBreakTimes')
+            $correctionRequest = CorrectionRequest::with('correctionBreakTimes')
                 ->where('id', $requestId)
                 ->where('attendance_id', $attendance->id)
                 ->firstOrFail();
@@ -165,43 +174,45 @@ class AttendanceController extends Controller
             $correctionRequest = $attendance->correctionRequests()->latest()->first();
         }
 
-        // 承認待ちのときだけ入力を無効化
+        // 申請が「承認待ち」の場合はフォームを無効化
         $isCorrectionDisabled = $correctionRequest?->isPending();
 
-        $breakTimes = $attendance->breakTimes;
-        $nextIndex = count($breakTimes);
-
         return view('shared.attendances.show', [
-            'attendance' => $attendance,
-            'correctionRequest' => $correctionRequest,
-            'breakTimes' => $breakTimes,
-            'nextIndex' => $nextIndex,
-            'isCorrectionDisabled' => $isCorrectionDisabled,
+            'attendance'            => $attendance,
+            'correctionRequest'     => $correctionRequest,
+            'breakTimes'            => $breakTimes,
+            'nextIndex'             => $nextIndex,
+            'isCorrectionDisabled'  => $isCorrectionDisabled,
         ]);
     }
 
     // 勤怠詳細画面（共通）の修正申請処理
     public function update(AttendanceCorrectionRequest $request, int $id): RedirectResponse
     {
-        // 勤怠と日付情報取得
+        // 対象の勤怠レコードを取得
         $attendance = Attendance::findOrFail($id);
         $workDate = $attendance->work_date;
+
+        // 申請フォームから休憩時間データを取得
         $breaks = $request->input('requested_breaks', []);
 
+        // 入力された出勤・退勤時刻を分解して Carbon に変換
         $requestedClockInParts = $request->input('requested_clock_in');
         $requestedClockOutParts = $request->input('requested_clock_out');
 
+        // 出勤時刻：時間と分が両方入力されていれば Carbon に変換、なければ null
         $requestedClockIn = filled($requestedClockInParts['hour'] ?? null) && filled($requestedClockInParts['minute'] ?? null)
             ? Carbon::createFromDate($workDate->year, $workDate->month, $workDate->day)
             ->setTime($requestedClockInParts['hour'], $requestedClockInParts['minute'])
             : null;
 
+        // 退勤時刻：時間と分が両方入力されていれば Carbon に変換、なければ null
         $requestedClockOut = filled($requestedClockOutParts['hour'] ?? null) && filled($requestedClockOutParts['minute'] ?? null)
             ? Carbon::createFromDate($workDate->year, $workDate->month, $workDate->day)
             ->setTime($requestedClockOutParts['hour'], $requestedClockOutParts['minute'])
             : null;
 
-        // 申請レコードを新規作成（常に create）
+        // 勤怠修正申請レコードを新規作成（毎回 create して履歴を残す）
         $correctionRequest = $attendance->correctionRequests()->create([
             'user_id'             => $attendance->user_id,
             'work_date'           => $attendance->work_date,
@@ -212,27 +223,30 @@ class AttendanceController extends Controller
             'reason'              => $request->input('reason'),
         ]);
 
-        // 休憩を保存
+        // 勤怠に紐づく元々の休憩情報を取得
         $originalBreaks = $attendance->breakTimes->values();
 
+        // 入力された各休憩の申請内容を保存
         foreach ($breaks as $i => $break) {
             $startParts = $break['requested_break_start'];
             $endParts   = $break['requested_break_end'];
 
-            // 空フォームの入力（完全に未入力）なら無視
+            // 入力されてないただの空欄はスキップ
             $isEmptyInput = empty($startParts['hour']) && empty($startParts['minute']) &&
                 empty($endParts['hour']) && empty($endParts['minute']);
 
-            // break_time_idが存在しない＝空フォームの追加用で保存対象外
+            // break_time_idがある場合は既存の休憩データに対応
             $hasBreakTimeId = isset($break['break_time_id']);
 
+            // 空フォームで既存データにも紐づかない場合はスキップ
             if ($isEmptyInput && !$hasBreakTimeId) {
-                continue; // 完全に何も入力されてないやつはスルー
+                continue;
             }
 
-            // 対応する breakTime（元データ）があれば取得、なければ null
+            // 元々の休憩データをインデックスで取得
             $originalBreak = $originalBreaks->get($i);
 
+            // 休憩申請を修正申請に紐づけて作成
             $correctionRequest->correctionBreakTimes()->create([
                 'requested_break_start' => $isEmptyInput ? null : Carbon::createFromTime($startParts['hour'], $startParts['minute']),
                 'requested_break_end'   => $isEmptyInput ? null : Carbon::createFromTime($endParts['hour'], $endParts['minute']),
@@ -240,7 +254,6 @@ class AttendanceController extends Controller
                 'original_break_end'    => $originalBreak?->break_end,
             ]);
         }
-
 
         return redirect()
             ->route('attendances.show', ['id' => $id])
