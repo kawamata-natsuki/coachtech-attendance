@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Services\AttendanceService;
 use App\Enums\WorkStatus;
-use App\Models\Attendance;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Carbon;
+use App\Models\Attendance;
+use App\Services\AttendanceService;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 
 class AttendanceController extends Controller
 {
@@ -22,17 +22,20 @@ class AttendanceController extends Controller
 
         // DB に attendanceレコードあれば取得、なければ未保存の新規レコード生成
         $attendance = Attendance::firstOrNew(
-            ['user_id'      => $user->id, 'work_date' => $today],
+            [
+                'user_id'       => $user->id,
+                'work_date'     => $today,
+            ],
+            [
+                'work_status'   => WorkStatus::OFF,
+            ]
         );
-        if (!$attendance->exists) {
-            $attendance->work_status = WorkStatus::OFF;
-        }
 
         return view(
             'user.attendances.record',
             [
                 'attendance'    => $attendance,
-                'statusLabel' => $attendance->work_status?->label() ?? '',
+                'statusLabel'   => $attendance->work_status?->label() ?? '',
             ]
         );
     }
@@ -46,13 +49,18 @@ class AttendanceController extends Controller
 
         // 初回打刻時にレコード作成（1日1回出勤）
         $attendance = Attendance::firstOrCreate(
-            ['user_id' => $user->id, 'work_date' => $today],
-            ['work_status' => WorkStatus::OFF]
+            [
+                'user_id'       => $user->id,
+                'work_date'     => $today,
+            ],
+            [
+                'work_status'   => WorkStatus::OFF,
+            ]
         );
 
         // リクエストのアクションに応じて勤怠登録処理を分岐
         switch ($request->input('action')) {
-            // 出勤：初回のみ有効
+            // 出勤
             case 'clock_in':
                 if ($attendance->clock_in === null) {
                     $attendance->update([
@@ -74,7 +82,7 @@ class AttendanceController extends Controller
 
             // 休憩戻
             case 'break_end':
-                // まだ終了していない最新の休憩（break_end が null）を取得
+                // 未終了の休憩（break_end が null）を取得
                 $activeBreak = $attendance->breakTimes()
                     ->whereNull('break_end')
                     ->oldest('break_start')
@@ -84,7 +92,6 @@ class AttendanceController extends Controller
                     $activeBreak->update([
                         'break_end' => $now,
                     ]);
-
                     $attendance->update([
                         'work_status' => WorkStatus::WORKING,
                     ]);
