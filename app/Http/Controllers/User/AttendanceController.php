@@ -116,25 +116,31 @@ class AttendanceController extends Controller
     {
         $user = Auth::user();
 
-        // 表示対象の月（クエリがなければ今月）
+        // 表示対象の月（クエリがなければ今月）を取得
         $currentMonth = $request->filled('month')
             ? Carbon::createFromFormat('Y-m', $request->query('month'))->startOfMonth()
             : now()->startOfMonth();
 
-        // 当月分の勤怠データ取得
-        $attendances = AttendanceService::getMonthlyAttendances(auth()->id(), $currentMonth);
+        // 対象月の勤怠データ取得
+        $attendances = AttendanceService::getMonthlyAttendances(
+            $user->id,
+            $currentMonth,
+        );
 
-        // 月ナビゲーションの前月・翌月リンク用
+        // 月ナビゲーションの前月・翌月リンク作成
         $prevMonth = $currentMonth->copy()->subMonth()->format('Y-m');
         $nextMonth = $currentMonth->copy()->addMonth()->format('Y-m');
-
-        $prevUrl = route('user.attendances.index', ['month' => $prevMonth]);
-        $nextUrl = route('user.attendances.index', ['month' => $nextMonth]);
+        $prevUrl = route('user.attendances.index', [
+            'month' => $prevMonth,
+        ]);
+        $nextUrl = route('user.attendances.index', [
+            'month' => $nextMonth,
+        ]);
 
         return view('shared.attendances.index', [
             'attendances'   => $attendances,
             'currentMonth'  => $currentMonth,
-            'user'          => $user->id,
+            'user'          => $user,
             'prevUrl'       => $prevUrl,
             'nextUrl'       => $nextUrl,
         ]);
