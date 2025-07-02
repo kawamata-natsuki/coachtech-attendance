@@ -7,9 +7,11 @@
 {{-- テスト用にはビルド済みファイルを直接読み込み --}}
 <link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
 <script src="{{ asset('build/assets/app.js') }}" defer></script>
+<script src="{{ asset('build/assets/record.js') }}" defer></script>
+
 @else
 {{-- 開発 or 本番はViteのHMRを利用 --}}
-@vite(['resources/css/app.css', 'resources/js/app.js'])
+@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/attendance/record.js'])
 @endif
 
 @endsection
@@ -17,6 +19,7 @@
 @section('title', '勤怠登録')
 
 @section('content')
+dd(config('database.connections.mysql'));
 <div class="attendance-record-page">
   <div class="attendance-record-page__container">
     <h1 class="sr-only">勤怠登録</h1>
