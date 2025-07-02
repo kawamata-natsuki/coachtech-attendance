@@ -23,7 +23,9 @@ if (is_array($breakStartInput)) {
 $breakStartHour = $breakStartInput['hour'] ?? null;
 $breakStartMinute = $breakStartInput['minute'] ?? null;
 } elseif ($requestedBreakStart) {
-[$breakStartHour, $breakStartMinute] = explode(':', $requestedBreakStart->format('H:i'));
+$breakStartParts = explode(':', $requestedBreakStart->format('H:i'));
+$breakStartHour = data_get($breakStartParts, 0);
+$breakStartMinute = data_get($breakStartParts, 1);
 } else {
 $breakStartHour = null;
 $breakStartMinute = null;
@@ -32,8 +34,13 @@ $breakStartMinute = null;
 if (is_array($breakEndInput)) {
 $breakEndHour = $breakEndInput['hour'] ?? null;
 $breakEndMinute = $breakEndInput['minute'] ?? null;
+} elseif ($requestedBreakEnd) {
+$breakEndParts = explode(':', optional($requestedBreakEnd)->format('H:i'));
+$breakEndHour = data_get($breakEndParts, 0);
+$breakEndMinute = data_get($breakEndParts, 1);
 } else {
-[$breakEndHour, $breakEndMinute] = explode(':', optional($requestedBreakEnd)->format('H:i'));
+$breakEndHour = null;
+$breakEndMinute = null;
 }
 }
 @endphp
