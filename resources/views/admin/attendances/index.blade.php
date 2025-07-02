@@ -59,7 +59,7 @@
             {{ $user->name }}
           </td>
 
-          @if ($attendance?->is_future)
+          @if ($attendance->isFuture())
           <td class="admin-attendance-index-page__table-cell" colspan="4">
           </td>
           <td class="admin-attendance-index-page__table-cell">

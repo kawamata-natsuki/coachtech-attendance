@@ -18,6 +18,7 @@
       </span>
     </h1>
 
+    <!-- 前月・翌月リンクを表示するナビゲーション -->
     <x-month.nav
       :currentMonth="$currentMonth"
       :prevUrl="$prevUrl"
@@ -56,7 +57,7 @@
             {{ $attendance->work_date->locale('ja')->isoFormat('MM/DD(dd)') }}
           </td>
 
-          @if ($attendance?->is_future)
+          @if ($attendance->isFuture())
           <td class="attendance-index-page__table-cell" colspan="4">
           </td>
           <td class="attendance-index-page__table-cell">
@@ -74,7 +75,6 @@
           <td class="attendance-index-page__table-cell">
             {{ App\Services\AttendanceService::calculateWorkTime($attendance) }}
           </td>
-
           <td class="attendance-index-page__table-cell">
             @if ($attendance->work_date->lte(now()))
             @if (!is_null($attendance->id))
