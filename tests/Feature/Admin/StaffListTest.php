@@ -5,8 +5,9 @@ namespace Tests\Feature\Admin;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
+
 
 class AdminStaffListTest extends TestCase
 {

@@ -22,6 +22,7 @@ class AdminLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/admin/login', [
+            '_token' => csrf_token(),
             'email' => '',
             'password' => 'admin123',
         ]);
@@ -43,6 +44,7 @@ class AdminLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/admin/login', [
+            '_token' => csrf_token(),
             'email' => 'admin@example.com',
             'password' => '',
         ]);
@@ -64,6 +66,7 @@ class AdminLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/admin/login', [
+            '_token' => csrf_token(),
             'email' => 'wrong@example.com',
             'password' => 'admin123',
         ]);

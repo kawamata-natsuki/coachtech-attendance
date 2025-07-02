@@ -3,10 +3,10 @@
 namespace Tests\Feature\Auth;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Notification;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
 use Tests\TestHelpers\AuthTestHelper;
 
@@ -28,6 +28,7 @@ class EmailVerifyTest extends TestCase
 
         // --- ユーザー登録＋認証メール送信 ---
         $response = $this->post(route('register'), [
+            '_token' => csrf_token(),
             'name' => 'TestUser',
             'email' => 'test@example.com',
             'password' => 'pass1234',
@@ -54,6 +55,7 @@ class EmailVerifyTest extends TestCase
 
         // --- ユーザー登録＋認証メール送信 ---
         $response = $this->post(route('register'), [
+            '_token' => csrf_token(),
             'name' => 'TestUser',
             'email' => 'test@example.com',
             'password' => 'pass1234',
@@ -78,6 +80,7 @@ class EmailVerifyTest extends TestCase
 
         // ユーザー登録
         $this->post(route('register'), [
+            '_token' => csrf_token(),
             'name' => 'TestUser',
             'email' => 'test@example.com',
             'password' => 'pass1234',

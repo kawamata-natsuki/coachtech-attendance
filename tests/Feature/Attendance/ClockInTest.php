@@ -5,8 +5,8 @@ namespace Tests\Feature\Attendance;
 use App\Enums\WorkStatus;
 use App\Models\Attendance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class ClockInTest extends TestCase
 {
@@ -27,6 +27,7 @@ class ClockInTest extends TestCase
 
         // --- 出勤処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'clock_in',
         ]);
         $response->assertStatus(302);
@@ -70,6 +71,7 @@ class ClockInTest extends TestCase
 
         // --- 出勤処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'clock_in',
         ]);
 

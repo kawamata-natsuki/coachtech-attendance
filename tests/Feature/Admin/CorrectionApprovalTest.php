@@ -3,13 +3,13 @@
 namespace Tests\Feature\Admin;
 
 use App\Enums\ApprovalStatus;
-use App\Models\User;
 use App\Models\Attendance;
 use App\Models\CorrectionBreakTime;
 use App\Models\CorrectionRequest;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class CorrectionApprovalTest extends TestCase
 {
@@ -187,6 +187,7 @@ class CorrectionApprovalTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post(route('admin.correction-requests.approve', [
+            '_token' => csrf_token(),
             'attendance_correct_request' => $correctionRequest->id,
         ]));
         $response->assertStatus(302);

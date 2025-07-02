@@ -5,8 +5,8 @@ namespace Tests\Feature\Attendance;
 use App\Enums\WorkStatus;
 use App\Models\Attendance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class BreakTimeTest extends TestCase
 {
@@ -27,6 +27,7 @@ class BreakTimeTest extends TestCase
 
         // --- 休憩入処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
@@ -64,24 +65,28 @@ class BreakTimeTest extends TestCase
 
         // --- 1回目の休憩 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
 
         // --- 1回目の休憩終了 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_end',
         ]);
         $response->assertStatus(302);
 
         // --- 2回目の休憩開始 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
 
         // --- 2回目の休憩終了 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_end',
         ]);
         $response->assertStatus(302);
@@ -114,6 +119,7 @@ class BreakTimeTest extends TestCase
 
         // --- 休憩入処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
@@ -124,6 +130,7 @@ class BreakTimeTest extends TestCase
 
         // --- 休憩戻処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_end',
         ]);
         $response->assertStatus(302);
@@ -164,18 +171,21 @@ class BreakTimeTest extends TestCase
 
         // --- 1回目の休憩 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
 
         // --- 1回目の休憩終了 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_end',
         ]);
         $response->assertStatus(302);
 
         // --- 2回目の休憩開始 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
@@ -215,12 +225,14 @@ class BreakTimeTest extends TestCase
 
         // --- 休憩入処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_start',
         ]);
         $response->assertStatus(302);
 
         // --- 休憩戻処理 ---
         $response = $this->post(route('user.attendances.store'), [
+            '_token' => csrf_token(),
             'action' => 'break_end',
         ]);
         $response->assertStatus(302);

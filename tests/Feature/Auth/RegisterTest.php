@@ -18,6 +18,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => '',
             'email' => 'test@example.com',
             'password' => 'pass1234',
@@ -39,6 +40,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => 'Tanaka Kanata',
             'email' => '',
             'password' => 'pass1234',
@@ -60,6 +62,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => 'Tanaka Kanata',
             'email' => 'test@example.com',
             'password' => '1234567',
@@ -81,6 +84,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => 'Tanaka Kanata',
             'email' => 'test@example.com',
             'password' => 'pass1234',
@@ -102,6 +106,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => 'Tanaka Kanata',
             'email' => 'test@example.com',
             'password' => '',
@@ -123,6 +128,7 @@ class RegisterTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/register', [
+            '_token' => csrf_token(),
             'name' => 'Tanaka Kanata',
             'email' => 'test@example.com',
             'password' => 'pass1234',

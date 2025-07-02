@@ -4,8 +4,8 @@ namespace Tests\Feature\Attendance;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class AttendanceListTest extends TestCase
 {

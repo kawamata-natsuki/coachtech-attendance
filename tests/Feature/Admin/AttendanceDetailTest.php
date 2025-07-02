@@ -4,8 +4,9 @@ namespace Tests\Feature\Admin;
 
 use App\Models\Attendance;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
+
 
 class AttendanceDetailTest extends TestCase
 {
@@ -83,6 +84,7 @@ class AttendanceDetailTest extends TestCase
             ->put(route('attendances.update', [
                 'id' => $attendance->id
             ]), [
+                '_token' => csrf_token(),
                 'requested_clock_in' => ['hour' => '18', 'minute' => '00'],
                 'requested_clock_out' => ['hour' => '09', 'minute' => '00'],
                 'reason' => 'test',
@@ -119,6 +121,7 @@ class AttendanceDetailTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '09', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '18', 'minute' => '00'],
             'requested_breaks' => [
@@ -162,6 +165,7 @@ class AttendanceDetailTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '09', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '18', 'minute' => '00'],
             'requested_breaks' => [
@@ -204,6 +208,7 @@ class AttendanceDetailTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '10', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '19', 'minute' => '00'],
             'requested_breaks' => [

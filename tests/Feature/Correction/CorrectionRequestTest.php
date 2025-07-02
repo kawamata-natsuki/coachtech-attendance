@@ -6,8 +6,8 @@ use App\Enums\ApprovalStatus;
 use App\Models\Attendance;
 use App\Models\CorrectionRequest;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class CorrectionRequestTest extends TestCase
 {
@@ -38,6 +38,7 @@ class CorrectionRequestTest extends TestCase
             ->put(route('attendances.update', [
                 'id' => $attendance->id
             ]), [
+                '_token' => csrf_token(),
                 'requested_clock_in' => ['hour' => '18', 'minute' => '00'],
                 'requested_clock_out' => ['hour' => '09', 'minute' => '00'],
                 'reason' => 'test',
@@ -71,6 +72,7 @@ class CorrectionRequestTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '09', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '18', 'minute' => '00'],
             'requested_breaks' => [
@@ -110,6 +112,7 @@ class CorrectionRequestTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '09', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '18', 'minute' => '00'],
             'requested_breaks' => [
@@ -148,6 +151,7 @@ class CorrectionRequestTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '09', 'minute' => '00'],
             'requested_clock_out' => ['hour' => '18', 'minute' => '00'],
             'reason' => '',
@@ -181,6 +185,7 @@ class CorrectionRequestTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '10', 'minute' => '30'],
             'requested_clock_out' => ['hour' => '19', 'minute' => '30'],
             'requested_breaks' => [
@@ -258,6 +263,7 @@ class CorrectionRequestTest extends TestCase
             $response = $this->from(
                 route('attendances.show', ['id' => $attendance->id])
             )->put(route('attendances.update', ['id' => $attendance->id]), [
+                '_token' => csrf_token(),
                 'requested_clock_in' => ['hour' => '10', 'minute' => '30'],
                 'requested_clock_out' => ['hour' => '19', 'minute' => '30'],
                 'requested_breaks' => [
@@ -323,6 +329,7 @@ class CorrectionRequestTest extends TestCase
             $response = $this->from(
                 route('attendances.show', ['id' => $attendance->id])
             )->put(route('attendances.update', ['id' => $attendance->id]), [
+                '_token' => csrf_token(),
                 'requested_clock_in' => ['hour' => '10', 'minute' => '30'],
                 'requested_clock_out' => ['hour' => '19', 'minute' => '30'],
                 'requested_breaks' => [
@@ -385,6 +392,7 @@ class CorrectionRequestTest extends TestCase
         $response = $this->from(
             route('attendances.show', ['id' => $attendance->id])
         )->put(route('attendances.update', ['id' => $attendance->id]), [
+            '_token' => csrf_token(),
             'requested_clock_in' => ['hour' => '10', 'minute' => '30'],
             'requested_clock_out' => ['hour' => '19', 'minute' => '30'],
             'requested_breaks' => [

@@ -2,7 +2,6 @@
 
 namespace Tests\Feature\Auth;
 
-use App\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 use Tests\TestHelpers\AuthTestHelper;
@@ -11,12 +10,6 @@ class UserLoginTest extends TestCase
 {
     use RefreshDatabase;
     use AuthTestHelper;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        $this->withoutMiddleware(VerifyCsrfToken::class);
-    }
 
     /**
      * メールアドレスが未入力の場合、バリデーションメッセージが表示される
@@ -29,6 +22,7 @@ class UserLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/login', [
+            '_token' => csrf_token(),
             'email' => '',
             'password' => 'guest123'
         ]);
@@ -50,6 +44,7 @@ class UserLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/login', [
+            '_token' => csrf_token(),
             'email' => 'guest@example.com',
             'password' => '',
         ]);
@@ -71,6 +66,7 @@ class UserLoginTest extends TestCase
         $response->assertStatus(200);
 
         $response = $this->post('/login', [
+            '_token' => csrf_token(),
             'email' => 'wrong@example.com',
             'password' => 'guest123'
         ]);

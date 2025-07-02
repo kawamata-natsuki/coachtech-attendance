@@ -3,8 +3,8 @@
 namespace Tests\Feature\Attendance;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestHelpers\AuthTestHelper;
 use Tests\TestCase;
+use Tests\TestHelpers\AuthTestHelper;
 
 class WorkStatusTest extends TestCase
 {
