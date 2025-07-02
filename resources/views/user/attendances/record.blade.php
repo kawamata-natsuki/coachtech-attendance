@@ -2,11 +2,19 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/user/attendances/record.css') }}">
-@vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/attendance/record.js'])
+
+@if (app()->environment('testing'))
+{{-- テスト用にはビルド済みファイルを直接読み込み --}}
+<link rel="stylesheet" href="{{ asset('build/assets/app.css') }}">
+<script src="{{ asset('build/assets/app.js') }}" defer></script>
+@else
+{{-- 開発 or 本番はViteのHMRを利用 --}}
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+@endif
+
 @endsection
 
 @section('title', '勤怠登録')
-
 
 @section('content')
 <div class="attendance-record-page">
