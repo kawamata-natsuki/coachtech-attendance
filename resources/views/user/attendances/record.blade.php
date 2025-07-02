@@ -2,9 +2,6 @@
 
 @section('css')
 <link rel="stylesheet" href="{{ asset('css/user/attendances/record.css') }}">
-@endsection
-
-@section('title', '勤怠登録')
 
 @if (app()->environment('testing'))
 {{-- テスト用にはViteを使わず直接ビルド済みのファイルを参照 --}}
@@ -14,6 +11,9 @@
 {{-- 開発 or 本番は通常通りViteを使う --}}
 @vite(['resources/css/app.css', 'resources/js/app.js'])
 @endif
+@endsection
+
+@section('title', '勤怠登録')
 
 @section('content')
 <div class="attendance-record-page">
