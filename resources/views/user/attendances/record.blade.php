@@ -10,7 +10,6 @@
 {{-- 開発 or 本番はViteのHMRを利用 --}}
 @vite(['resources/css/app.css', 'resources/js/app.js', 'resources/js/attendance/record.js'])
 @endif
-
 @endsection
 
 @section('title', '勤怠登録')
@@ -18,7 +17,9 @@
 @section('content')
 <div class="attendance-record-page">
   <div class="attendance-record-page__container">
-    <h1 class="sr-only">勤怠登録</h1>
+    <h1 class="sr-only">
+      勤怠登録
+    </h1>
 
     <!-- 勤務ステータス -->
     <div class="attendance-record-page__status">
@@ -38,7 +39,6 @@
       {{ now()->format('H:i') }}
     </div>
     @endenv
-
     <!-- 時刻（開発・本番はJSで更新） -->
     <div class="attendance-record-page__time" id="clock">
       --:--

@@ -1,3 +1,4 @@
+/* ページ全体レイアウト */
 .attendance-record-page {
   min-height: calc(100vh - 80px);
   padding-top: 80px;
@@ -16,6 +17,7 @@
   margin-bottom: 60px;
 }
 
+/* 勤務ステータス */
 .attendance-record-page__status {
   width: 100px;
   height: 40px;
@@ -36,18 +38,21 @@
   color: #696969;
 }
 
+/* 日付 */
 .attendance-record-page__date {
   font-weight: 400;
   font-size: 40px;
   margin-bottom: 36px;
 }
 
+/* 時刻 */
 .attendance-record-page__time {
   font-weight: 700;
   font-size: 80px;
   margin-bottom: 72px;
 }
 
+/* 打刻ボタンレイアウト */
 .button-wrapper {
   display: flex;
   gap: 72px;
