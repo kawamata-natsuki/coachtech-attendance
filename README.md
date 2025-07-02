@@ -161,6 +161,15 @@
 テストケース ID4 「日時取得機能」は JavaScript を含むため、 Dusk による E2E テストは導入せず、 Feature テスト＋手動によるブラウザ確認で対応しています。
 ※このテスト実行方法についてはクライアント（コーチ）に事前相談し、了承を得ています。　
 
+### ✅ テスト環境でのフロントビルドについて
+
+テスト環境（.env.testing）ではViteのHMRを利用せず、ビルド済みのCSS/JSを読み込みます。
+そのため、テストを正しく実行するには以下のコマンドでビルドを行い、`public/build` ディレクトリを生成してください：
+
+```bash
+npm install
+npm run build
+
 1. `.env.testing.example` をコピーして `.env.testing` を作成：
 
    ```bash
