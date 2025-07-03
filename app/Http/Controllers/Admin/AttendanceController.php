@@ -75,7 +75,7 @@ class AttendanceController extends Controller
             $correctionRequest = $attendance->correctionRequests()->latest()->first();
         }
 
-        // 出退勤時間：補正申請があれば優先、なければ勤怠データを使う
+        // 出退勤時間：修正申請があればその申請内容を優先、なければ勤怠レコードの値を使う
         $requestedClockIn = optional(
             $correctionRequest?->requested_clock_in ?? $attendance->clock_in
         )?->format('H:i');
