@@ -1,3 +1,4 @@
+/* ページ全体レイアウト */
 .staff-index-page {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -15,6 +16,7 @@
   margin-bottom: 100px;
 }
 
+/* タイトル */
 .staff-index-page__heading {
   position: relative;
   font-weight: 700;
@@ -36,6 +38,12 @@
 
 .staff-index-page__heading-text {
   margin-left: 32px;
+}
+
+/* テーブルレイアウト */
+.staff-index-page__table-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .staff-index-page__table {
@@ -65,6 +73,7 @@
   text-align: center;
 }
 
+/* 詳細リンクレイアウト */
 .staff-index-page__table-link {
   color: #000;
 }
