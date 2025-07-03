@@ -175,6 +175,15 @@ class AttendanceController extends Controller
             $correctionRequest = $attendance->correctionRequests()->latest()->first();
         }
 
+        // 出退勤時間：補正申請があれば優先、なければ勤怠データを使う
+        $requestedClockIn = optional(
+            $correctionRequest?->requested_clock_in ?? $attendance->clock_in
+        )?->format('H:i');
+
+        $requestedClockOut = optional(
+            $correctionRequest?->requested_clock_out ?? $attendance->clock_out
+        )?->format('H:i');
+
         // 申請が「承認待ち」の場合はフォームを無効化
         $isCorrectionDisabled = $correctionRequest?->isPending();
 
@@ -184,6 +193,8 @@ class AttendanceController extends Controller
             'breakTimes'            => $breakTimes,
             'nextIndex'             => $nextIndex,
             'isCorrectionDisabled'  => $isCorrectionDisabled,
+            'requestedClockIn'      => $requestedClockIn,
+            'requestedClockOut'     => $requestedClockOut,
         ]);
     }
 
