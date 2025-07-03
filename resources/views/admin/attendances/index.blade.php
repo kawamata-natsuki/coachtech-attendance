@@ -18,6 +18,7 @@
       </span>
     </h1>
 
+    <!-- 前日・翌日リンクを表示するナビゲーション -->
     <x-day.nav
       :currentDate="$currentDate"
       :prevUrl="$prevUrl"
@@ -56,6 +57,7 @@
           $attendance = $user->attendanceForDay;
           @endphp
           <tr>
+            <!-- 名前 -->
             <td class="admin-attendance-index-page__table-cell">
               {{ $user->name }}
             </td>
@@ -66,24 +68,30 @@
             <td class="admin-attendance-index-page__table-cell">
             </td>
             @else
+
+            <!-- 出勤 -->
             <td class="admin-attendance-index-page__table-cell">
               {{ $attendance?->clock_in?->format('H:i') ?? '' }}
             </td>
 
+            <!-- 退勤 -->
             <td class="admin-attendance-index-page__table-cell">
               {{ $attendance?->clock_out?->format('H:i') ?? '' }}
             </td>
 
+            <!-- 休憩 -->
             <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance ? App\Services\AttendanceService::calculateBreakTime($attendance) : '' }}
+              {{ $attendance?->breakTime ?? '' }}
             </td>
 
+            <!-- 合計 -->
             <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance ?  App\Services\AttendanceService::calculateWorkTime($attendance)  : '' }}
+              {{ $attendance?->workTime ?? '' }}
             </td>
 
+            <!-- 詳細 -->
             <td class="admin-attendance-index-page__table-cell">
-              @if ($attendance && $attendance->id && $attendance->work_date->lte(now()))
+              @if ($attendance?->id && $attendance->work_date->lte(now()))
               <a class="admin-attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
                 詳細
               </a>
@@ -92,7 +100,8 @@
                 詳細
               </span>
               @endif
-            </td> @endif
+            </td>
+            @endif
           </tr>
           @endforeach
         </tbody>
