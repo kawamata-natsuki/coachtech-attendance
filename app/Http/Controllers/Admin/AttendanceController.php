@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
+use App\Models\CorrectionRequest;
 use App\Models\User;
 use App\Services\AttendanceLogService;
 use App\Services\AttendanceService;
@@ -54,14 +55,43 @@ class AttendanceController extends Controller
     // 勤怠詳細画面（管理者）表示
     public function show(Request $request, $id)
     {
-        $attendance = Attendance::with('breakTimes')->findOrFail($id);
+        // 勤怠レコードと関連するユーザー・休憩データを取得
+        $attendance = Attendance::with([
+            'user',
+            'breakTimes',
+        ])->findOrFail($id);
+
+        // クエリパラメータから申請IDを取得
+        $requestId = $request->query('request_id');
+
+        // 指定された correctionRequest を取得
+        if ($requestId) {
+            $correctionRequest = CorrectionRequest::with('correctionBreakTimes')
+                ->where('id', $requestId)
+                ->where('attendance_id', $attendance->id)
+                ->firstOrFail();
+        } else {
+            // 通常は最新の申請を表示
+            $correctionRequest = $attendance->correctionRequests()->latest()->first();
+        }
+
+        // 出退勤時間：補正申請があれば優先、なければ勤怠データを使う
+        $requestedClockIn = optional(
+            $correctionRequest?->requested_clock_in ?? $attendance->clock_in
+        )?->format('H:i');
+
+        $requestedClockOut = optional(
+            $correctionRequest?->requested_clock_out ?? $attendance->clock_out
+        )?->format('H:i');
 
         return view('shared.attendances.show', [
-            'attendance' => $attendance,
-            'correctionRequest' => null,
-            'breakTimes' => $attendance->breakTimes,
-            'isCorrectionDisabled' => false,
-            'nextIndex' => $attendance->breakTimes->count(),
+            'attendance'            => $attendance,
+            'correctionRequest'     => $correctionRequest,
+            'breakTimes'            => $attendance->breakTimes,
+            'isCorrectionDisabled'  => false,
+            'nextIndex'             => $attendance->breakTimes->count(),
+            'requestedClockIn'      => $requestedClockIn,
+            'requestedClockOut'     => $requestedClockOut,
         ]);
     }
 
@@ -69,19 +99,22 @@ class AttendanceController extends Controller
     public function update(Request $request, $id, AttendanceLogService $logService)
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($id);
+        $requestedClockIn = optional($correctionRequest?->requested_clock_in ?? $attendance->clock_in)?->format('H:i');
+        $requestedClockOut = optional($correctionRequest?->requested_clock_out ?? $attendance->clock_out)?->format('H:i');
 
-        // ===== 修正前のデータ保持 =====
-        $beforeClockIn = $attendance->clock_in;
+        // 修正前のデータ保持
+        $beforeClockIn  = $attendance->clock_in;
         $beforeClockOut = $attendance->clock_out;
-        $beforeReason = $attendance->reason;
-        $beforeBreaks = $attendance->breakTimes->map(function ($break) {
+        $beforeReason   = $attendance->reason;
+        $beforeBreaks   = $attendance->breakTimes->map(function ($break) {
             return [
                 'break_start' => optional($break->break_start)->format('H:i'),
                 'break_end' => optional($break->break_end)->format('H:i'),
             ];
         })->toArray();
 
-        // ===== 出勤・退勤時間の整形（HH:MM形式）=====
+        // --- 出勤・退勤の処理 --- 
+        // HH:MM形式に変換
         $clockInParts = $request->input('requested_clock_in');
         $clockOutParts = $request->input('requested_clock_out');
 
@@ -93,14 +126,15 @@ class AttendanceController extends Controller
             ? Carbon::createFromTime($clockOutParts['hour'], $clockOutParts['minute'])
             : null;
 
-        // ===== 出勤・退勤時間・備考の更新 =====
+        // 出勤・退勤時間・備考の更新
         $attendance->update([
             'clock_in' => $clockIn,
             'clock_out' => $clockOut,
             'reason' => $request->input('reason'),
         ]);
 
-        // ===== 休憩時間の更新 =====
+        // --- 休憩の処理 --- 
+        // 休憩時間の更新
         foreach ($request->input('requested_breaks', []) as $break) {
             $breakStartParts = $break['requested_break_start'];
             $breakEndParts = $break['requested_break_end'];
@@ -135,10 +169,7 @@ class AttendanceController extends Controller
             );
         }
 
-        // ===== モデルの状態を最新に更新（再取得）=====
-        $attendance->refresh();
-
-        // ===== 修正後の休憩時間を整形 =====
+        // 修正後の休憩時間を整形
         $afterBreaks = $attendance->breakTimes->map(function ($break) {
             return [
                 'break_start' => optional($break->break_start)->format('H:i'),
@@ -146,7 +177,11 @@ class AttendanceController extends Controller
             ];
         })->toArray();
 
-        // ===== 修正ログを記録（管理者による即時修正）=====
+        // --- 修正ログの処理 --- 
+        // モデルの状態を最新に更新（再取得）
+        $attendance->refresh();
+
+        // 修正ログを記録（管理者による即時修正）
         $logService->logManual(
             $attendance,
             $beforeClockIn,
@@ -160,7 +195,7 @@ class AttendanceController extends Controller
             Auth::guard('admin')->user()
         );
 
-        // ===== 完了後リダイレクト =====
+        // 直接修正完了後リダイレクト
         return redirect()
             ->route('attendances.show', ['id' => $id])
             ->with('success', '勤怠を修正しました');
