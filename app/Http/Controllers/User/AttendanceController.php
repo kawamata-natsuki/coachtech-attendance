@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Enums\ApprovalStatus;
 use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AttendanceCorrectionRequest;
@@ -192,6 +193,16 @@ class AttendanceController extends Controller
         // 対象の勤怠レコードを取得
         $attendance = Attendance::findOrFail($id);
         $workDate = $attendance->work_date;
+
+        // すでに承認待ちの申請があるかチェック
+        $pendingExists = $attendance->correctionRequests()
+            ->where('approval_status', ApprovalStatus::PENDING)
+            ->exists();
+        if ($pendingExists) {
+            return redirect()
+                ->route('attendances.show', ['id' => $id])
+                ->with('error', 'すでに承認待ちの修正申請が存在します。承認されるまで新しい申請はできません。');
+        }
 
         // 申請フォームから休憩時間データを取得
         $breaks = $request->input('requested_breaks', []);
