@@ -18,24 +18,8 @@
       </span>
     </h1>
 
-    <div class="attendance-show-page__flash-wrapper">
-      @if (session('success'))
-      <div class="flash-message flash-message--success">
-        {{ session('success') }}
-      </div>
-      @endif
-
-      @if (session('error'))
-      <div class="flash-message flash-message--error">
-        {{ session('error') }}
-      </div>
-      @endif
-    </div>
-
-    @php
-    $requestedClockIn = ($correctionRequest?->requested_clock_in)?->format('H:i') ?? ($attendance->clock_in)?->format('H:i');
-    $requestedClockOut = ($correctionRequest?->requested_clock_out)?->format('H:i') ?? ($attendance->clock_out)?->format('H:i');
-    @endphp
+    <!-- フラッシュメッセージ -->
+    @include('shared.flash-message')
 
     <form action="{{ route('attendances.update', ['id' => $attendance->id]) }}" method="post" novalidate>
       @csrf
@@ -62,8 +46,8 @@
           </td>
         </tr>
 
+        <!-- 表示専用モード（申請済） -->
         @if ($isCorrectionDisabled)
-        {{-- 表示専用モード（修正済み） --}}
         @include('shared.attendances.display-fields', [
         'attendance' => $attendance,
         'correctionRequest' => $correctionRequest,
@@ -97,16 +81,15 @@
         @endif
       </table>
 
-      <!-- 修正ボタン -->
       <div class="attendance-show-page__button">
-        <!-- 管理者 -->
-        @if (auth('admin')->check())
+        <!-- 管理者用修正ボタン -->
+        @auth('admin')
         <button type="submit" class="attendance-show-page__submit-button">
           修正
         </button>
-
-        <!-- 一般ユーザー -->
-        @elseif (auth('web')->check())
+        @endauth
+        <!-- 一般ユーザー用修正ボタン -->
+        @auth('web')
         @if ($correctionRequest?->isPending())
         <p class="attendance-show-page__pending-message">
           *承認待ちのため修正はできません。
@@ -116,8 +99,9 @@
           修正
         </button>
         @endif
-        @endif
+        @endauth
       </div>
+
     </form>
   </div>
 </div>
