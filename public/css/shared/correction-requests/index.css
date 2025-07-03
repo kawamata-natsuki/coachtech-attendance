@@ -1,3 +1,4 @@
+/* ページ全体レイアウト */
 .correction-request-index-page {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -14,6 +15,7 @@
   margin-bottom: 100px;
 }
 
+/* タイトル */
 .correction-request-index-page__heading {
   position: relative;
   font-weight: 700;
@@ -38,6 +40,7 @@
   margin-left: 32px;
 }
 
+/* メニュータブ */
 .correction-request-index-page__tabs {
   display: flex;
   gap: 16px;
@@ -63,6 +66,7 @@
   font-weight: 700;
 }
 
+/* テーブルレイアウト */
 .correction-request-index-page__table {
   width: 100%;
   height: 100%;
@@ -135,6 +139,7 @@
   padding-right: 16px;
 }
 
+/* 詳細リンクレイアウト */
 .correction-request-index-page__table-link {
   color: #000;
 }
