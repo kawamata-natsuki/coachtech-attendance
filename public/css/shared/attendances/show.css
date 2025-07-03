@@ -61,6 +61,18 @@
   margin-top: 26px;
 }
 
+.attendance-show-page .flash-message--error {
+  width: 100%;
+  padding: 10px 20px;
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 5px;
+  font-weight: 700;
+  font-size: 14px;
+  margin-top: 26px;
+}
+
 /* テーブルレイアウトはshow-table.cssに分離 */
 
 /* ボタンレイアウト */
