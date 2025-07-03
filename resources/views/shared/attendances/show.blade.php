@@ -24,6 +24,12 @@
         {{ session('success') }}
       </div>
       @endif
+
+      @if (session('error'))
+      <div class="flash-message flash-message--error">
+        {{ session('error') }}
+      </div>
+      @endif
     </div>
 
     @php
@@ -93,13 +99,13 @@
 
       <!-- 修正ボタン -->
       <div class="attendance-show-page__button">
-        <!-- 管理者は常に修正可能 -->
+        <!-- 管理者 -->
         @if (auth('admin')->check())
         <button type="submit" class="attendance-show-page__submit-button">
           修正
         </button>
 
-        <!-- ユーザーは再申請は不可 -->
+        <!-- 一般ユーザー -->
         @elseif (auth('web')->check())
         @if ($correctionRequest?->isPending())
         <p class="attendance-show-page__pending-message">
