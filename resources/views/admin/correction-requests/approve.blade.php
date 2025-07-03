@@ -16,13 +16,8 @@
       </span>
     </h1>
 
-    <div class="admin-correction-approve-page__flash-wrapper">
-      @if (session('success'))
-      <div class="flash-message flash-message--success">
-        {{ session('success') }}
-      </div>
-      @endif
-    </div>
+    <!-- フラッシュメッセージ -->
+    @include('shared.flash-message')
 
     <table class="admin-correction-approve-page__table">
       <!-- 名前 -->
