@@ -53,26 +53,31 @@
       <tbody>
         @foreach ($requests as $correctionRequest)
         <tr>
+          <!-- 状態 -->
           <td class="correction-request-index-page__table-cell">
             {{ $correctionRequest->approval_status->label() }}
           </td>
 
+          <!-- 名前 -->
           <td class="correction-request-index-page__table-cell">
             <div class="correction-request-index-page__table-cell--name" title="{{ $correctionRequest->user->name }}">
               {{ $correctionRequest->user->name }}
             </div>
           </td>
 
+          <!-- 対象日時 -->
           <td class="correction-request-index-page__table-cell">
             {{ $correctionRequest->work_date->format('Y/m/d') }}
           </td>
 
+          <!-- 申請理由 -->
           <td class="correction-request-index-page__table-cell">
             <div class="correction-request-index-page__table-cell--reason" title="{{ $correctionRequest->reason }}">
               {{ $correctionRequest->reason }}
             </div>
           </td>
 
+          <!-- 申請日時 -->
           <td class="correction-request-index-page__table-cell">
             {{ $correctionRequest->created_at->format('Y/m/d') }}
           </td>
