@@ -59,13 +59,12 @@
             {{ $user->name }}
           </td>
 
-          @if ($attendance->isFuture())
+          @if ($attendance && $attendance->isFuture())
           <td class="admin-attendance-index-page__table-cell" colspan="4">
           </td>
           <td class="admin-attendance-index-page__table-cell">
           </td>
           @else
-
           <td class="admin-attendance-index-page__table-cell">
             {{ $attendance?->clock_in?->format('H:i') ?? '' }}
           </td>
