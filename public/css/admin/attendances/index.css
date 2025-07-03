@@ -1,3 +1,4 @@
+/* ページ全体のレイアウト */
 .admin-attendance-index-page {
   min-height: calc(100vh - 80px);
   display: flex;
@@ -15,6 +16,7 @@
   margin-bottom: 100px;
 }
 
+/* タイトル */
 .admin-attendance-index-page__heading {
   position: relative;
   font-weight: 700;
@@ -36,6 +38,13 @@
 
 .admin-attendance-index-page__heading-text {
   margin-left: 32px;
+}
+
+/* テーブルレイアウト */
+
+.admin-attendance-index-page__table-wrapper {
+  border-radius: 10px;
+  overflow: hidden;
 }
 
 .admin-attendance-index-page__table {
@@ -92,6 +101,8 @@
   border-bottom: 2px solid #E1E1E1;
   text-align: center;
 }
+
+/* 詳細リンクのレイアウト */
 
 .admin-attendance-index-page__table-link {
   color: #000;
