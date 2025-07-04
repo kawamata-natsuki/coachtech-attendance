@@ -41,6 +41,11 @@ class AttendanceService
   {
     if (! $attendance->exists) return '';
 
+    // 出勤・退勤が揃っていない場合は空欄を返す
+    if (!$attendance->clock_in || !$attendance->clock_out) {
+      return '';
+    }
+
     $seconds = self::getBreakTimeSeconds($attendance);
 
     $interval = CarbonInterval::seconds($seconds)->cascade();
@@ -60,6 +65,11 @@ class AttendanceService
   public static function calculateWorkTime(Attendance $attendance): string
   {
     if (! $attendance->exists) return '';
+
+    // 出勤 or 退勤が欠けているときは欠けている場合は空欄
+    if (!$attendance->clock_in || !$attendance->clock_out) {
+      return '';
+    }
 
     $seconds = self::getWorkTimeSeconds($attendance);
 
