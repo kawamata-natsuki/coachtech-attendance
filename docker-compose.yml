@@ -9,8 +9,6 @@ services:
       - php
 
   php:
-    env_file:
-      - .env.docker
     build:
       context: ./docker/php
       dockerfile: Dockerfile
