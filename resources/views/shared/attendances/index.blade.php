@@ -51,41 +51,65 @@
       </thead>
 
       <tbody>
-        @foreach($attendances as $attendance)
+        @foreach($datesInMonth as $date)
+        @php
+        $attendance = $attendances->first(function ($att) use ($date) {
+        return \Carbon\Carbon::parse($att->work_date)->isSameDay($date);
+        });
+        @endphp
         <tr>
           <td class="attendance-index-page__table-cell">
-            {{ $attendance->work_date->locale('ja')->isoFormat('MM/DD(dd)') }}
+            {{ $date->locale('ja')->isoFormat('MM/DD(dd)') }}
           </td>
 
-          @if ($attendance->isFuture())
-          <td class="attendance-index-page__table-cell" colspan="4">
-          </td>
+          @if (!$attendance)
+          {{-- レコードがない日（お休み） --}}
+          <td class="attendance-index-page__table-cell" colspan="4"></td>
           <td class="attendance-index-page__table-cell">
+            <span class="attendance-index-page__table-link--disabled">詳細</span>
           </td>
+
           @else
+          {{-- レコードがある日 --}}
           <td class="attendance-index-page__table-cell">
+            @if ($attendance && $attendance->clock_in)
             {{ optional($attendance->clock_in)->format('H:i') }}
+            @endif
           </td>
+
           <td class="attendance-index-page__table-cell">
+            @if ($attendance && $attendance->clock_in && $attendance->clock_out)
             {{ optional($attendance->clock_out)->format('H:i') }}
+            @elseif ($attendance && $attendance->clock_in)
+            --:--
+            @endif
           </td>
+
           <td class="attendance-index-page__table-cell">
+            @if ($attendance && $attendance->clock_in && ($attendance->clock_out || $attendance->breakTimes->isNotEmpty()))
             {{ App\Services\AttendanceService::calculateBreakTime($attendance) }}
+            @elseif ($attendance && $attendance->clock_in)
+            --:--
+            @endif
           </td>
+
           <td class="attendance-index-page__table-cell">
+            @if ($attendance && $attendance->clock_in && $attendance->clock_out)
             {{ App\Services\AttendanceService::calculateWorkTime($attendance) }}
+            @elseif ($attendance && $attendance->clock_in)
+            --:--
+            @endif
           </td>
+
           <td class="attendance-index-page__table-cell">
-            @if ($attendance->work_date->lte(now()))
-            @if (!is_null($attendance->id))
-            <a class="attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
+            @if ($attendance && $attendance->id)
+            <a class="attendance-index-page__table-link" href="{{ route('attendances.show', ['id' => $attendance->id]) }}">
               詳細
             </a>
             @else
             <span class="attendance-index-page__table-link--disabled">
               詳細
             </span>
-            @endif
             @endif
           </td>
           @endif
