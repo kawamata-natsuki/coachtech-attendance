@@ -10,6 +10,9 @@
 
 @section('body-class', 'page-auth')
 @section('content')
+<!-- フラッシュメッセージ -->
+@include('shared.flash-message')
+
 <div class="login-page">
   <div class="login-page__container">
     <h1 class="login-page__heading content__heading">
