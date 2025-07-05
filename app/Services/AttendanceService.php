@@ -41,12 +41,17 @@ class AttendanceService
   {
     if (! $attendance->exists) return '';
 
-    // 出勤・退勤が揃っていない場合は空欄を返す
-    if (!$attendance->clock_in || !$attendance->clock_out) {
+    // 出勤打刻があれば休憩の合計計算
+    if (!$attendance->clock_in) {
       return '';
     }
 
     $seconds = self::getBreakTimeSeconds($attendance);
+
+    // 休憩がゼロでも「00:00」と表示
+    if ($seconds === 0) {
+      return '00:00';
+    }
 
     $interval = CarbonInterval::seconds($seconds)->cascade();
     return sprintf('%d:%02d', $interval->hours, $interval->minutes);
