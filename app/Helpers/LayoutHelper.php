@@ -4,10 +4,8 @@ namespace App\Helpers;
 
 use Illuminate\Support\Facades\Auth;
 
-// 	ロゴのリンク、ナビゲーションなど、共通レイアウトに関するビュー補助処理
 class LayoutHelper
 {
-  // headerのナビゲーションメニューのビューを返す
   public static function headerNavView(): ?string
   {
     // 管理者ログインしている場合は管理者用のナビゲーションメニューを返す
