@@ -61,14 +61,13 @@ class AttendanceController extends Controller
         // クエリパラメータから申請IDを取得
         $requestId = $request->query('request_id');
 
-        // 指定された correctionRequest を取得
+        // 申請IDがあればその申請を取得、なければ勤怠に紐づく最新の申請を取得
         if ($requestId) {
             $correctionRequest = CorrectionRequest::with('correctionBreakTimes')
                 ->where('id', $requestId)
                 ->where('attendance_id', $attendance->id)
                 ->firstOrFail();
         } else {
-            // 通常は最新の申請を表示
             $correctionRequest = $attendance->correctionRequests()->latest()->first();
         }
 
@@ -76,7 +75,6 @@ class AttendanceController extends Controller
         $requestedClockIn = optional(
             $correctionRequest?->requested_clock_in ?? $attendance->clock_in
         )?->format('H:i');
-
         $requestedClockOut = optional(
             $correctionRequest?->requested_clock_out ?? $attendance->clock_out
         )?->format('H:i');
@@ -96,8 +94,6 @@ class AttendanceController extends Controller
     public function update(Request $request, $id, AttendanceLogService $logService)
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($id);
-        $requestedClockIn = optional($correctionRequest?->requested_clock_in ?? $attendance->clock_in)?->format('H:i');
-        $requestedClockOut = optional($correctionRequest?->requested_clock_out ?? $attendance->clock_out)?->format('H:i');
 
         // 修正前のデータ保持
         $beforeClockIn  = $attendance->clock_in;
