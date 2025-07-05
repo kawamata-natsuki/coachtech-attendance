@@ -6,7 +6,7 @@
 
 @section('title', 'ログイン')
 
-@php($isAdmin = \App\Helpers\AuthHelper::isAdminLoginPage())
+@php($isAdmin = \Illuminate\Support\Facades\Request::is('admin/login'))
 
 @section('body-class', 'page-auth')
 @section('content')
