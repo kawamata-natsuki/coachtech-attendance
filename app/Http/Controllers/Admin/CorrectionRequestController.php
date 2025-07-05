@@ -4,11 +4,9 @@ namespace App\Http\Controllers\Admin;
 
 use App\Enums\ApprovalStatus;
 use App\Http\Controllers\Controller;
-use App\Models\Attendance;
 use App\Models\CorrectionRequest;
 use App\Services\AttendanceLogService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 
 class CorrectionRequestController extends Controller
@@ -23,32 +21,39 @@ class CorrectionRequestController extends Controller
     // 申請一覧画面（管理者）表示
     public function index(Request $request)
     {
+        // URLのクエリパラメータから「status」を取得(デフォルトはpending)
         $status = $request->query('status', 'pending');
 
-        $query = CorrectionRequest::with('user');
+        // ユーザーの修正申請を取得
+        $requestsQuery = CorrectionRequest::with('user');
 
+        // 承認待ちの申請を作成日の古い順で取得
+        // 承認済みの申請を作成日の新しい順で取得
         if ($status === 'pending') {
-            $query->where('approval_status', ApprovalStatus::PENDING)
-                ->orderBy('created_at', 'asc'); // 古→新
+            $requestsQuery->where('approval_status', ApprovalStatus::PENDING)
+                ->orderBy('created_at', 'asc');
         } elseif ($status === 'approved') {
-            $query->where('approval_status', ApprovalStatus::APPROVED)
-                ->orderBy('created_at', 'desc'); // 新→古
+            $requestsQuery->where('approval_status', ApprovalStatus::APPROVED)
+                ->orderBy('created_at', 'desc');
         }
 
-        $correctionRequests = $query->get();
+        // 申請データを取得
+        $requests = $requestsQuery->get();
 
         return view('shared.correction-requests.index', [
             'status' => $status,
-            'requests' => $correctionRequests,
+            'requests' => $requests,
         ]);
     }
 
     // 修正申請承認画面（管理者）表示
     public function show(Request $request, $id)
     {
+        // 修正申請をIDで取得（関連する勤怠・ユーザー・修正休憩をまとめて取得）
         $correctionRequest = CorrectionRequest::with(['attendance.user', 'correctionBreakTimes'])
             ->findOrFail($id);
 
+        // 勤怠データに通常の休憩時間もまとめて取得
         $attendance = $correctionRequest->attendance->load('breakTimes');
 
         return view('admin.correction-requests.approve', [
@@ -63,6 +68,7 @@ class CorrectionRequestController extends Controller
     // 修正申請承認画面（管理者）承認処理
     public function approve($id)
     {
+        // 修正申請をIDで取得（関連する勤怠データと休憩データをまとめて取得）
         $correctionRequest = CorrectionRequest::with('attendance.breakTimes')->findOrFail($id);
         $attendance = $correctionRequest->attendance;
 
@@ -84,7 +90,7 @@ class CorrectionRequestController extends Controller
             'reason' => $correctionRequest->reason,
         ]);
 
-        // breakTimesも上書き
+        // breakTimes テーブルに申請内容を上書き
         $correctionBreaks = $correctionRequest->correctionBreakTimes;
         $originalBreaks = $attendance->breakTimes->values();
 
@@ -94,9 +100,8 @@ class CorrectionRequestController extends Controller
             $start = $correctionBreak->requested_break_start;
             $end   = $correctionBreak->requested_break_end;
 
-            // --:-- ~ --:-- が選ばれた場合（nullになってる）
+            // 両方とも未入力（--:-- ~ --:--）の場合は削除扱い
             $isDeleted = is_null($start) && is_null($end);
-
             if ($isDeleted) {
                 if ($original) {
                     $original->delete();
@@ -104,7 +109,7 @@ class CorrectionRequestController extends Controller
                 continue;
             }
 
-            // 上書き or 新規追加（Carbonのまま渡す）
+            // 既存データがあれば更新、なければ新規作成
             if ($original) {
                 $original->update([
                     'break_start' => $start,
