@@ -3,7 +3,7 @@
 namespace App\Exceptions;
 
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Session\TokenMismatchException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -23,13 +23,11 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        // 現在ログイン中のガードを判定（管理者 or ユーザー）
-        $guard = Auth::guard('admin')->check() ? 'admin' : 'web';
+        $guard = auth('admin')->check() ? 'admin' : 'web';
 
-        if ($this->isHttpException($exception)) {
-            if ($exception->getStatusCode() === 419) {
-                return redirect()->route($guard === 'admin' ? 'admin.login' : 'login')->with('error', 'セッションの有効期限が切れました。再度ログインしてください。');
-            }
+        if ($exception instanceof TokenMismatchException) {
+            return redirect()->guest(route($guard === 'admin' ? 'admin.login' : 'login'))
+                ->with('error', 'セッションの有効期限が切れました。再度ログインしてください。');
         }
 
         return parent::render($request, $exception);
