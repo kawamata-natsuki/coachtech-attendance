@@ -23,10 +23,8 @@ class Handler extends ExceptionHandler
 
     public function render($request, Throwable $exception)
     {
-        $guard = auth('admin')->check() ? 'admin' : 'web';
-
         if ($exception instanceof TokenMismatchException) {
-            return redirect()->guest(route($guard === 'admin' ? 'admin.login' : 'login'))
+            return redirect()->guest(route('login'))
                 ->with('error', 'セッションの有効期限が切れました。再度ログインしてください。');
         }
 
