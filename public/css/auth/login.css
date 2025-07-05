@@ -1,6 +1,6 @@
 /* ページ全体レイアウト */
 .login-page {
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 80px - 68px);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -76,4 +76,15 @@
   opacity: 0.6;
   transform: scale(0.98);
   transition: transform 0.05s ease, opacity 0.05s ease;
+}
+
+/* フラッシュメッセージ */
+.flash-message__wrapper {
+  width: 100%;
+  max-width: 680px;
+  margin: 0 auto 32px;
+  min-height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
