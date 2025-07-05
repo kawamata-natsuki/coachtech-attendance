@@ -13,7 +13,7 @@ class AttendanceSeeder extends Seeder
     public function run(): void
     {
         $startDate = Carbon::parse('2025-04-01');
-        $endDate = Carbon::parse('2025-06-12');
+        $endDate = Carbon::parse('2025-07-04');
 
         $holidays = [
             '2025-04-29',
