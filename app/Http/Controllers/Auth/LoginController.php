@@ -28,6 +28,13 @@ class LoginController extends Controller
         // 管理者ログインか一般ユーザーログインかを判定
         $guard = $request->is('admin/*') ? 'admin' : 'web';
 
+        // 不要なガードをログアウトしてセッションをクリーンにする
+        if ($guard === 'admin') {
+            Auth::guard('web')->logout();
+        } else {
+            Auth::guard('admin')->logout();
+        }
+
         // ログイン試行
         if (! Auth::guard($guard)->attempt($request->only('email', 'password'))) {
             RateLimiter::hit($this->throttleKey($request), 60);
