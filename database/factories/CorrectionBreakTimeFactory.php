@@ -3,8 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\CorrectionBreakTime;
-use App\Models\CorrectionRequest;
-use App\Models\BreakTime;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 class CorrectionBreakTimeFactory extends Factory
