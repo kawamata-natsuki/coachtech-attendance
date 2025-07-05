@@ -39,16 +39,17 @@ class AttendanceService
   }
   public static function calculateBreakTime(Attendance $attendance): string
   {
+    // 新規作成中など、未保存の勤怠レコードは空文字を返す
     if (! $attendance->exists) return '';
 
-    // 出勤打刻があれば休憩の合計計算
+    // 出勤打刻がなければ計算しない
     if (!$attendance->clock_in) {
       return '';
     }
 
     $seconds = self::getBreakTimeSeconds($attendance);
 
-    // 休憩がゼロでも「00:00」と表示
+    // 休憩をしていない場合「00:00」と表示
     if ($seconds === 0) {
       return '00:00';
     }
@@ -69,6 +70,7 @@ class AttendanceService
   }
   public static function calculateWorkTime(Attendance $attendance): string
   {
+    // 新規作成中など、未保存の勤怠レコードは空文字を返す
     if (! $attendance->exists) return '';
 
     // 出勤 or 退勤が欠けているときは欠けている場合は空欄
