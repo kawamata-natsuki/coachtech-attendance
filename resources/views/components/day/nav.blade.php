@@ -1,4 +1,4 @@
-<!-- 日ナビゲーション -->
+<!-- 日付ナビゲーション -->
 <div class="day-nav">
   <div class="day-nav__navigation">
     <a class="day-nav__link" href="{{ $prevUrl }}">
