@@ -139,8 +139,16 @@ class AttendanceController extends Controller
             'month' => $nextMonth,
         ]);
 
+        $datesInMonth = collect();
+        $start = $currentMonth->copy()->startOfMonth();
+        $end = $currentMonth->copy()->endOfMonth();
+        for ($date = $start; $date->lte($end); $date->addDay()) {
+            $datesInMonth->push($date->copy());
+        }
+
         return view('shared.attendances.index', [
             'attendances'   => $attendances,
+            'datesInMonth'  => $datesInMonth,
             'currentMonth'  => $currentMonth,
             'user'          => $user,
             'prevUrl'       => $prevUrl,
