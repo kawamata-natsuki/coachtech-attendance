@@ -17,13 +17,13 @@ class AttendanceController extends Controller
     // 勤怠一覧画面（管理者）表示
     public function index(Request $request)
     {
-        // 表示対象の日（クエリがなければ今日）を取得
+        // 表示対象の日を取得
         $dateParam = $request->query('date');
         $currentDate = $dateParam
             ? Carbon::createFromFormat('Y-m-d', $dateParam)->startOfDay()
             : now()->startOfDay();
 
-        // 日ナビゲーションのためのURL生成（currenrDateの前日と翌日）
+        // 日付ナビゲーション用のURL生成
         $prevUrl = route('admin.attendances.index', ['date' => $currentDate->copy()->subDay()->format('Y-m-d')]);
         $nextUrl = route('admin.attendances.index', ['date' => $currentDate->copy()->addDay()->format('Y-m-d')]);
 
@@ -31,13 +31,10 @@ class AttendanceController extends Controller
         $users = User::with(['attendances' => function ($query) use ($currentDate) {
             $query->whereDate('work_date', $currentDate->toDateString());
         }])->get();
-        foreach ($users as $user) {
-            $user->attendanceForDay = $user->attendances->first();
-        }
 
         // 休憩時間と合計勤務時間を計算して取得
         foreach ($users as $user) {
-            $attendance = $user->attendanceForDay;
+            $attendance = $user->attendances->first();
             if ($attendance) {
                 $attendance->workTime = AttendanceService::calculateWorkTime($attendance);
                 $attendance->breakTime = AttendanceService::calculateBreakTime($attendance);

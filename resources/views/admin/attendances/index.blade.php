@@ -54,7 +54,7 @@
         <tbody>
           @foreach ($users as $user)
           @php
-          $attendance = $user->attendanceForDay;
+          $attendance = $user->attendances->first();
           @endphp
           <tr>
             <!-- 名前 -->
