@@ -50,7 +50,6 @@
             </th>
           </tr>
         </thead>
-
         <tbody>
           @foreach ($users as $user)
           @php
@@ -62,43 +61,47 @@
               {{ $user->name }}
             </td>
 
-            @if ($attendance && $attendance->isFuture())
-            <td class="admin-attendance-index-page__table-cell" colspan="4">
-            </td>
+            @if (!$attendance || $attendance->isFuture())
+            {{-- 勤怠データなし or 未来 → 空欄＋詳細 --}}
+            <td class="admin-attendance-index-page__table-cell"></td>
+            <td class="admin-attendance-index-page__table-cell"></td>
+            <td class="admin-attendance-index-page__table-cell"></td>
+            <td class="admin-attendance-index-page__table-cell"></td>
             <td class="admin-attendance-index-page__table-cell">
+              <span class="admin-attendance-index-page__table-link--disabled">詳細</span>
             </td>
+
             @else
-
-            <!-- 出勤 -->
+            {{-- 勤怠データあり --}}
             <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance?->clock_in?->format('H:i') ?? '' }}
+              {{ $attendance->clock_in ? $attendance->clock_in->format('H:i') : '--:--' }}
             </td>
-
-            <!-- 退勤 -->
             <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance?->clock_out?->format('H:i') ?? '' }}
-            </td>
-
-            <!-- 休憩 -->
-            <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance?->breakTime ?? '' }}
-            </td>
-
-            <!-- 合計 -->
-            <td class="admin-attendance-index-page__table-cell">
-              {{ $attendance?->workTime ?? '' }}
-            </td>
-
-            <!-- 詳細 -->
-            <td class="admin-attendance-index-page__table-cell">
-              @if ($attendance?->id && $attendance->work_date->lte(now()))
-              <a class="admin-attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">
-                詳細
-              </a>
+              @if ($attendance->clock_in && $attendance->clock_out)
+              {{ $attendance->clock_out->format('H:i') }}
               @else
-              <span class="admin-attendance-index-page__table-link--disabled">
-                詳細
-              </span>
+              --:--
+              @endif
+            </td>
+            <td class="admin-attendance-index-page__table-cell">
+              @if ($attendance->clock_in && ($attendance->clock_out || $attendance->breakTimes->isNotEmpty()))
+              {{ $attendance->breakTime }}
+              @else
+              --:--
+              @endif
+            </td>
+            <td class="admin-attendance-index-page__table-cell">
+              @if ($attendance->clock_in && $attendance->clock_out)
+              {{ $attendance->workTime }}
+              @else
+              --:--
+              @endif
+            </td>
+            <td class="admin-attendance-index-page__table-cell">
+              @if ($attendance->id && $attendance->work_date->lte(now()))
+              <a class="admin-attendance-index-page__table-link" href="{{ route('attendances.show',['id' => $attendance->id]) }}">詳細</a>
+              @else
+              <span class="admin-attendance-index-page__table-link--disabled">詳細</span>
               @endif
             </td>
             @endif
