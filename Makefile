@@ -1,7 +1,7 @@
 init:
 	docker compose up -d --build
+	cp .env.example .env
 	docker compose exec php composer install
-	docker compose exec php cp .env.example .env
 	docker compose exec php php artisan key:generate
 	docker compose exec php php artisan migrate --seed
 
@@ -27,8 +27,8 @@ stop:
 
 set-testing-env:
 	cp .env.testing .env
-	php artisan config:clear
+	docker compose exec php php artisan config:clear
 
 restore-env:
 	cp .env.backup .env
-	php artisan config:clear
+	docker compose exec php php artisan config:clear
