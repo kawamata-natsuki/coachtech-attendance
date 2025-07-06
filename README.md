@@ -20,20 +20,22 @@ code .
 Docker Desktopを起動してください
 
 
-4. Docker用UID/GIDを設定する  
-プロジェクトルートに.env を作成する:  
+4. プロジェクトルートにDocker用.env を作成する  
 ```
 touch .env
 ```
-自分の環境に合わせてUID/GIDを設定  
+
+5. Docker 用 UID / GID を設定
+UID/GIDは `id -u` / `id -g` コマンドで確認できます。  
+自分の環境に合わせてUID/GIDを設定してください
 設定例: 
 ```
 UID=1000
 GID=1000
 ```
-※UID/GIDは id -u / id -g コマンドで確認できます
 
-5. `docker-compose.override.yml`の作成
+
+6. `docker-compose.override.yml`の作成
 
 `docker-compose.override.yml` は、開発環境ごとの個別調整（ポート番号の変更など）を行うための設定ファイルです。  
 `docker-compose.yml` ではポートは設定されていないため、各自 `docker-compose.override.yml` を作成して、他のアプリケーションと競合しないポート番号を設定してください:     
@@ -62,9 +64,8 @@ services:
     - 8091:80                 # phpMyAdmin用ポート
 ```
 
-4. プロジェクト直下で、以下のコマンドを実行、初期セットアップを行います：
+7. プロジェクトルート直下で、以下のコマンドを実行、初期セットアップを行います：
 ```bash
-cd ~/coachtech-attendance
 make init
 ```
 `make init` では以下が自動で実行されます：
@@ -162,7 +163,6 @@ MAIL_FROM_NAME="${APP_NAME}"
 そのため、テストを正しく実行するには以下のコマンドでビルドを行い、`public/build` ディレクトリを生成してください：
 
 ```bash
-npm install
 npm run build
 ```
 
