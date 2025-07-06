@@ -8,22 +8,24 @@
 git clone git@github.com:kawamata-natsuki/coachtech-attendance.git
 ``` 
 
+
 2. クローン後、プロジェクトディレクトリに移動してVSCodeを起動
 ```
 cd coachtech-attendance
-
 code .
 ```
 
-3. Dockerを起動する
+
+3. Dockerを起動する  
 Docker Desktopを起動してください
 
-4. Docker用UID/GIDを設定する
+
+4. Docker用UID/GIDを設定する  
 プロジェクトルートに.env を作成する:  
 ```
 touch .env
 ```
-自分の環境に合わせてUID/GIDを設定
+自分の環境に合わせてUID/GIDを設定  
 設定例: 
 ```
 UID=1000
@@ -43,19 +45,21 @@ touch docker-compose.override.yml
 services:
   nginx:
     ports:
-    - "8090:80"        # 開発環境用のNginxポート
+      - "8090:80"             # 開発環境用のNginxポート
     
   php:
     build:
-    args:
-        USER_ID: 1000  # .envで指定したUIDを使用
-        GROUP_ID: 1000 # .envで指定したGIDを使用
+      context: ./docker/php
+      dockerfile: Dockerfile
+      args:
+        USER_ID: 1000         # .envで指定したUIDを使用
+        GROUP_ID: 1000        # .envで指定したGIDを使用
     ports:
-    - "5173:5173"      # Viteのホットリロード用ポート
+    - "5173:5173"             # Viteのホットリロード用ポート
 
   phpmyadmin:
     ports:
-    - 8091:80          # phpMyAdmin用ポート
+    - 8091:80                 # phpMyAdmin用ポート
 ```
 
 4. プロジェクト直下で、以下のコマンドを実行、初期セットアップを行います：
@@ -63,7 +67,7 @@ services:
 cd ~/coachtech-attendance
 make init
 ```
-make init では以下が自動で実行されます：
+`make init` では以下が自動で実行されます：
 - Dockerイメージのビルド
 - コンテナ起動
 - Laravel用 .env（.env.example → .env）配置
@@ -172,13 +176,13 @@ cp .env.testing.example .env.testing
 2. テスト用データベースを作成：
 
 ```bash
-docker compose exec mysql mysql -u root -proot -e "CREATE DATABASdemo_test;"
+docker compose exec mysql mysql -u root -proot -e "CREATE DATABASE demo_test;"
 ```
 
 3. テスト用データベースにマイグレーションを実行：
 
-```
-php artisan migrate:fresh --env=testing
+```bash
+docker compose exec php php artisan migrate:fresh --env=testing
 ```
 
 4. テスト用環境に切り替える前に .env をバックアップ
@@ -195,7 +199,7 @@ make set-testing-env
 
 6. テスト実行
 ```bash
-php artisan test tests/Feature
+docker compose exec php php artisan test tests/Feature
 ```
 
 7. テスト完了後、開発環境に戻す
