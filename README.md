@@ -8,10 +8,30 @@
 git clone git@github.com:kawamata-natsuki/coachtech-attendance.git
 ``` 
 
-2. Dockerを起動する
+2. クローン後、プロジェクトディレクトリに移動してVSCodeを起動
+```
+cd coachtech-attendance
+
+code .
+```
+
+3. Dockerを起動する
 Docker Desktopを起動してください
 
-3. `docker-compose.override.yml`の作成
+4. Docker用UID/GIDを設定する
+プロジェクトルートに.env を作成する:  
+```
+touch .env
+```
+自分の環境に合わせてUID/GIDを設定
+設定例: 
+```
+UID=1000
+GID=1000
+```
+※UID/GIDは id -u / id -g コマンドで確認できます
+
+5. `docker-compose.override.yml`の作成
 
 `docker-compose.override.yml` は、開発環境ごとの個別調整（ポート番号の変更など）を行うための設定ファイルです。  
 `docker-compose.yml` ではポートは設定されていないため、各自 `docker-compose.override.yml` を作成して、他のアプリケーションと競合しないポート番号を設定してください:     
@@ -23,29 +43,33 @@ touch docker-compose.override.yml
 services:
   nginx:
     ports:
-    - "8090:80" # 開発環境用のNginxポート
+    - "8090:80"        # 開発環境用のNginxポート
     
   php:
     build:
     args:
-        USER_ID: 1000
-        GROUP_ID: 1000
+        USER_ID: 1000  # .envで指定したUIDを使用
+        GROUP_ID: 1000 # .envで指定したGIDを使用
     ports:
-    - "5173:5173" # Viteのホットリロード用ポート
+    - "5173:5173"      # Viteのホットリロード用ポート
 
   phpmyadmin:
     ports:
-    - 8091:80 # phpMyAdmin用ポート
+    - 8091:80          # phpMyAdmin用ポート
 ```
 
 4. プロジェクト直下で、以下のコマンドを実行、初期セットアップを行います：
 ```bash
-
 cd ~/coachtech-attendance
 make init
-
 ```
-    make init ではDockerイメージのビルド・コンテナ起動・Laravel初期セットアップ（.env作成、key生成、マイグレーションなど）をまとめて実行します。
+make init では以下が自動で実行されます：
+- Dockerイメージのビルド
+- コンテナ起動
+- Laravel用 .env（.env.example → .env）配置
+- Composer依存インストール
+- APP_KEY生成
+- DBマイグレーション・シーディング
 
 ## フロントエンドセットアップ（Vite）
 本案件では勤怠登録画面の日時をViteを用いてリアルタイムで更新して、取得している。  
@@ -87,8 +111,8 @@ MAIL_PORT=2525
 MAIL_USERNAME=your_mailtrap_username_here
 MAIL_PASSWORD=your_mailtrap_password_here
 MAIL_ENCRYPTION=null
-MAIL_FROM_ADDRESS=no-reply@example.com
-MAIL_FROM_NAME="${APP_NAME}"  
+MAIL_FROM_ADDRESS="hello@example.com"
+MAIL_FROM_NAME="${APP_NAME}"
 ```
 
 ## 使用技術(実行環境)
@@ -138,30 +162,28 @@ npm install
 npm run build
 ```
 
-
 1. `.env.testing.example` をコピーして `.env.testing` を作成：
 
-   ```bash
-   cp .env.testing.example .env.testing
-   ```
-
-    ※ `.env.testing.example` はテスト専用の設定テンプレートです。
+```bash
+cp .env.testing.example .env.testing
+```
+※ `.env.testing.example` はテスト専用の設定テンプレートです。
 
 2. テスト用データベースを作成：
 
-   ```bash
-   docker compose exec mysql mysql -u root -proot -e "CREATE DATABASE demo_test;"
-   ```
+```bash
+docker compose exec mysql mysql -u root -proot -e "CREATE DATABASdemo_test;"
+```
 
 3. テスト用データベースにマイグレーションを実行：
 
-    ```
-    php artisan migrate:fresh --env=testing
-    ```
+```
+php artisan migrate:fresh --env=testing
+```
 
 4. テスト用環境に切り替える前に .env をバックアップ
 テスト環境に切り替える前に現在の開発用 .env を保存します：
-```
+```bash
 cp .env .env.backup
 ```
 
@@ -172,7 +194,7 @@ make set-testing-env
 ```
 
 6. テスト実行
-```
+```bash
 php artisan test tests/Feature
 ```
 
