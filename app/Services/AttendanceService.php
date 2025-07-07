@@ -39,20 +39,20 @@ class AttendanceService
   }
   public static function calculateBreakTime(Attendance $attendance): string
   {
-    // 新規作成中など、未保存の勤怠レコードは空文字を返す
-    if (! $attendance->exists) return '';
-
-    // 出勤打刻がなければ計算しない
-    if (!$attendance->clock_in) {
+    if (!$attendance->exists || !$attendance->clock_in) {
       return '';
     }
 
-    $seconds = self::getBreakTimeSeconds($attendance);
+    $hasUnclosedBreak = $attendance->breakTimes->contains(function ($break) {
+      return $break->break_start && !$break->break_end;
+    });
 
-    // 休憩をしていない場合「00:00」と表示
-    if ($seconds === 0) {
-      return '00:00';
+    // 未完了の休憩があれば全体を--:--にする
+    if ($hasUnclosedBreak) {
+      return '--:--';
     }
+
+    $seconds = self::getBreakTimeSeconds($attendance);
 
     $interval = CarbonInterval::seconds($seconds)->cascade();
     return sprintf('%d:%02d', $interval->hours, $interval->minutes);
