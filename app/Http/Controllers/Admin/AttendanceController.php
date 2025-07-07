@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\WorkStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\CorrectionRequest;
@@ -95,6 +96,9 @@ class AttendanceController extends Controller
     {
         $attendance = Attendance::with('breakTimes')->findOrFail($id);
 
+        // 勤怠日のCarbon（日付部分）を取得
+        $workDate = $attendance->work_date->copy();
+
         // 修正前のデータ保持
         $beforeClockIn  = $attendance->clock_in;
         $beforeClockOut = $attendance->clock_out;
@@ -112,18 +116,24 @@ class AttendanceController extends Controller
         $clockOutParts = $request->input('requested_clock_out');
 
         $clockIn = filled($clockInParts['hour']) && filled($clockInParts['minute'])
-            ? Carbon::createFromTime($clockInParts['hour'], $clockInParts['minute'])
+            ? $workDate->copy()->setTime($clockInParts['hour'], $clockInParts['minute'])
             : null;
 
         $clockOut = filled($clockOutParts['hour']) && filled($clockOutParts['minute'])
-            ? Carbon::createFromTime($clockOutParts['hour'], $clockOutParts['minute'])
+            ? $workDate->copy()->setTime($clockOutParts['hour'], $clockOutParts['minute'])
             : null;
+
+        // ステータスを判定
+        $workStatus = $clockIn && $clockOut
+            ? WorkStatus::COMPLETED
+            : WorkStatus::WORKING;
 
         // 出勤・退勤時間・備考の更新
         $attendance->update([
             'clock_in' => $clockIn,
             'clock_out' => $clockOut,
             'reason' => $request->input('reason'),
+            'work_status' => $workStatus,
         ]);
 
         // --- 休憩の処理 --- 
@@ -146,10 +156,10 @@ class AttendanceController extends Controller
 
             // HH:MM形式に変換
             $breakStart = filled($breakStartParts['hour']) && filled($breakStartParts['minute'])
-                ? Carbon::createFromTime($breakStartParts['hour'], $breakStartParts['minute'])
+                ? $workDate->copy()->setTime($breakStartParts['hour'], $breakStartParts['minute'])
                 : null;
             $breakEnd = filled($breakEndParts['hour']) && filled($breakEndParts['minute'])
-                ? Carbon::createFromTime($breakEndParts['hour'], $breakEndParts['minute'])
+                ? $workDate->copy()->setTime($breakEndParts['hour'], $breakEndParts['minute'])
                 : null;
 
             // 更新 or 新規作成
@@ -173,6 +183,15 @@ class AttendanceController extends Controller
         // --- 修正ログの処理 --- 
         // モデルの状態を最新に更新（再取得）
         $attendance->refresh();
+        $attendance->load('breakTimes');
+
+        // 修正後の休憩時間を整形（最新データで）
+        $afterBreaks = $attendance->breakTimes->map(function ($break) {
+            return [
+                'break_start' => optional($break->break_start)->format('H:i'),
+                'break_end' => optional($break->break_end)->format('H:i'),
+            ];
+        })->toArray();
 
         // 修正ログを記録（管理者による即時修正）
         $logService->logManual(
