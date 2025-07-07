@@ -115,7 +115,7 @@ MAIL_FROM_ADDRESS="hello@example.com"
 MAIL_FROM_NAME="${APP_NAME}"
 ```
 
-## 動作確認
+## URL(動作確認)
 セットアップ完了後、以下のURLにブラウザでアクセスし、アプリケーションが正しく動作しているか確認してください：  
 - 一般ユーザー画面: http://localhost:8090/login
 - 管理者画面: http://localhost:8090/admin/login
