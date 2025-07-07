@@ -194,6 +194,12 @@ MAIL_FROM_NAME="${APP_NAME}"
     make restore-env
     ```
 
+9. 設定キャッシュをクリア  
+`.env` の切り替え後は Laravel のキャッシュをクリアして設定を反映させてください：
+    ```bash
+    docker compose exec php php artisan config:clear
+    ```
+
 ## テストケース対応表
 | テストケースID | 対応テストファイル                                                   |
 |----------------|--------------------------------------------------------------------|
