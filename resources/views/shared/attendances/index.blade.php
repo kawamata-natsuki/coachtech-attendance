@@ -103,7 +103,15 @@
             </td>
 
             <td class="attendance-index-page__table-cell">
-              @if ($attendance && $attendance->id)
+              @if ($date->isFuture())
+              <!-- 未来日：詳細ボタン非表示 -->
+              @elseif (!$attendance)
+              <!-- レコードがない日（過去の休日・未打刻）  -->
+              <span class="attendance-index-page__table-link--disabled">
+                詳細
+              </span>
+              @elseif ($attendance && $attendance->id)
+              <!-- レコードがある日  -->
               <a class="attendance-index-page__table-link" href="{{ route('attendances.show', ['id' => $attendance->id]) }}">
                 詳細
               </a>
