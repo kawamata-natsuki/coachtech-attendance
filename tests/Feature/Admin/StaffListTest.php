@@ -9,7 +9,7 @@ use Tests\TestCase;
 use Tests\TestHelpers\AuthTestHelper;
 
 
-class AdminStaffListTest extends TestCase
+class StaffListTest extends TestCase
 {
     use RefreshDatabase;
     use AuthTestHelper;
