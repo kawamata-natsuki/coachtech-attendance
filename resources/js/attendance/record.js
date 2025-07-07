@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   updateClock();
-  setInterval(updateClock, 60000)
+  setInterval(updateClock, 1000);
 });
 
 // 多重送信防止
