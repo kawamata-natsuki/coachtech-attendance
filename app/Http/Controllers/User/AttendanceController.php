@@ -278,8 +278,8 @@ class AttendanceController extends Controller
 
             // 休憩申請を修正申請に紐づけて作成
             $correctionRequest->correctionBreakTimes()->create([
-                'requested_break_start' => $isEmptyInput ? null : Carbon::createFromTime($startParts['hour'], $startParts['minute']),
-                'requested_break_end'   => $isEmptyInput ? null : Carbon::createFromTime($endParts['hour'], $endParts['minute']),
+                'requested_break_start' => $isEmptyInput ? null : $workDate->copy()->setTime($startParts['hour'], $startParts['minute']),
+                'requested_break_end'   => $isEmptyInput ? null : $workDate->copy()->setTime($endParts['hour'], $endParts['minute']),
                 'original_break_start'  => $originalBreak?->break_start,
                 'original_break_end'    => $originalBreak?->break_end,
             ]);
